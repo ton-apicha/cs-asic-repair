@@ -384,7 +384,7 @@ class JobController extends BaseController
         $jobPartsModel = new \App\Models\JobPartsModel();
         $parts = $jobPartsModel->select('job_parts.*, parts_inventory.part_code, parts_inventory.name')
             ->join('parts_inventory', 'parts_inventory.id = job_parts.part_id')
-            ->where('job_parts.job_id', $id)
+            ->where('job_parts.job_card_id', $id)
             ->findAll();
 
         $pdfGenerator = new \App\Libraries\PdfGenerator();
@@ -418,7 +418,7 @@ class JobController extends BaseController
         
         // Get payments
         $paymentModel = new \App\Models\PaymentModel();
-        $payments = $paymentModel->where('job_id', $id)->findAll();
+        $payments = $paymentModel->where('job_card_id', $id)->findAll();
 
         $pdfGenerator = new \App\Libraries\PdfGenerator();
         $pdf = $pdfGenerator->generateReceipt($job, $customer, $payments);

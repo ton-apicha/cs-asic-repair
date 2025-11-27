@@ -122,6 +122,22 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     });
     
     // ========================================================================
+    // Quotations
+    // ========================================================================
+    $routes->group('quotations', function ($routes) {
+        $routes->get('/', 'QuotationController::index');
+        $routes->get('create', 'QuotationController::create');
+        $routes->post('store', 'QuotationController::store');
+        $routes->get('edit/(:num)', 'QuotationController::edit/$1');
+        $routes->post('update/(:num)', 'QuotationController::update/$1');
+        $routes->get('view/(:num)', 'QuotationController::view/$1');
+        $routes->post('status/(:num)', 'QuotationController::updateStatus/$1');
+        $routes->get('convert/(:num)', 'QuotationController::convertToJob/$1');
+        $routes->get('export-pdf/(:num)', 'QuotationController::exportPdf/$1');
+        $routes->post('delete/(:num)', 'QuotationController::delete/$1');
+    });
+    
+    // ========================================================================
     // Settings (Admin Only)
     // ========================================================================
     $routes->group('settings', ['filter' => 'role:admin'], function ($routes) {

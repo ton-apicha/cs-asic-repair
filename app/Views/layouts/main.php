@@ -92,6 +92,14 @@
                 </li>
                 
                 <?php if ($isAdmin ?? false): ?>
+                <!-- Quotations -->
+                <li class="menu-item <?= str_starts_with(uri_string(), 'quotations') ? 'active' : '' ?>">
+                    <a href="<?= base_url('quotations') ?>" class="menu-link <?= str_starts_with(uri_string(), 'quotations') ? 'active' : '' ?>">
+                        <i class="bi bi-file-earmark-text menu-icon"></i>
+                        <span class="menu-text">Quotations</span>
+                    </a>
+                </li>
+                
                 <!-- Divider -->
                 <li class="menu-divider">
                     <span><?= lang('App.management') ?? 'Management' ?></span>

@@ -287,7 +287,7 @@
                 <tr>
                     <td><?= date('d/m/Y', strtotime($payment['payment_date'])) ?></td>
                     <td><?= ucfirst($payment['payment_method']) ?></td>
-                    <td><?= esc($payment['reference_no'] ?? '-') ?></td>
+                    <td><?= esc($payment['reference_number'] ?? '-') ?></td>
                     <td class="text-right">฿<?= number_format($payment['amount'], 2) ?></td>
                 </tr>
                 <?php endforeach; ?>

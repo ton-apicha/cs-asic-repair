@@ -112,12 +112,17 @@ class PortalController extends BaseController
             ],
         ];
 
-        $currentStatusIndex = array_search($job['status'], array_keys($statuses));
+        $statusKeys = array_keys($statuses);
+        $currentStatusIndex = array_search($job['status'], $statusKeys);
+        
+        // If status not found in defined statuses, treat as unknown
+        $statusFound = $currentStatusIndex !== false;
         $index = 0;
 
         foreach ($statuses as $status => $info) {
-            $isCompleted = $index < $currentStatusIndex;
-            $isCurrent = $index === $currentStatusIndex;
+            // If status not found, mark nothing as current/completed
+            $isCompleted = $statusFound && $index < $currentStatusIndex;
+            $isCurrent = $statusFound && $index === $currentStatusIndex;
             
             $timeline[] = [
                 'status'      => $status,
