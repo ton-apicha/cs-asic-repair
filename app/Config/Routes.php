@@ -7,12 +7,16 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 // ============================================================================
-// Authentication Routes
+// Public Routes (No Authentication Required)
 // ============================================================================
 $routes->get('/', 'AuthController::login');
 $routes->get('login', 'AuthController::login');
 $routes->post('login', 'AuthController::attemptLogin');
 $routes->get('logout', 'AuthController::logout');
+
+// Customer Portal (Public)
+$routes->get('track', 'PortalController::track');
+$routes->get('portal/history', 'PortalController::history');
 
 // ============================================================================
 // Protected Routes (Require Authentication)
