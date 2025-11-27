@@ -93,27 +93,37 @@
         margin-top: 0.25rem;
     }
     
-    .stat-change {
-        display: inline-flex;
+    /* Chart Card */
+    .chart-card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.5s ease forwards;
+        animation-delay: 0.3s;
+        opacity: 0;
+    }
+    
+    .chart-card-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
         align-items: center;
-        gap: 0.25rem;
-        font-size: 0.75rem;
+        justify-content: space-between;
+    }
+    
+    .chart-card-title {
         font-weight: 600;
-        padding: 0.25rem 0.5rem;
-        border-radius: 9999px;
-        margin-top: 0.75rem;
+        font-size: 1rem;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
-    .stat-change.up {
-        background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
+    .chart-card-body {
+        padding: 1.25rem;
     }
-    
-    .stat-change.down {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-    }
-    
+
     /* Data Cards */
     .data-card {
         background: #fff;
@@ -385,6 +395,39 @@
     </div>
 </div>
 
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <span class="chart-card-title">
+                    <i class="bi bi-graph-up text-success"></i>
+                    Revenue (Last 7 Days)
+                </span>
+            </div>
+            <div class="chart-card-body">
+                <canvas id="revenueChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Job Status Chart -->
+    <div class="col-lg-4">
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <span class="chart-card-title">
+                    <i class="bi bi-pie-chart text-primary"></i>
+                    Job Status
+                </span>
+            </div>
+            <div class="chart-card-body">
+                <canvas id="statusChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <!-- Recent Jobs -->
     <div class="col-lg-8">
@@ -517,4 +560,132 @@
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Revenue Chart Data from PHP
+    const revenueData = <?= json_encode($revenueChart ?? []) ?>;
+    
+    // Revenue Line Chart
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: revenueData.map(item => item.date),
+                datasets: [{
+                    label: 'Revenue (฿)',
+                    data: revenueData.map(item => item.amount),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '฿' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            color: '#64748b',
+                            callback: function(value) {
+                                return '฿' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Job Status Pie Chart
+    const statusCtx = document.getElementById('statusChart');
+    if (statusCtx) {
+        const jobStats = {
+            pending: <?= $jobStats['pending'] ?? 0 ?>,
+            inProgress: <?= $jobStats['in_progress'] ?? 0 ?>,
+            completed: <?= $jobStats['completed'] ?? 0 ?>,
+            delivered: <?= $jobStats['delivered'] ?? 0 ?>
+        };
+        
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'In Progress', 'Completed', 'Delivered'],
+                datasets: [{
+                    data: [jobStats.pending, jobStats.inProgress, jobStats.completed, jobStats.delivered],
+                    backgroundColor: [
+                        '#f59e0b',
+                        '#3b82f6',
+                        '#10b981',
+                        '#6366f1'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            color: '#64748b'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>

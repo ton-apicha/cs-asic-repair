@@ -438,11 +438,23 @@ class JobCardModel extends Model
         if ($branchId) $completedJobs->where('branch_id', $branchId);
         $completedCount = $completedJobs->countAllResults();
 
+        // In Progress count (for chart)
+        $inProgressJobs = (clone $builder)->where('status', self::STATUS_IN_PROGRESS);
+        if ($branchId) $inProgressJobs->where('branch_id', $branchId);
+        $inProgressCount = $inProgressJobs->countAllResults();
+
+        // Delivered count (for chart)
+        $deliveredJobs = (clone $builder)->where('status', self::STATUS_DELIVERED);
+        if ($branchId) $deliveredJobs->where('branch_id', $branchId);
+        $deliveredCount = $deliveredJobs->countAllResults();
+
         return [
-            'today'     => $todayCount,
-            'monthly'   => $monthlyCount,
-            'pending'   => $pendingCount,
-            'completed' => $completedCount,
+            'today'       => $todayCount,
+            'monthly'     => $monthlyCount,
+            'pending'     => $pendingCount,
+            'completed'   => $completedCount,
+            'in_progress' => $inProgressCount,
+            'delivered'   => $deliveredCount,
         ];
     }
 }
