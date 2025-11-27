@@ -22,6 +22,9 @@ class CustomerModel extends Model
         'address',
         'tax_id',
         'notes',
+        'credit_limit',
+        'credit_used',
+        'credit_terms',
     ];
 
     protected $useTimestamps = true;
@@ -112,6 +115,69 @@ class CustomerModel extends Model
     public function findByPhone(string $phone): ?array
     {
         return $this->where('phone', $phone)->first();
+    }
+
+    /**
+     * Get available credit for a customer
+     */
+    public function getAvailableCredit(int $customerId): float
+    {
+        $customer = $this->find($customerId);
+        if (!$customer) {
+            return 0;
+        }
+        
+        return max(0, ($customer['credit_limit'] ?? 0) - ($customer['credit_used'] ?? 0));
+    }
+
+    /**
+     * Use credit (increase credit_used)
+     */
+    public function useCredit(int $customerId, float $amount): bool
+    {
+        $customer = $this->find($customerId);
+        if (!$customer) {
+            return false;
+        }
+        
+        $newCreditUsed = ($customer['credit_used'] ?? 0) + $amount;
+        
+        return $this->update($customerId, ['credit_used' => $newCreditUsed]);
+    }
+
+    /**
+     * Pay credit (decrease credit_used)
+     */
+    public function payCredit(int $customerId, float $amount): bool
+    {
+        $customer = $this->find($customerId);
+        if (!$customer) {
+            return false;
+        }
+        
+        $newCreditUsed = max(0, ($customer['credit_used'] ?? 0) - $amount);
+        
+        return $this->update($customerId, ['credit_used' => $newCreditUsed]);
+    }
+
+    /**
+     * Get customers with outstanding balance
+     */
+    public function getWithOutstandingBalance(): array
+    {
+        return $this->where('credit_used >', 0)
+            ->orderBy('credit_used', 'DESC')
+            ->findAll();
+    }
+
+    /**
+     * Get overdue customers (past credit terms)
+     */
+    public function getOverdueCustomers(): array
+    {
+        // This would require joining with job/payment dates
+        // For now, just return customers with outstanding balance
+        return $this->getWithOutstandingBalance();
     }
 }
 

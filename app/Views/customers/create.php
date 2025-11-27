@@ -46,6 +46,23 @@
                             <textarea class="form-control" name="notes" rows="2"><?= old('notes') ?></textarea>
                         </div>
                         
+                        <!-- Credit Settings -->
+                        <div class="border-top pt-3 mt-3">
+                            <h6 class="mb-3"><i class="bi bi-credit-card me-2"></i>Credit Settings</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Credit Limit (฿)</label>
+                                    <input type="number" class="form-control" name="credit_limit" 
+                                           value="<?= old('credit_limit', 0) ?>" step="0.01" min="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Payment Terms (Days)</label>
+                                    <input type="number" class="form-control" name="credit_terms" 
+                                           value="<?= old('credit_terms', 30) ?>" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="bi bi-check-lg me-2"></i><?= lang('App.save') ?>

@@ -49,7 +49,37 @@
                         <textarea class="form-control" name="notes" rows="2"><?= old('notes', $customer['notes']) ?></textarea>
                     </div>
                     
-                    <div class="mb-4">
+                    <!-- Credit Settings -->
+                    <div class="border-top pt-3 mt-3">
+                        <h6 class="mb-3"><i class="bi bi-credit-card me-2"></i>Credit Settings</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Credit Limit (฿)</label>
+                                <input type="number" class="form-control" name="credit_limit" 
+                                       value="<?= old('credit_limit', $customer['credit_limit'] ?? 0) ?>" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Credit Used (฿)</label>
+                                <input type="number" class="form-control" readonly
+                                       value="<?= number_format($customer['credit_used'] ?? 0, 2) ?>">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Payment Terms (Days)</label>
+                                <input type="number" class="form-control" name="credit_terms" 
+                                       value="<?= old('credit_terms', $customer['credit_terms'] ?? 30) ?>" min="0">
+                            </div>
+                        </div>
+                        <?php 
+                        $available = ($customer['credit_limit'] ?? 0) - ($customer['credit_used'] ?? 0);
+                        $availableClass = $available > 0 ? 'text-success' : ($available < 0 ? 'text-danger' : 'text-muted');
+                        ?>
+                        <p class="mb-0">
+                            <small class="text-muted">Available Credit:</small>
+                            <strong class="<?= $availableClass ?>">฿<?= number_format($available, 2) ?></strong>
+                        </p>
+                    </div>
+                    
+                    <div class="mb-4 mt-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="is_active" id="isActive" value="1"
                                    <?= old('is_active', $customer['is_active']) ? 'checked' : '' ?>>
