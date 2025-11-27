@@ -360,6 +360,62 @@ class JobController extends BaseController
     }
 
     /**
+     * Export Job Card as PDF
+     */
+    public function exportPdf(int $id)
+    {
+        $job = $this->jobModel->find($id);
+
+        if (!$job) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $customer = $this->customerModel->find($job['customer_id']);
+        $asset = $this->assetModel->find($job['asset_id']);
+        
+        // Get parts used
+        $jobPartsModel = new \App\Models\JobPartsModel();
+        $parts = $jobPartsModel->select('job_parts.*, parts_inventory.part_code, parts_inventory.name')
+            ->join('parts_inventory', 'parts_inventory.id = job_parts.part_id')
+            ->where('job_parts.job_id', $id)
+            ->findAll();
+
+        $pdfGenerator = new \App\Libraries\PdfGenerator();
+        $pdf = $pdfGenerator->generateJobCard($job, $customer, $asset, $parts);
+        
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="JobCard-' . $job['job_id'] . '.pdf"')
+            ->setBody($pdf);
+    }
+
+    /**
+     * Export Receipt as PDF
+     */
+    public function exportReceipt(int $id)
+    {
+        $job = $this->jobModel->find($id);
+
+        if (!$job) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $customer = $this->customerModel->find($job['customer_id']);
+        
+        // Get payments
+        $paymentModel = new \App\Models\PaymentModel();
+        $payments = $paymentModel->where('job_id', $id)->findAll();
+
+        $pdfGenerator = new \App\Libraries\PdfGenerator();
+        $pdf = $pdfGenerator->generateReceipt($job, $customer, $payments);
+        
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'inline; filename="Receipt-' . $job['job_id'] . '.pdf"')
+            ->setBody($pdf);
+    }
+
+    /**
      * Add part to job
      */
     public function addPart(int $id)

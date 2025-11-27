@@ -68,6 +68,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('view/(:num)', 'JobController::view/$1');
         $routes->get('print/(:num)', 'JobController::print/$1');
         $routes->get('print-label/(:num)', 'JobController::printLabel/$1');
+        $routes->get('export-pdf/(:num)', 'JobController::exportPdf/$1');
+        $routes->get('export-receipt/(:num)', 'JobController::exportReceipt/$1');
         
         // Job Parts
         $routes->post('add-part/(:num)', 'JobController::addPart/$1');

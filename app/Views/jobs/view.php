@@ -16,9 +16,23 @@
             </h1>
         </div>
         <div>
-            <a href="<?= base_url('jobs/print/' . $job['id']) ?>" class="btn btn-outline-info me-2" target="_blank">
-                <i class="bi bi-printer me-1"></i><?= lang('App.printCheckinSlip') ?>
-            </a>
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Export
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="<?= base_url('jobs/export-pdf/' . $job['id']) ?>" target="_blank">
+                        <i class="bi bi-file-earmark-text me-2"></i>Job Card PDF
+                    </a></li>
+                    <li><a class="dropdown-item" href="<?= base_url('jobs/export-receipt/' . $job['id']) ?>" target="_blank">
+                        <i class="bi bi-receipt me-2"></i>Receipt PDF
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="<?= base_url('jobs/print/' . $job['id']) ?>" target="_blank">
+                        <i class="bi bi-printer me-2"></i><?= lang('App.printCheckinSlip') ?>
+                    </a></li>
+                </ul>
+            </div>
             <?php if (!$job['is_locked']): ?>
                 <a href="<?= base_url('jobs/edit/' . $job['id']) ?>" class="btn btn-outline-primary me-2">
                     <i class="bi bi-pencil me-1"></i><?= lang('App.edit') ?>
