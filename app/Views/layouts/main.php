@@ -132,6 +132,7 @@
                         <li><a href="<?= base_url('settings') ?>"><?= lang('App.systemSettings') ?></a></li>
                         <li><a href="<?= base_url('settings/branches') ?>"><?= lang('App.branches') ?></a></li>
                         <li><a href="<?= base_url('settings/users') ?>"><?= lang('App.users') ?></a></li>
+                        <li><a href="<?= base_url('settings/backup') ?>"><i class="bi bi-database me-1"></i>Backup</a></li>
                     </ul>
                 </li>
                 <?php endif; ?>

@@ -157,6 +157,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('users/edit/(:num)', 'SettingController::editUser/$1');
         $routes->post('users/update/(:num)', 'SettingController::updateUser/$1');
         $routes->post('users/delete/(:num)', 'SettingController::deleteUser/$1');
+        
+        // Backup & Restore
+        $routes->get('backup', 'BackupController::index');
+        $routes->post('backup/create', 'BackupController::create');
+        $routes->get('backup/download/(:any)', 'BackupController::download/$1');
+        $routes->post('backup/restore', 'BackupController::restore');
+        $routes->post('backup/delete/(:any)', 'BackupController::delete/$1');
     });
     
     // ========================================================================
