@@ -29,7 +29,15 @@ class DashboardController extends BaseController
      */
     public function index(): string
     {
-        $branchId = $this->getBranchId();
+        // Allow admin to filter by branch
+        $branchId = $this->request->getGet('branch_id') 
+            ? (int) $this->request->getGet('branch_id') 
+            : $this->getBranchId();
+        
+        // For non-admin, always use their assigned branch
+        if (!$this->isAdmin()) {
+            $branchId = $this->getBranchId();
+        }
 
         // Get job statistics
         $jobStats = $this->jobModel->getStats($branchId);
@@ -69,6 +77,10 @@ class DashboardController extends BaseController
             ];
         }
 
+        // Get all branches for admin filter
+        $branchModel = new \App\Models\BranchModel();
+        $branches = $branchModel->where('is_active', 1)->findAll();
+
         $data = $this->getViewData([
             'title'          => lang('App.dashboard'),
             'jobStats'       => $jobStats,
@@ -78,6 +90,8 @@ class DashboardController extends BaseController
             'recentJobs'     => $recentJobs,
             'jobsByStatus'   => $jobsByStatus,
             'revenueChart'   => $revenueChart,
+            'branches'       => $branches,
+            'selectedBranch' => $branchId,
         ]);
 
         // Show different view based on role

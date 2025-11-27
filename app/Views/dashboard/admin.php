@@ -338,7 +338,18 @@
         <i class="bi bi-speedometer2"></i>
         <?= lang('App.dashboard') ?>
     </h1>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 align-items-center">
+        <?php if (!empty($branches) && count($branches) > 1): ?>
+        <select class="form-select form-select-sm" style="width: auto;" 
+                onchange="window.location.href='?branch_id=' + this.value">
+            <option value="">All Branches</option>
+            <?php foreach ($branches as $branch): ?>
+            <option value="<?= $branch['id'] ?>" <?= ($selectedBranch ?? null) == $branch['id'] ? 'selected' : '' ?>>
+                <?= esc($branch['name']) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+        <?php endif; ?>
         <a href="<?= base_url('jobs/kanban') ?>" class="btn btn-outline-secondary">
             <i class="bi bi-kanban me-1"></i>Kanban
         </a>
