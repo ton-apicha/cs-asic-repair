@@ -187,6 +187,12 @@
             </div>
             
             <div class="topbar-right">
+                <!-- Dark Mode Toggle -->
+                <button class="theme-toggle topbar-btn" id="themeToggle" title="Toggle Dark Mode">
+                    <i class="bi bi-sun-fill"></i>
+                    <i class="bi bi-moon-fill"></i>
+                </button>
+                
                 <!-- Language Switcher -->
                 <div class="dropdown">
                     <button class="topbar-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -293,9 +299,44 @@
         <footer class="main-footer">
             <div class="d-flex justify-content-between align-items-center">
                 <span>&copy; <?= date('Y') ?> ASIC Repair Management System</span>
-                <span class="text-muted">Version 1.0.0</span>
+                <span class="text-muted">Version 1.1.0</span>
             </div>
         </footer>
+        
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-bottom-nav">
+            <ul class="mobile-bottom-nav-items">
+                <li class="mobile-nav-item">
+                    <a href="<?= base_url('dashboard') ?>" class="mobile-nav-link <?= current_url() == base_url('dashboard') ? 'active' : '' ?>">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="<?= base_url('jobs') ?>" class="mobile-nav-link <?= strpos(current_url(), '/jobs') !== false ? 'active' : '' ?>">
+                        <i class="bi bi-clipboard-check"></i>
+                        <span>Jobs</span>
+                    </a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="<?= base_url('jobs/create') ?>" class="mobile-nav-link" style="background: #3b82f6; color: #fff; border-radius: 50%; width: 44px; height: 44px; margin: -10px 0;">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="<?= base_url('customers') ?>" class="mobile-nav-link <?= strpos(current_url(), '/customers') !== false ? 'active' : '' ?>">
+                        <i class="bi bi-people"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="<?= base_url('inventory') ?>" class="mobile-nav-link <?= strpos(current_url(), '/inventory') !== false ? 'active' : '' ?>">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
     <?php else: ?>
     <!-- Non-authenticated layout (Login page, etc.) -->

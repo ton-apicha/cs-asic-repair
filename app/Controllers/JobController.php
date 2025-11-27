@@ -373,6 +373,13 @@ class JobController extends BaseController
         $customer = $this->customerModel->find($job['customer_id']);
         $asset = $this->assetModel->find($job['asset_id']);
         
+        // Validate required related records exist
+        if (!$customer || !$asset) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+                'Required customer or asset data not found for this job.'
+            );
+        }
+        
         // Get parts used
         $jobPartsModel = new \App\Models\JobPartsModel();
         $parts = $jobPartsModel->select('job_parts.*, parts_inventory.part_code, parts_inventory.name')
@@ -401,6 +408,13 @@ class JobController extends BaseController
         }
 
         $customer = $this->customerModel->find($job['customer_id']);
+        
+        // Validate required customer record exists
+        if (!$customer) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+                'Required customer data not found for this job.'
+            );
+        }
         
         // Get payments
         $paymentModel = new \App\Models\PaymentModel();

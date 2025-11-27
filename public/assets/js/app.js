@@ -19,6 +19,7 @@
         // Configuration
         config: {
             sidebarCollapseKey: 'sidebar_collapsed',
+            themeKey: 'theme',
             toastDuration: 4000,
             debounceDelay: 300
         },
@@ -29,6 +30,7 @@
         init: function() {
             console.log('Initializing ASIC Repair System...');
             
+            this.initTheme();
             this.initSidebar();
             this.initSubmenu();
             this.initTooltips();
@@ -36,8 +38,79 @@
             this.initConfirmDialogs();
             this.initKanban();
             this.initFlyout();
+            this.initPageTransitions();
+            this.initMobileNav();
             
             console.log('App initialized successfully');
+        },
+        
+        // ====================================================================
+        // Theme (Dark Mode)
+        // ====================================================================
+        initTheme: function() {
+            const savedTheme = localStorage.getItem(this.config.themeKey);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Apply saved theme or system preference
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (prefersDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            
+            // Theme toggle button
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => this.toggleTheme());
+            }
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem(this.config.themeKey)) {
+                    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                }
+            });
+        },
+        
+        toggleTheme: function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem(this.config.themeKey, newTheme);
+            
+            // Animate toggle
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.classList.add('bounce');
+                setTimeout(() => themeToggle.classList.remove('bounce'), 600);
+            }
+        },
+        
+        // ====================================================================
+        // Page Transitions
+        // ====================================================================
+        initPageTransitions: function() {
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.classList.add('page-transition');
+            }
+        },
+        
+        // ====================================================================
+        // Mobile Navigation
+        // ====================================================================
+        initMobileNav: function() {
+            // Add active state to mobile nav items
+            const currentPath = window.location.pathname;
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            
+            mobileNavLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && currentPath.includes(href.replace(/\//g, ''))) {
+                    link.classList.add('active');
+                }
+            });
         },
         
         // ====================================================================
