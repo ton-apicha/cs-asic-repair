@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * CodeIgniter 4 CLI Tool
+ */
+
+// Refuse to run when called from php-cgi
+if (strpos(PHP_SAPI, 'cgi') === 0) {
+    exit("The cli tool is not supported when running php-cgi. It needs php-cli to function!\n\n");
+}
+
+// Path to the front controller
+define('FCPATH', __DIR__ . '/public/');
+
+// Ensure the current directory is pointing to the front controller's directory
+if (is_dir(FCPATH)) {
+    chdir(FCPATH);
+}
+
+/*
+ *---------------------------------------------------------------
+ * BOOTSTRAP THE APPLICATION
+ *---------------------------------------------------------------
+ */
+require __DIR__ . '/app/Config/Paths.php';
+$paths = new Config\Paths();
+
+// Load the framework
+require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'Boot.php';
+
+exit(CodeIgniter\Boot::bootSpark($paths));
