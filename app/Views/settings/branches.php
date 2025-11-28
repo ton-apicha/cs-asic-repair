@@ -118,19 +118,18 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// Use Bootstrap 5 native JavaScript API
-var branchModalEl = document.getElementById('branchModal');
-var branchModal = null;
-
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
     // Clean up any leftover backdrops on page load
     document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
     
+    // Get modal element
+    var branchModalEl = document.getElementById('branchModal');
+    
     // Create Bootstrap Modal instance ONCE
-    branchModal = new bootstrap.Modal(branchModalEl);
+    var branchModal = new bootstrap.Modal(branchModalEl);
     
     // Cleanup when modal is hidden
     branchModalEl.addEventListener('hidden.bs.modal', function() {
@@ -139,53 +138,56 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
     });
-});
+    
+    // Expose functions globally
+    window.branchModal = branchModal;
 
-function addBranch() {
-    var form = document.getElementById('branchForm');
-    var title = document.getElementById('branchModalTitle');
-    
-    form.reset();
-    document.getElementById('branchId').value = '';
-    title.innerHTML = '<i class="bi bi-building me-2"></i><?= lang('App.addBranch') ?>';
-    form.action = '<?= base_url('settings/branches/store') ?>';
-    document.getElementById('branchActive').checked = true;
-    
-    branchModal.show();
-}
-
-function editBranch(branch) {
-    var form = document.getElementById('branchForm');
-    var title = document.getElementById('branchModalTitle');
-    
-    form.reset();
-    title.innerHTML = '<i class="bi bi-pencil me-2"></i><?= lang('App.editBranch') ?>';
-    form.action = '<?= base_url('settings/branches/update') ?>/' + branch.id;
-    document.getElementById('branchId').value = branch.id;
-    document.getElementById('branchName').value = branch.name;
-    document.getElementById('branchPhone').value = branch.phone || '';
-    document.getElementById('branchAddress').value = branch.address || '';
-    document.getElementById('branchActive').checked = branch.is_active == 1;
-    
-    branchModal.show();
-}
-
-function deleteBranch(id, name) {
-    if (confirm('<?= lang('App.confirmDelete') ?>\n\nBranch: ' + name)) {
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?= base_url('settings/branches/delete') ?>/' + id;
+    window.addBranch = function() {
+        var form = document.getElementById('branchForm');
+        var title = document.getElementById('branchModalTitle');
         
-        var csrf = document.createElement('input');
-        csrf.type = 'hidden';
-        csrf.name = '<?= csrf_token() ?>';
-        csrf.value = '<?= csrf_hash() ?>';
-        form.appendChild(csrf);
+        form.reset();
+        document.getElementById('branchId').value = '';
+        title.innerHTML = '<i class="bi bi-building me-2"></i><?= lang('App.addBranch') ?>';
+        form.action = '<?= base_url('settings/branches/store') ?>';
+        document.getElementById('branchActive').checked = true;
         
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
+        branchModal.show();
+    };
+
+    window.editBranch = function(branch) {
+        var form = document.getElementById('branchForm');
+        var title = document.getElementById('branchModalTitle');
+        
+        form.reset();
+        title.innerHTML = '<i class="bi bi-pencil me-2"></i><?= lang('App.editBranch') ?>';
+        form.action = '<?= base_url('settings/branches/update') ?>/' + branch.id;
+        document.getElementById('branchId').value = branch.id;
+        document.getElementById('branchName').value = branch.name;
+        document.getElementById('branchPhone').value = branch.phone || '';
+        document.getElementById('branchAddress').value = branch.address || '';
+        document.getElementById('branchActive').checked = branch.is_active == 1;
+        
+        branchModal.show();
+    };
+
+    window.deleteBranch = function(id, name) {
+        if (confirm('<?= lang('App.confirmDelete') ?>\n\nBranch: ' + name)) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '<?= base_url('settings/branches/delete') ?>/' + id;
+            
+            var csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '<?= csrf_token() ?>';
+            csrf.value = '<?= csrf_hash() ?>';
+            form.appendChild(csrf);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    };
+})();
 </script>
 <?= $this->endSection() ?>
 

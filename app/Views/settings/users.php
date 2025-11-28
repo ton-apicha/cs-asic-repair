@@ -184,19 +184,18 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// Use Bootstrap 5 native JavaScript API
-var userModalEl = document.getElementById('userModal');
-var userModal = null;
-
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
     // Clean up any leftover backdrops on page load
     document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
     
+    // Get modal element
+    var userModalEl = document.getElementById('userModal');
+    
     // Create Bootstrap Modal instance ONCE
-    userModal = new bootstrap.Modal(userModalEl);
+    var userModal = new bootstrap.Modal(userModalEl);
     
     // Cleanup when modal is hidden
     userModalEl.addEventListener('hidden.bs.modal', function() {
@@ -205,88 +204,88 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
     });
-});
 
-function addUser() {
-    var form = document.getElementById('userForm');
-    var title = document.getElementById('userModalTitle');
-    
-    form.reset();
-    document.getElementById('userId').value = '';
-    title.innerHTML = '<i class="bi bi-person-plus me-2"></i><?= lang('App.newUser') ?>';
-    form.action = '<?= base_url('settings/users/store') ?>';
-    
-    // Show/hide elements for create mode
-    document.getElementById('userName').readOnly = false;
-    document.getElementById('usernameNote').classList.add('d-none');
-    document.getElementById('passwordLabel').classList.add('required');
-    document.getElementById('userPassword').required = true;
-    document.getElementById('passwordNote').classList.add('d-none');
-    document.getElementById('statusSection').classList.add('d-none');
-    document.getElementById('userActive').checked = true;
-    
-    userModal.show();
-}
-
-function editUser(user) {
-    var form = document.getElementById('userForm');
-    var title = document.getElementById('userModalTitle');
-    
-    form.reset();
-    title.innerHTML = '<i class="bi bi-person-gear me-2"></i><?= lang('App.editUser') ?>';
-    form.action = '<?= base_url('settings/users/update') ?>/' + user.id;
-    
-    // Populate form
-    document.getElementById('userId').value = user.id;
-    document.getElementById('userName').value = user.username;
-    document.getElementById('userName').readOnly = true;
-    document.getElementById('userFullName').value = user.name;
-    document.getElementById('userEmail').value = user.email || '';
-    document.getElementById('userPhone').value = user.phone || '';
-    document.getElementById('userRole').value = user.role;
-    document.getElementById('userBranch').value = user.branch_id || '';
-    document.getElementById('userActive').checked = user.is_active == 1;
-    
-    // Show/hide elements for edit mode
-    document.getElementById('usernameNote').classList.remove('d-none');
-    document.getElementById('passwordLabel').classList.remove('required');
-    document.getElementById('userPassword').required = false;
-    document.getElementById('passwordNote').classList.remove('d-none');
-    document.getElementById('statusSection').classList.remove('d-none');
-    
-    userModal.show();
-}
-
-function deleteUser(id, name) {
-    if (confirm('<?= lang('App.confirmDelete') ?>\n\n<?= lang('App.user') ?>: ' + name)) {
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?= base_url('settings/users/delete') ?>/' + id;
+    window.addUser = function() {
+        var form = document.getElementById('userForm');
+        var title = document.getElementById('userModalTitle');
         
-        var csrf = document.createElement('input');
-        csrf.type = 'hidden';
-        csrf.name = '<?= csrf_token() ?>';
-        csrf.value = '<?= csrf_hash() ?>';
-        form.appendChild(csrf);
+        form.reset();
+        document.getElementById('userId').value = '';
+        title.innerHTML = '<i class="bi bi-person-plus me-2"></i><?= lang('App.newUser') ?>';
+        form.action = '<?= base_url('settings/users/store') ?>';
         
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
+        // Show/hide elements for create mode
+        document.getElementById('userName').readOnly = false;
+        document.getElementById('usernameNote').classList.add('d-none');
+        document.getElementById('passwordLabel').classList.add('required');
+        document.getElementById('userPassword').required = true;
+        document.getElementById('passwordNote').classList.add('d-none');
+        document.getElementById('statusSection').classList.add('d-none');
+        document.getElementById('userActive').checked = true;
+        
+        userModal.show();
+    };
 
-function togglePassword() {
-    var password = document.getElementById('userPassword');
-    var icon = document.getElementById('toggleIcon');
-    
-    if (password.type === 'password') {
-        password.type = 'text';
-        icon.classList.remove('bi-eye');
-        icon.classList.add('bi-eye-slash');
-    } else {
-        password.type = 'password';
-        icon.classList.remove('bi-eye-slash');
-        icon.classList.add('bi-eye');
-    }
-}
+    window.editUser = function(user) {
+        var form = document.getElementById('userForm');
+        var title = document.getElementById('userModalTitle');
+        
+        form.reset();
+        title.innerHTML = '<i class="bi bi-person-gear me-2"></i><?= lang('App.editUser') ?>';
+        form.action = '<?= base_url('settings/users/update') ?>/' + user.id;
+        
+        // Populate form
+        document.getElementById('userId').value = user.id;
+        document.getElementById('userName').value = user.username;
+        document.getElementById('userName').readOnly = true;
+        document.getElementById('userFullName').value = user.name;
+        document.getElementById('userEmail').value = user.email || '';
+        document.getElementById('userPhone').value = user.phone || '';
+        document.getElementById('userRole').value = user.role;
+        document.getElementById('userBranch').value = user.branch_id || '';
+        document.getElementById('userActive').checked = user.is_active == 1;
+        
+        // Show/hide elements for edit mode
+        document.getElementById('usernameNote').classList.remove('d-none');
+        document.getElementById('passwordLabel').classList.remove('required');
+        document.getElementById('userPassword').required = false;
+        document.getElementById('passwordNote').classList.remove('d-none');
+        document.getElementById('statusSection').classList.remove('d-none');
+        
+        userModal.show();
+    };
+
+    window.deleteUser = function(id, name) {
+        if (confirm('<?= lang('App.confirmDelete') ?>\n\n<?= lang('App.user') ?>: ' + name)) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '<?= base_url('settings/users/delete') ?>/' + id;
+            
+            var csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '<?= csrf_token() ?>';
+            csrf.value = '<?= csrf_hash() ?>';
+            form.appendChild(csrf);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    };
+
+    window.togglePassword = function() {
+        var password = document.getElementById('userPassword');
+        var icon = document.getElementById('toggleIcon');
+        
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    };
+})();
 </script>
 <?= $this->endSection() ?>
