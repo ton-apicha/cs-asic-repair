@@ -118,57 +118,67 @@
 
 <?= $this->section('scripts') ?>
 <script>
-let branchModal = null;
-
-document.addEventListener('DOMContentLoaded', function() {
-    branchModal = new bootstrap.Modal(document.getElementById('branchModal'));
+$(document).ready(function() {
+    // Clean up any leftover backdrops
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open').css('overflow', '');
+    
+    // Initialize modal using jQuery/Bootstrap
+    var $branchModal = $('#branchModal');
+    
+    window.addBranch = function() {
+        var $form = $('#branchForm');
+        var $title = $('#branchModalTitle');
+        
+        $form[0].reset();
+        $('#branchId').val('');
+        $title.html('<i class="bi bi-building me-2"></i><?= lang('App.addBranch') ?>');
+        $form.attr('action', '<?= base_url('settings/branches/store') ?>');
+        $('#branchActive').prop('checked', true);
+        
+        $branchModal.modal('show');
+    };
+    
+    window.editBranch = function(branch) {
+        var $form = $('#branchForm');
+        var $title = $('#branchModalTitle');
+        
+        $form[0].reset();
+        $title.html('<i class="bi bi-pencil me-2"></i><?= lang('App.editBranch') ?>');
+        $form.attr('action', '<?= base_url('settings/branches/update') ?>/' + branch.id);
+        $('#branchId').val(branch.id);
+        $('#branchName').val(branch.name);
+        $('#branchPhone').val(branch.phone || '');
+        $('#branchAddress').val(branch.address || '');
+        $('#branchActive').prop('checked', branch.is_active == 1);
+        
+        $branchModal.modal('show');
+    };
+    
+    window.deleteBranch = function(id, name) {
+        if (confirm('<?= lang('App.confirmDelete') ?>\n\nBranch: ' + name)) {
+            var $form = $('<form>', {
+                method: 'POST',
+                action: '<?= base_url('settings/branches/delete') ?>/' + id
+            });
+            
+            $form.append($('<input>', {
+                type: 'hidden',
+                name: '<?= csrf_token() ?>',
+                value: '<?= csrf_hash() ?>'
+            }));
+            
+            $('body').append($form);
+            $form.submit();
+        }
+    };
+    
+    // Cleanup on modal hide
+    $branchModal.on('hidden.bs.modal', function() {
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+    });
 });
-
-function addBranch() {
-    const form = document.getElementById('branchForm');
-    const title = document.getElementById('branchModalTitle');
-    
-    form.reset();
-    document.getElementById('branchId').value = '';
-    title.innerHTML = '<i class="bi bi-building me-2"></i><?= lang('App.addBranch') ?>';
-    form.action = '<?= base_url('settings/branches/store') ?>';
-    document.getElementById('branchActive').checked = true;
-    
-    branchModal.show();
-}
-
-function editBranch(branch) {
-    const form = document.getElementById('branchForm');
-    const title = document.getElementById('branchModalTitle');
-    
-    form.reset();
-    title.innerHTML = '<i class="bi bi-pencil me-2"></i><?= lang('App.editBranch') ?>';
-    form.action = '<?= base_url('settings/branches/update') ?>/' + branch.id;
-    document.getElementById('branchId').value = branch.id;
-    document.getElementById('branchName').value = branch.name;
-    document.getElementById('branchPhone').value = branch.phone || '';
-    document.getElementById('branchAddress').value = branch.address || '';
-    document.getElementById('branchActive').checked = branch.is_active == 1;
-    
-    branchModal.show();
-}
-
-function deleteBranch(id, name) {
-    if (confirm('<?= lang('App.confirmDelete') ?>\n\nBranch: ' + name)) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?= base_url('settings/branches/delete') ?>/' + id;
-        
-        const csrf = document.createElement('input');
-        csrf.type = 'hidden';
-        csrf.name = '<?= csrf_token() ?>';
-        csrf.value = '<?= csrf_hash() ?>';
-        form.appendChild(csrf);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
 </script>
 <?= $this->endSection() ?>
 
