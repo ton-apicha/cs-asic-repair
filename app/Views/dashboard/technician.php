@@ -9,14 +9,14 @@
     .page-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.75rem;
     }
     
     .page-title i {
-        color: #3b82f6;
+        color: var(--info-color);
     }
     
     /* Kanban Board */
@@ -30,7 +30,7 @@
     
     .kanban-column {
         flex: 0 0 320px;
-        background: #f8fafc;
+        background: var(--content-bg);
         border-radius: 1rem;
         display: flex;
         flex-direction: column;
@@ -58,7 +58,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem 1rem 0 0;
     }
     
@@ -75,19 +75,19 @@
     }
     
     .kanban-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 0.75rem;
         padding: 1rem;
         margin-bottom: 0.75rem;
         cursor: grab;
         border-left: 4px solid;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--card-shadow);
         transition: all 0.2s ease;
     }
     
     .kanban-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     }
     
     .kanban-card:active {
@@ -97,7 +97,7 @@
     
     .kanban-card .job-id {
         font-weight: 700;
-        color: #3b82f6;
+        color: var(--info-color);
         font-size: 0.9375rem;
         transition: color 0.15s ease;
     }
@@ -109,13 +109,13 @@
     .kanban-card .customer-name {
         font-size: 0.9375rem;
         font-weight: 500;
-        color: #1e293b;
+        color: var(--text-primary);
         margin-bottom: 0.5rem;
     }
     
     .kanban-card .asset-info {
         font-size: 0.8125rem;
-        color: #64748b;
+        color: var(--text-secondary);
         display: flex;
         align-items: center;
         margin-top: 0.25rem;
@@ -124,7 +124,7 @@
     .kanban-card .asset-info i {
         font-size: 0.75rem;
         margin-right: 0.5rem;
-        color: #94a3b8;
+        color: var(--text-muted);
     }
     
     .warranty-badge {
@@ -136,23 +136,23 @@
     /* Column Colors */
     .kanban-column[data-status="new_checkin"] .kanban-column-header { 
         border-color: #6b7280;
-        color: #374151;
+        color: var(--text-secondary);
     }
     .kanban-column[data-status="pending_repair"] .kanban-column-header { 
         border-color: #f59e0b;
-        color: #92400e;
+        color: #f59e0b;
     }
     .kanban-column[data-status="in_progress"] .kanban-column-header { 
         border-color: #3b82f6;
-        color: #1e40af;
+        color: #3b82f6;
     }
     .kanban-column[data-status="repair_done"] .kanban-column-header { 
         border-color: #10b981;
-        color: #065f46;
+        color: #10b981;
     }
     .kanban-column[data-status="ready_handover"] .kanban-column-header { 
         border-color: #8b5cf6;
-        color: #5b21b6;
+        color: #8b5cf6;
     }
     
     .kanban-card[data-status="new_checkin"] { border-left-color: #6b7280; }
@@ -164,7 +164,7 @@
     /* Sortable States */
     .sortable-ghost {
         opacity: 0.4;
-        background: #e5e7eb;
+        background: var(--border-color);
     }
     
     .sortable-drag {
@@ -174,14 +174,14 @@
     }
     
     .sortable-chosen {
-        background: #f0f9ff;
+        background: rgba(59, 130, 246, 0.1);
     }
     
     /* Empty Column State */
     .kanban-empty {
         text-align: center;
         padding: 2rem 1rem;
-        color: #94a3b8;
+        color: var(--text-muted);
         font-size: 0.875rem;
     }
     

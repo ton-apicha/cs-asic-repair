@@ -9,28 +9,28 @@
     .page-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.75rem;
     }
     
     .page-title i {
-        color: #3b82f6;
+        color: var(--info-color);
     }
     
     .filter-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem;
         padding: 1rem 1.25rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
     }
     
     .data-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
         overflow: hidden;
     }
     
@@ -39,20 +39,22 @@
     }
     
     .jobs-table th {
-        background: #f8fafc;
+        background: var(--table-stripe);
         font-weight: 600;
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #64748b;
+        color: var(--text-secondary);
         padding: 1rem;
         white-space: nowrap;
-        border-bottom: 2px solid #e5e7eb;
+        border-bottom: 2px solid var(--border-color);
     }
     
     .jobs-table td {
         padding: 1rem;
         vertical-align: middle;
+        color: var(--text-primary);
+        border-color: var(--border-color);
     }
     
     .jobs-table tbody tr {
@@ -60,11 +62,11 @@
     }
     
     .jobs-table tbody tr:hover {
-        background: #f9fafb;
+        background: var(--table-stripe);
     }
     
     .job-link {
-        color: #3b82f6;
+        color: var(--info-color);
         font-weight: 600;
         text-decoration: none;
         transition: color 0.15s ease;
@@ -88,7 +90,7 @@
     
     .asset-model {
         font-weight: 500;
-        color: #1e293b;
+        color: var(--text-primary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -96,7 +98,7 @@
     
     .asset-serial {
         font-size: 0.8125rem;
-        color: #64748b;
+        color: var(--text-secondary);
     }
     
     .action-btns .btn {
@@ -107,7 +109,7 @@
     .empty-state {
         padding: 4rem 1rem;
         text-align: center;
-        color: #94a3b8;
+        color: var(--text-muted);
     }
     
     .empty-state i {
@@ -128,20 +130,20 @@
         font-size: 0.8125rem;
         font-weight: 500;
         text-decoration: none;
-        border: 1px solid #e5e7eb;
-        background: #fff;
-        color: #64748b;
+        border: 1px solid var(--border-color);
+        background: var(--content-bg);
+        color: var(--text-secondary);
         transition: all 0.15s ease;
     }
     
     .status-tab:hover {
-        background: #f3f4f6;
-        color: #1e293b;
+        background: var(--card-bg);
+        color: var(--text-primary);
     }
     
     .status-tab.active {
-        background: #3b82f6;
-        border-color: #3b82f6;
+        background: var(--info-color);
+        border-color: var(--info-color);
         color: #fff;
     }
     

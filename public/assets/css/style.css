@@ -243,6 +243,203 @@
     color: var(--text-primary);
 }
 
+/* Dark Mode - Page Elements (Override inline styles) */
+[data-theme="dark"] .page-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .filter-card {
+    background: var(--card-bg) !important;
+    box-shadow: var(--card-shadow) !important;
+}
+
+[data-theme="dark"] .status-tab {
+    background: var(--content-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .status-tab:hover {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .status-tab.active {
+    background: var(--info-color) !important;
+    border-color: var(--info-color) !important;
+    color: #fff !important;
+}
+
+[data-theme="dark"] .empty-state {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .empty-state h5 {
+    color: var(--text-secondary);
+}
+
+/* Dark Mode - Stat Cards */
+[data-theme="dark"] .stat-card {
+    background: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .stat-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .stat-label {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode - Chart Cards */
+[data-theme="dark"] .chart-card {
+    background: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .chart-card-header {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .chart-card-title {
+    color: var(--text-primary) !important;
+}
+
+/* Dark Mode - Data Cards */
+[data-theme="dark"] .data-card {
+    background: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .data-card-header {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .data-card-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .data-card-title i {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode - Alert Cards */
+[data-theme="dark"] .alert-card {
+    background: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .alert-card-header {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .alert-card-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .low-stock-item {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .low-stock-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .low-stock-code {
+    color: var(--text-muted) !important;
+}
+
+/* Dark Mode - Tables (override inline styles) */
+[data-theme="dark"] .jobs-table th {
+    background: var(--content-bg) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .jobs-table td {
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .jobs-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .asset-model {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .asset-serial {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode - Kanban Board */
+[data-theme="dark"] .kanban-column {
+    background: var(--content-bg) !important;
+}
+
+[data-theme="dark"] .kanban-column-header {
+    background: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .kanban-card {
+    background: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .kanban-card .customer-name {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .kanban-card .asset-info {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .kanban-card .asset-info i {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .kanban-empty {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .sortable-ghost {
+    background: var(--border-color) !important;
+}
+
+[data-theme="dark"] .sortable-chosen {
+    background: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Dark Mode - Revenue Card (gradient) */
+[data-theme="dark"] .revenue-card {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+}
+
+/* Dark Mode - Input Group */
+[data-theme="dark"] .input-group-text.bg-transparent {
+    background: transparent !important;
+    border-color: var(--input-border) !important;
+}
+
+/* Dark Mode - Widget Cards */
+[data-theme="dark"] .widget-card .widget-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .widget-card .widget-label {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark Mode - Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--content-bg);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
 /* Dark Mode Toggle Button */
 .theme-toggle {
     background: transparent;
@@ -280,8 +477,8 @@
 
 body {
     font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: #f3f4f6;
-    color: #1f2937;
+    background-color: var(--body-bg);
+    color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
 }

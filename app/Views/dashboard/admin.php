@@ -9,24 +9,25 @@
     .page-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.75rem;
     }
     
     .page-title i {
-        color: #3b82f6;
+        color: var(--info-color);
     }
     
     /* Widget Cards */
     .stat-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem;
         padding: 1.5rem;
         height: 100%;
         position: relative;
         overflow: hidden;
+        box-shadow: var(--card-shadow);
         animation: fadeInUp 0.5s ease forwards;
         opacity: 0;
     }
@@ -82,22 +83,22 @@
     .stat-value {
         font-size: 1.875rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-primary);
         line-height: 1.2;
         margin-top: 1rem;
     }
     
     .stat-label {
         font-size: 0.875rem;
-        color: #64748b;
+        color: var(--text-secondary);
         margin-top: 0.25rem;
     }
     
     /* Chart Card */
     .chart-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
         animation: fadeInUp 0.5s ease forwards;
         animation-delay: 0.3s;
         opacity: 0;
@@ -105,7 +106,7 @@
     
     .chart-card-header {
         padding: 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -114,7 +115,7 @@
     .chart-card-title {
         font-weight: 600;
         font-size: 1rem;
-        color: #1e293b;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -126,9 +127,9 @@
 
     /* Data Cards */
     .data-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
         animation: fadeInUp 0.5s ease forwards;
         animation-delay: 0.3s;
         opacity: 0;
@@ -136,7 +137,7 @@
     
     .data-card-header {
         padding: 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -145,14 +146,14 @@
     .data-card-title {
         font-weight: 600;
         font-size: 1rem;
-        color: #1e293b;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
     
     .data-card-title i {
-        color: #64748b;
+        color: var(--text-secondary);
     }
     
     .data-card-body {
@@ -201,9 +202,9 @@
     
     /* Alert Card */
     .alert-card {
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 1rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
         animation: fadeInUp 0.5s ease forwards;
         animation-delay: 0.4s;
         opacity: 0;
@@ -211,7 +212,7 @@
     
     .alert-card-header {
         padding: 1rem 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -220,7 +221,7 @@
     .alert-card-title {
         font-weight: 600;
         font-size: 0.9375rem;
-        color: #1e293b;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -240,7 +241,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 0.875rem 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--border-color);
         transition: background 0.15s ease;
     }
     
@@ -249,7 +250,7 @@
     }
     
     .low-stock-item:hover {
-        background: #f9fafb;
+        background: rgba(255, 255, 255, 0.05);
     }
     
     .low-stock-info {
@@ -259,7 +260,7 @@
     
     .low-stock-name {
         font-weight: 500;
-        color: #1e293b;
+        color: var(--text-primary);
         font-size: 0.875rem;
         white-space: nowrap;
         overflow: hidden;
@@ -268,7 +269,7 @@
     
     .low-stock-code {
         font-size: 0.75rem;
-        color: #94a3b8;
+        color: var(--text-muted);
     }
     
     .low-stock-qty {
@@ -283,18 +284,21 @@
     
     /* Table Improvements */
     .jobs-table th {
-        background: #f8fafc;
+        background: var(--table-stripe);
         font-weight: 600;
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #64748b;
+        color: var(--text-secondary);
         padding: 0.875rem 1rem;
+        border-color: var(--border-color);
     }
     
     .jobs-table td {
         padding: 1rem;
         vertical-align: middle;
+        color: var(--text-primary);
+        border-color: var(--border-color);
     }
     
     .jobs-table tbody tr {
@@ -302,11 +306,11 @@
     }
     
     .jobs-table tbody tr:hover {
-        background: #f9fafb;
+        background: var(--table-stripe);
     }
     
     .job-link {
-        color: #3b82f6;
+        color: var(--info-color);
         font-weight: 600;
         text-decoration: none;
         transition: color 0.15s ease;
@@ -320,7 +324,7 @@
     .empty-state {
         padding: 3rem 1rem;
         text-align: center;
-        color: #94a3b8;
+        color: var(--text-muted);
     }
     
     .empty-state i {
