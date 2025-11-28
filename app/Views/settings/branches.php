@@ -5,7 +5,7 @@
     <h1 class="h4 mb-0">
         <i class="bi bi-building me-2"></i><?= lang('App.branchManagement') ?>
     </h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#branchModal" onclick="openBranchModal()">
+    <button type="button" class="btn btn-primary" onclick="addBranch()">
         <i class="bi bi-plus-lg me-1"></i><?= lang('App.addBranch') ?>
     </button>
 </div>
@@ -118,32 +118,39 @@
 
 <?= $this->section('scripts') ?>
 <script>
-function openBranchModal(branch = null) {
-    const modal = document.getElementById('branchModal');
+let branchModal = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    branchModal = new bootstrap.Modal(document.getElementById('branchModal'));
+});
+
+function addBranch() {
     const form = document.getElementById('branchForm');
     const title = document.getElementById('branchModalTitle');
     
     form.reset();
     document.getElementById('branchId').value = '';
+    title.innerHTML = '<i class="bi bi-building me-2"></i><?= lang('App.addBranch') ?>';
+    form.action = '<?= base_url('settings/branches/store') ?>';
+    document.getElementById('branchActive').checked = true;
     
-    if (branch) {
-        title.innerHTML = '<i class="bi bi-pencil me-2"></i><?= lang('App.editBranch') ?>';
-        form.action = '<?= base_url('settings/branches/update') ?>/' + branch.id;
-        document.getElementById('branchId').value = branch.id;
-        document.getElementById('branchName').value = branch.name;
-        document.getElementById('branchPhone').value = branch.phone || '';
-        document.getElementById('branchAddress').value = branch.address || '';
-        document.getElementById('branchActive').checked = branch.is_active == 1;
-    } else {
-        title.innerHTML = '<i class="bi bi-building me-2"></i><?= lang('App.addBranch') ?>';
-        form.action = '<?= base_url('settings/branches/store') ?>';
-        document.getElementById('branchActive').checked = true;
-    }
+    branchModal.show();
 }
 
 function editBranch(branch) {
-    openBranchModal(branch);
-    new bootstrap.Modal(document.getElementById('branchModal')).show();
+    const form = document.getElementById('branchForm');
+    const title = document.getElementById('branchModalTitle');
+    
+    form.reset();
+    title.innerHTML = '<i class="bi bi-pencil me-2"></i><?= lang('App.editBranch') ?>';
+    form.action = '<?= base_url('settings/branches/update') ?>/' + branch.id;
+    document.getElementById('branchId').value = branch.id;
+    document.getElementById('branchName').value = branch.name;
+    document.getElementById('branchPhone').value = branch.phone || '';
+    document.getElementById('branchAddress').value = branch.address || '';
+    document.getElementById('branchActive').checked = branch.is_active == 1;
+    
+    branchModal.show();
 }
 
 function deleteBranch(id, name) {
