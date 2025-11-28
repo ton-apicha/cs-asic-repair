@@ -184,101 +184,105 @@
 
 <?= $this->section('scripts') ?>
 <script>
+var userModalInstance = null;
+
 $(document).ready(function() {
-    // Clean up any leftover backdrops
+    // Clean up any leftover backdrops on page load
     $('.modal-backdrop').remove();
-    $('body').removeClass('modal-open').css('overflow', '');
+    $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
     
-    var $userModal = $('#userModal');
-    var isEditMode = false;
-    
-    window.addUser = function() {
-        isEditMode = false;
-        var $form = $('#userForm');
-        var $title = $('#userModalTitle');
-        
-        $form[0].reset();
-        $('#userId').val('');
-        $title.html('<i class="bi bi-person-plus me-2"></i><?= lang('App.newUser') ?>');
-        $form.attr('action', '<?= base_url('settings/users/store') ?>');
-        
-        // Show/hide elements for create mode
-        $('#userName').prop('readonly', false);
-        $('#usernameNote').addClass('d-none');
-        $('#passwordLabel').addClass('required');
-        $('#userPassword').prop('required', true);
-        $('#passwordNote').addClass('d-none');
-        $('#statusSection').addClass('d-none');
-        $('#userActive').prop('checked', true);
-        
-        $userModal.modal('show');
-    };
-    
-    window.editUser = function(user) {
-        isEditMode = true;
-        var $form = $('#userForm');
-        var $title = $('#userModalTitle');
-        
-        $form[0].reset();
-        $title.html('<i class="bi bi-person-gear me-2"></i><?= lang('App.editUser') ?>');
-        $form.attr('action', '<?= base_url('settings/users/update') ?>/' + user.id);
-        
-        // Populate form
-        $('#userId').val(user.id);
-        $('#userName').val(user.username).prop('readonly', true);
-        $('#userFullName').val(user.name);
-        $('#userEmail').val(user.email || '');
-        $('#userPhone').val(user.phone || '');
-        $('#userRole').val(user.role);
-        $('#userBranch').val(user.branch_id || '');
-        $('#userActive').prop('checked', user.is_active == 1);
-        
-        // Show/hide elements for edit mode
-        $('#usernameNote').removeClass('d-none');
-        $('#passwordLabel').removeClass('required');
-        $('#userPassword').prop('required', false);
-        $('#passwordNote').removeClass('d-none');
-        $('#statusSection').removeClass('d-none');
-        
-        $userModal.modal('show');
-    };
-    
-    window.deleteUser = function(id, name) {
-        if (confirm('<?= lang('App.confirmDelete') ?>\n\n<?= lang('App.user') ?>: ' + name)) {
-            var $form = $('<form>', {
-                method: 'POST',
-                action: '<?= base_url('settings/users/delete') ?>/' + id
-            });
-            
-            $form.append($('<input>', {
-                type: 'hidden',
-                name: '<?= csrf_token() ?>',
-                value: '<?= csrf_hash() ?>'
-            }));
-            
-            $('body').append($form);
-            $form.submit();
-        }
-    };
-    
-    window.togglePassword = function() {
-        var $password = $('#userPassword');
-        var $icon = $('#toggleIcon');
-        
-        if ($password.attr('type') === 'password') {
-            $password.attr('type', 'text');
-            $icon.removeClass('bi-eye').addClass('bi-eye-slash');
-        } else {
-            $password.attr('type', 'password');
-            $icon.removeClass('bi-eye-slash').addClass('bi-eye');
-        }
-    };
+    // Get the modal element and create Bootstrap modal instance
+    var userModalEl = document.getElementById('userModal');
+    userModalInstance = new bootstrap.Modal(userModalEl, {
+        backdrop: true,
+        keyboard: true
+    });
     
     // Cleanup on modal hide
-    $userModal.on('hidden.bs.modal', function() {
+    userModalEl.addEventListener('hidden.bs.modal', function() {
         $('.modal-backdrop').remove();
         $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
     });
 });
+
+function addUser() {
+    var $form = $('#userForm');
+    var $title = $('#userModalTitle');
+    
+    $form[0].reset();
+    $('#userId').val('');
+    $title.html('<i class="bi bi-person-plus me-2"></i><?= lang('App.newUser') ?>');
+    $form.attr('action', '<?= base_url('settings/users/store') ?>');
+    
+    // Show/hide elements for create mode
+    $('#userName').prop('readonly', false);
+    $('#usernameNote').addClass('d-none');
+    $('#passwordLabel').addClass('required');
+    $('#userPassword').prop('required', true);
+    $('#passwordNote').addClass('d-none');
+    $('#statusSection').addClass('d-none');
+    $('#userActive').prop('checked', true);
+    
+    userModalInstance.show();
+}
+
+function editUser(user) {
+    var $form = $('#userForm');
+    var $title = $('#userModalTitle');
+    
+    $form[0].reset();
+    $title.html('<i class="bi bi-person-gear me-2"></i><?= lang('App.editUser') ?>');
+    $form.attr('action', '<?= base_url('settings/users/update') ?>/' + user.id);
+    
+    // Populate form
+    $('#userId').val(user.id);
+    $('#userName').val(user.username).prop('readonly', true);
+    $('#userFullName').val(user.name);
+    $('#userEmail').val(user.email || '');
+    $('#userPhone').val(user.phone || '');
+    $('#userRole').val(user.role);
+    $('#userBranch').val(user.branch_id || '');
+    $('#userActive').prop('checked', user.is_active == 1);
+    
+    // Show/hide elements for edit mode
+    $('#usernameNote').removeClass('d-none');
+    $('#passwordLabel').removeClass('required');
+    $('#userPassword').prop('required', false);
+    $('#passwordNote').removeClass('d-none');
+    $('#statusSection').removeClass('d-none');
+    
+    userModalInstance.show();
+}
+
+function deleteUser(id, name) {
+    if (confirm('<?= lang('App.confirmDelete') ?>\n\n<?= lang('App.user') ?>: ' + name)) {
+        var $form = $('<form>', {
+            method: 'POST',
+            action: '<?= base_url('settings/users/delete') ?>/' + id
+        });
+        
+        $form.append($('<input>', {
+            type: 'hidden',
+            name: '<?= csrf_token() ?>',
+            value: '<?= csrf_hash() ?>'
+        }));
+        
+        $('body').append($form);
+        $form.submit();
+    }
+}
+
+function togglePassword() {
+    var $password = $('#userPassword');
+    var $icon = $('#toggleIcon');
+    
+    if ($password.attr('type') === 'password') {
+        $password.attr('type', 'text');
+        $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+    } else {
+        $password.attr('type', 'password');
+        $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+    }
+}
 </script>
 <?= $this->endSection() ?>
