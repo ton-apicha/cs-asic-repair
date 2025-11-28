@@ -66,7 +66,9 @@
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('modals') ?>
 <!-- User Modal -->
 <div class="modal fade" id="userModal" tabindex="-1">
     <div class="modal-dialog modal-lg">

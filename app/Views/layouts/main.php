@@ -304,6 +304,9 @@
             <?= $this->renderSection('content') ?>
         </main>
         
+        <!-- Modals (outside main for proper z-index) -->
+        <?= $this->renderSection('modals') ?>
+        
         <!-- Footer -->
         <footer class="main-footer">
             <div class="d-flex justify-content-between align-items-center">

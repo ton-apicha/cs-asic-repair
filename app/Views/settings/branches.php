@@ -66,7 +66,9 @@
         <?php endif; ?>
     </div>
 </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('modals') ?>
 <!-- Branch Modal -->
 <div class="modal fade" id="branchModal" tabindex="-1">
     <div class="modal-dialog">
