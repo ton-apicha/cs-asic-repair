@@ -200,8 +200,10 @@ class SettingController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $branchId = $this->request->getPost('branch_id');
+        
         $data = [
-            'branch_id' => $this->request->getPost('branch_id'),
+            'branch_id' => !empty($branchId) ? $branchId : null,
             'username'  => $this->request->getPost('username'),
             'password'  => $this->request->getPost('password'),
             'name'      => $this->request->getPost('name'),
@@ -255,8 +257,10 @@ class SettingController extends BaseController
                 ->with('error', lang('App.recordNotFound'));
         }
 
+        $branchId = $this->request->getPost('branch_id');
+        
         $data = [
-            'branch_id' => $this->request->getPost('branch_id'),
+            'branch_id' => !empty($branchId) ? $branchId : null,
             'name'      => $this->request->getPost('name'),
             'email'     => $this->request->getPost('email'),
             'phone'     => $this->request->getPost('phone'),
