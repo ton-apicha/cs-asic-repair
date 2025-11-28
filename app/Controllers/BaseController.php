@@ -70,6 +70,9 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
         $this->session = session();
         
+        // Set locale from session or cookie
+        $this->setLocale();
+        
         // Load user data if logged in
         if ($this->session->get('isLoggedIn')) {
             $this->user = [
@@ -200,6 +203,28 @@ abstract class BaseController extends Controller
         ];
         
         return array_merge($baseData, $data);
+    }
+
+    /**
+     * Set locale from session or cookie
+     */
+    protected function setLocale(): void
+    {
+        $supportedLocales = ['en', 'th', 'zh'];
+        $locale = null;
+
+        // Check session first
+        $locale = $this->session->get('locale');
+        
+        // Then check cookie
+        if (!$locale) {
+            $locale = $this->request->getCookie('locale');
+        }
+        
+        // Validate locale
+        if ($locale && in_array($locale, $supportedLocales)) {
+            $this->request->setLocale($locale);
+        }
     }
 }
 

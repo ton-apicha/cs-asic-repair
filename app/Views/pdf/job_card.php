@@ -190,7 +190,7 @@
         <tr>
             <td style="width: 50%;">
                 <div class="logo">ASIC Repair</div>
-                <div class="logo-subtitle">Professional Mining Hardware Service</div>
+                <div class="logo-subtitle"><?= lang('App.professionalService') ?></div>
             </td>
             <td style="width: 50%; text-align: right;">
                 <div class="job-id"><?= esc($job['job_id']) ?></div>
@@ -220,7 +220,7 @@
         <tr>
             <td>
                 <div class="section">
-                    <div class="section-title">Customer Information</div>
+                    <div class="section-title"><?= lang('App.customer') ?></div>
                     <div class="info-grid">
                         <div class="info-row">
                             <span class="info-label">Name:</span>
@@ -241,7 +241,7 @@
             </td>
             <td>
                 <div class="section">
-                    <div class="section-title">Asset Information</div>
+                    <div class="section-title"><?= lang('App.asset') ?></div>
                     <div class="info-grid">
                         <div class="info-row">
                             <span class="info-label">Model:</span>
@@ -265,7 +265,7 @@
     
     <!-- Job Details -->
     <div class="section">
-        <div class="section-title">Job Details</div>
+        <div class="section-title"><?= lang('App.jobDetails') ?></div>
         <div class="info-grid">
             <div class="info-row">
                 <span class="info-label">Symptom:</span>
@@ -295,7 +295,7 @@
     <!-- Parts Used -->
     <?php if (!empty($parts)): ?>
     <div class="section">
-        <div class="section-title">Parts Used</div>
+        <div class="section-title"><?= lang('App.jobParts') ?></div>
         <table class="parts-table">
             <thead>
                 <tr>

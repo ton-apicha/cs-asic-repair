@@ -4,10 +4,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">
         <i class="bi bi-plus-circle text-primary me-2"></i>
-        Create Quotation
+        <?= lang('App.newQuotation') ?>
     </h1>
     <a href="<?= base_url('quotations') ?>" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i>Back
+        <i class="bi bi-arrow-left me-1"></i><?= lang('App.back') ?>
     </a>
 </div>
 
@@ -19,14 +19,14 @@
             <!-- Customer & Description -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="bi bi-person me-1"></i>Customer Information
+                    <i class="bi bi-person me-1"></i><?= lang('App.customer') ?>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label required">Customer</label>
+                            <label class="form-label required"><?= lang('App.customer') ?></label>
                             <select name="customer_id" class="form-select" required>
-                                <option value="">Select Customer</option>
+                                <option value=""><?= lang('App.searchCustomer') ?></option>
                                 <?php foreach ($customers as $customer): ?>
                                 <option value="<?= $customer['id'] ?>">
                                     <?= esc($customer['name']) ?> - <?= esc($customer['phone']) ?>
@@ -35,14 +35,14 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Asset (Optional)</label>
-                            <input type="text" class="form-control" id="assetSearch" placeholder="Search asset by S/N...">
+                            <label class="form-label"><?= lang('App.asset') ?></label>
+                            <input type="text" class="form-control" id="assetSearch" placeholder="<?= lang('App.searchAsset') ?>">
                             <input type="hidden" name="asset_id" id="assetId">
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Description</label>
+                            <label class="form-label"><?= lang('App.issueDescription') ?></label>
                             <textarea name="description" class="form-control" rows="2" 
-                                      placeholder="Brief description of work to be done..."></textarea>
+                                      placeholder="<?= lang('App.proposedSolution') ?>..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -51,9 +51,9 @@
             <!-- Items -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-list-check me-1"></i>Items</span>
+                    <span><i class="bi bi-list-check me-1"></i><?= lang('App.jobParts') ?></span>
                     <button type="button" class="btn btn-sm btn-primary" id="addItem">
-                        <i class="bi bi-plus me-1"></i>Add Item
+                        <i class="bi bi-plus me-1"></i><?= lang('App.add') ?>
                     </button>
                 </div>
                 <div class="card-body">
@@ -63,7 +63,7 @@
                     
                     <div id="noItems" class="text-center py-4 text-muted">
                         <i class="bi bi-cart fs-1 d-block mb-2 opacity-50"></i>
-                        <p>No items added yet. Click "Add Item" to start.</p>
+                        <p><?= lang('App.noRecords') ?></p>
                     </div>
                 </div>
             </div>
@@ -73,17 +73,17 @@
             <!-- Options -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="bi bi-gear me-1"></i>Options
+                    <i class="bi bi-gear me-1"></i><?= lang('App.settings') ?>
                 </div>
                 <div class="card-body">
                     <div class="form-check mb-3">
                         <input type="checkbox" name="include_vat" value="1" class="form-check-input" id="includeVat">
-                        <label class="form-check-label" for="includeVat">Include VAT (7%)</label>
+                        <label class="form-check-label" for="includeVat"><?= lang('App.vatInclusive') ?></label>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Notes</label>
+                        <label class="form-label"><?= lang('App.notes') ?></label>
                         <textarea name="notes" class="form-control" rows="3" 
-                                  placeholder="Internal notes..."></textarea>
+                                  placeholder="<?= lang('App.notes') ?>..."></textarea>
                     </div>
                 </div>
             </div>
@@ -91,20 +91,20 @@
             <!-- Totals -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="bi bi-calculator me-1"></i>Summary
+                    <i class="bi bi-calculator me-1"></i><?= lang('App.subtotal') ?>
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
+                        <span><?= lang('App.subtotal') ?>:</span>
                         <span id="subtotal">฿0.00</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2" id="vatRow" style="display: none !important;">
-                        <span>VAT (7%):</span>
+                        <span><?= lang('App.vatAmount') ?>:</span>
                         <span id="vatAmount">฿0.00</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between fw-bold fs-5">
-                        <span>Grand Total:</span>
+                        <span><?= lang('App.grandTotal') ?>:</span>
                         <span id="grandTotal" class="text-primary">฿0.00</span>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
             <!-- Actions -->
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-check-lg me-1"></i>Create Quotation
+                    <i class="bi bi-check-lg me-1"></i><?= lang('App.create') ?> <?= lang('App.quotation') ?>
                 </button>
             </div>
         </div>
@@ -126,7 +126,7 @@
         <div class="row g-2">
             <div class="col-md-4">
                 <input type="text" name="items[__INDEX__][name]" class="form-control item-name" 
-                       placeholder="Item name" required>
+                       placeholder="<?= lang('App.partName') ?>" required>
             </div>
             <div class="col-md-2">
                 <input type="number" name="items[__INDEX__][quantity]" class="form-control item-qty" 
@@ -134,7 +134,7 @@
             </div>
             <div class="col-md-3">
                 <input type="number" name="items[__INDEX__][unit_price]" class="form-control item-price" 
-                       step="0.01" placeholder="Price" required>
+                       step="0.01" placeholder="<?= lang('App.price') ?>" required>
             </div>
             <div class="col-md-2">
                 <span class="form-control-plaintext item-total text-end">฿0.00</span>
@@ -146,7 +146,7 @@
             </div>
             <div class="col-12">
                 <input type="text" name="items[__INDEX__][description]" class="form-control form-control-sm" 
-                       placeholder="Description (optional)">
+                       placeholder="<?= lang('App.description') ?>">
             </div>
             <input type="hidden" name="items[__INDEX__][type]" value="service">
         </div>
@@ -220,4 +220,3 @@ $(function() {
 });
 </script>
 <?= $this->endSection() ?>
-

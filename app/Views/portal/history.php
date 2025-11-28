@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= service('request')->getLocale() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,21 +60,42 @@
             padding: 0.25rem 0.75rem;
             border-radius: 1rem;
         }
+        
+        /* Language Switcher */
+        .lang-switcher {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        
+        .lang-switcher .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <div class="btn-group btn-group-sm">
+            <a href="<?= base_url('language/switch/en') ?>" class="btn btn-outline-light <?= service('request')->getLocale() === 'en' ? 'active' : '' ?>">EN</a>
+            <a href="<?= base_url('language/switch/th') ?>" class="btn btn-outline-light <?= service('request')->getLocale() === 'th' ? 'active' : '' ?>">TH</a>
+            <a href="<?= base_url('language/switch/zh') ?>" class="btn btn-outline-light <?= service('request')->getLocale() === 'zh' ? 'active' : '' ?>">中</a>
+        </div>
+    </div>
+
     <div class="history-container">
         <div class="brand-header">
             <h1><i class="bi bi-cpu-fill me-2"></i>ASIC Repair</h1>
-            <p class="text-white-50">Repair History</p>
+            <p class="text-white-50"><?= lang('App.repairHistory') ?></p>
         </div>
         
         <div class="search-card">
-            <h5><i class="bi bi-clock-history me-2"></i>View Your Repair History</h5>
+            <h5><i class="bi bi-clock-history me-2"></i><?= lang('App.viewHistory') ?></h5>
             <form method="GET" class="mt-3">
                 <div class="input-group">
                     <input type="tel" class="form-control form-control-lg" name="phone" 
-                           value="<?= esc($phone ?? '') ?>" placeholder="Enter your phone number">
+                           value="<?= esc($phone ?? '') ?>" placeholder="<?= lang('App.enterPhone') ?>">
                     <button type="submit" class="btn btn-primary btn-lg">
                         <i class="bi bi-search"></i>
                     </button>
@@ -92,7 +113,7 @@
             <?php if (empty($jobs)): ?>
                 <div class="text-center text-muted py-4">
                     <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
-                    <p>No repair history found.</p>
+                    <p><?= lang('App.noRepairHistory') ?></p>
                 </div>
             <?php else: ?>
                 <?php foreach ($jobs as $job): ?>
@@ -113,7 +134,15 @@
                                     'delivered' => 'bg-secondary',
                                     default => 'bg-secondary'
                                 };
-                                $statusText = ucfirst(str_replace('_', ' ', $job['status']));
+                                $statusText = match($job['status']) {
+                                    'new_checkin' => lang('App.checkedIn'),
+                                    'pending_repair' => lang('App.awaitingRepair'),
+                                    'in_progress' => lang('App.repairInProgress'),
+                                    'repair_done' => lang('App.repairComplete'),
+                                    'ready_handover' => lang('App.readyForPickup'),
+                                    'delivered' => lang('App.delivered'),
+                                    default => ucfirst(str_replace('_', ' ', $job['status']))
+                                };
                                 ?>
                                 <span class="badge <?= $statusClass ?> status-badge"><?= $statusText ?></span>
                                 <div class="text-muted small mt-2">฿<?= number_format($job['grand_total'], 0) ?></div>
@@ -128,7 +157,7 @@
         
         <div class="text-center mt-4">
             <a href="<?= base_url('track') ?>" class="text-white-50 text-decoration-none">
-                <i class="bi bi-arrow-left me-1"></i>Back to Track
+                <i class="bi bi-arrow-left me-1"></i><?= lang('App.back') ?> <?= lang('App.trackRepair') ?>
             </a>
         </div>
     </div>
@@ -136,4 +165,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

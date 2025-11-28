@@ -17,8 +17,17 @@
             'converted' => 'bg-primary',
             default => 'bg-secondary'
         };
+        $statusText = match($quotation['status']) {
+            'draft' => lang('App.statusDraft'),
+            'sent' => lang('App.statusSent'),
+            'approved' => lang('App.statusApproved'),
+            'rejected' => lang('App.statusRejected'),
+            'expired' => lang('App.statusExpired'),
+            'converted' => lang('App.statusConverted'),
+            default => ucfirst($quotation['status'])
+        };
         ?>
-        <span class="badge <?= $statusClass ?> mt-1"><?= ucfirst($quotation['status']) ?></span>
+        <span class="badge <?= $statusClass ?> mt-1"><?= $statusText ?></span>
     </div>
     <div class="d-flex gap-2">
         <a href="<?= base_url('quotations/export-pdf/' . $quotation['id']) ?>" 
@@ -27,19 +36,19 @@
         </a>
         <?php if ($quotation['status'] === 'draft'): ?>
         <a href="<?= base_url('quotations/edit/' . $quotation['id']) ?>" class="btn btn-outline-secondary">
-            <i class="bi bi-pencil me-1"></i>Edit
+            <i class="bi bi-pencil me-1"></i><?= lang('App.edit') ?>
         </a>
         <button type="button" class="btn btn-success" onclick="updateStatus('approved')">
-            <i class="bi bi-check-lg me-1"></i>Approve
+            <i class="bi bi-check-lg me-1"></i><?= lang('App.approveQuotation') ?>
         </button>
         <?php endif; ?>
         <?php if ($quotation['status'] === 'approved'): ?>
         <a href="<?= base_url('quotations/convert/' . $quotation['id']) ?>" class="btn btn-primary">
-            <i class="bi bi-arrow-right-circle me-1"></i>Convert to Job
+            <i class="bi bi-arrow-right-circle me-1"></i><?= lang('App.convertToJob') ?>
         </a>
         <?php endif; ?>
         <a href="<?= base_url('quotations') ?>" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>Back
+            <i class="bi bi-arrow-left me-1"></i><?= lang('App.back') ?>
         </a>
     </div>
 </div>
@@ -49,21 +58,21 @@
         <!-- Customer Info -->
         <div class="card mb-4">
             <div class="card-header">
-                <i class="bi bi-person me-1"></i>Customer Information
+                <i class="bi bi-person me-1"></i><?= lang('App.customer') ?>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <p class="mb-1 text-muted">Customer Name</p>
+                        <p class="mb-1 text-muted"><?= lang('App.customerName') ?></p>
                         <p class="fw-semibold"><?= esc($customer['name']) ?></p>
                     </div>
                     <div class="col-md-6">
-                        <p class="mb-1 text-muted">Phone</p>
+                        <p class="mb-1 text-muted"><?= lang('App.phone') ?></p>
                         <p class="fw-semibold"><?= esc($customer['phone']) ?></p>
                     </div>
                     <?php if (!empty($quotation['description'])): ?>
                     <div class="col-12">
-                        <p class="mb-1 text-muted">Description</p>
+                        <p class="mb-1 text-muted"><?= lang('App.description') ?></p>
                         <p class="mb-0"><?= esc($quotation['description']) ?></p>
                     </div>
                     <?php endif; ?>
@@ -74,16 +83,16 @@
         <!-- Items -->
         <div class="card mb-4">
             <div class="card-header">
-                <i class="bi bi-list-check me-1"></i>Items
+                <i class="bi bi-list-check me-1"></i><?= lang('App.jobParts') ?>
             </div>
             <div class="table-responsive">
                 <table class="table mb-0">
                     <thead>
                         <tr>
-                            <th>Item</th>
-                            <th class="text-center" width="80">Qty</th>
-                            <th class="text-end" width="120">Unit Price</th>
-                            <th class="text-end" width="120">Total</th>
+                            <th><?= lang('App.partName') ?></th>
+                            <th class="text-center" width="80"><?= lang('App.quantity') ?></th>
+                            <th class="text-end" width="120"><?= lang('App.price') ?></th>
+                            <th class="text-end" width="120"><?= lang('App.total') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,17 +112,17 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3" class="text-end">Subtotal:</td>
+                            <td colspan="3" class="text-end"><?= lang('App.subtotal') ?>:</td>
                             <td class="text-end">฿<?= number_format($quotation['subtotal'], 2) ?></td>
                         </tr>
                         <?php if ($quotation['include_vat']): ?>
                         <tr>
-                            <td colspan="3" class="text-end">VAT (7%):</td>
+                            <td colspan="3" class="text-end"><?= lang('App.vatAmount') ?>:</td>
                             <td class="text-end">฿<?= number_format($quotation['vat_amount'], 2) ?></td>
                         </tr>
                         <?php endif; ?>
                         <tr class="fw-bold">
-                            <td colspan="3" class="text-end">Grand Total:</td>
+                            <td colspan="3" class="text-end"><?= lang('App.grandTotal') ?>:</td>
                             <td class="text-end text-primary fs-5">฿<?= number_format($quotation['grand_total'], 2) ?></td>
                         </tr>
                     </tfoot>
@@ -126,15 +135,15 @@
         <!-- Details -->
         <div class="card mb-4">
             <div class="card-header">
-                <i class="bi bi-info-circle me-1"></i>Details
+                <i class="bi bi-info-circle me-1"></i><?= lang('App.quotationDetails') ?>
             </div>
             <div class="card-body">
                 <p class="mb-2">
-                    <span class="text-muted">Created:</span><br>
+                    <span class="text-muted"><?= lang('App.createdAt') ?>:</span><br>
                     <?= date('d M Y, H:i', strtotime($quotation['created_at'])) ?>
                 </p>
                 <p class="mb-2">
-                    <span class="text-muted">Valid Until:</span><br>
+                    <span class="text-muted"><?= lang('App.validUntil') ?>:</span><br>
                     <?php if ($quotation['valid_until']): ?>
                         <?php
                         $validUntil = strtotime($quotation['valid_until']);
@@ -142,7 +151,7 @@
                         ?>
                         <span class="<?= $isExpired ? 'text-danger' : '' ?>">
                             <?= date('d M Y', $validUntil) ?>
-                            <?= $isExpired ? '(Expired)' : '' ?>
+                            <?= $isExpired ? '(' . lang('App.statusExpired') . ')' : '' ?>
                         </span>
                     <?php else: ?>
                         -
@@ -150,9 +159,9 @@
                 </p>
                 <?php if ($quotation['converted_job_id']): ?>
                 <p class="mb-0">
-                    <span class="text-muted">Converted to Job:</span><br>
+                    <span class="text-muted"><?= lang('App.convertToJob') ?>:</span><br>
                     <a href="<?= base_url('jobs/view/' . $quotation['converted_job_id']) ?>" class="text-primary">
-                        View Job Card →
+                        <?= lang('App.view') ?> <?= lang('App.jobCard') ?> →
                     </a>
                 </p>
                 <?php endif; ?>
@@ -162,7 +171,7 @@
         <?php if (!empty($quotation['notes'])): ?>
         <div class="card mb-4">
             <div class="card-header">
-                <i class="bi bi-sticky me-1"></i>Notes
+                <i class="bi bi-sticky me-1"></i><?= lang('App.notes') ?>
             </div>
             <div class="card-body">
                 <p class="mb-0"><?= nl2br(esc($quotation['notes'])) ?></p>
@@ -174,7 +183,7 @@
 
 <script>
 function updateStatus(status) {
-    if (confirm('Are you sure you want to update the status?')) {
+    if (confirm('<?= lang('App.confirm') ?>?')) {
         fetch('<?= base_url('quotations/status/' . $quotation['id']) ?>', {
             method: 'POST',
             headers: {
@@ -188,11 +197,10 @@ function updateStatus(status) {
             if (data.success) {
                 location.reload();
             } else {
-                alert(data.message || 'Error updating status');
+                alert(data.message || '<?= lang('App.operationFailed') ?>');
             }
         });
     }
 }
 </script>
 <?= $this->endSection() ?>
-

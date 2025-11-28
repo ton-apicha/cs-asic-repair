@@ -244,7 +244,7 @@
     </style>
 </head>
 <body>
-    <div class="watermark">QUOTATION</div>
+    <div class="watermark"><?= strtoupper(lang('App.quotation')) ?></div>
     
     <!-- Header -->
     <table style="width: 100%;" class="header">
@@ -258,7 +258,7 @@
                 </div>
             </td>
             <td style="width: 50%; text-align: right;">
-                <div class="quotation-title">QUOTATION</div>
+                <div class="quotation-title"><?= strtoupper(lang('App.quotation')) ?></div>
                 <div class="quotation-no">
                     No: <?= esc($quotation['quotation_no'] ?? 'DRAFT') ?><br>
                     Date: <?= date('d/m/Y', strtotime($quotation['created_at'] ?? 'now')) ?>
@@ -269,7 +269,7 @@
     
     <!-- Customer Info -->
     <div class="section">
-        <div class="section-title">Quote For</div>
+        <div class="section-title"><?= lang('App.customer') ?></div>
         <div class="info-grid">
             <div class="info-row">
                 <div class="info-label">Customer Name</div>
@@ -290,7 +290,7 @@
     
     <!-- Items -->
     <div class="section">
-        <div class="section-title">Service & Parts</div>
+        <div class="section-title"><?= lang('App.jobParts') ?></div>
         <table class="items-table">
             <thead>
                 <tr>
@@ -351,7 +351,7 @@
     
     <!-- Terms -->
     <div class="terms-section">
-        <div class="terms-title">Terms & Conditions</div>
+        <div class="terms-title"><?= lang('App.quotationTerms') ?></div>
         <ul class="terms-list">
             <li>This quotation is valid for 30 days from the date of issue.</li>
             <li>50% deposit required to proceed with the service.</li>

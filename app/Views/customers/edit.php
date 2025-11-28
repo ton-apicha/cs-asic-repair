@@ -51,20 +51,20 @@
                     
                     <!-- Credit Settings -->
                     <div class="border-top pt-3 mt-3">
-                        <h6 class="mb-3"><i class="bi bi-credit-card me-2"></i>Credit Settings</h6>
+                        <h6 class="mb-3"><i class="bi bi-credit-card me-2"></i><?= lang('App.creditSettings') ?></h6>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Credit Limit (฿)</label>
+                                <label class="form-label"><?= lang('App.creditLimit') ?> (฿)</label>
                                 <input type="number" class="form-control" name="credit_limit" 
                                        value="<?= old('credit_limit', $customer['credit_limit'] ?? 0) ?>" step="0.01" min="0">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Credit Used (฿)</label>
+                                <label class="form-label"><?= lang('App.creditUsed') ?> (฿)</label>
                                 <input type="number" class="form-control" readonly
                                        value="<?= number_format($customer['credit_used'] ?? 0, 2) ?>">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Payment Terms (Days)</label>
+                                <label class="form-label"><?= lang('App.creditTerms') ?></label>
                                 <input type="number" class="form-control" name="credit_terms" 
                                        value="<?= old('credit_terms', $customer['credit_terms'] ?? 30) ?>" min="0">
                             </div>
@@ -74,7 +74,7 @@
                         $availableClass = $available > 0 ? 'text-success' : ($available < 0 ? 'text-danger' : 'text-muted');
                         ?>
                         <p class="mb-0">
-                            <small class="text-muted">Available Credit:</small>
+                            <small class="text-muted"><?= lang('App.creditAvailable') ?>:</small>
                             <strong class="<?= $availableClass ?>">฿<?= number_format($available, 2) ?></strong>
                         </p>
                     </div>

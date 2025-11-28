@@ -181,7 +181,7 @@
     <!-- Header -->
     <div class="header">
         <div class="logo">ASIC Repair</div>
-        <div class="receipt-title">Payment Receipt</div>
+        <div class="receipt-title"><?= lang('App.payment') ?></div>
         <div class="receipt-no">Receipt No: <?= esc($job['job_id']) ?></div>
         <div style="font-size: 11px; color: #666; margin-top: 5px;">
             Date: <?= date('d/m/Y H:i') ?>
@@ -193,7 +193,7 @@
         <tr>
             <td style="width: 50%; vertical-align: top;">
                 <div class="section">
-                    <div class="section-title">Bill To</div>
+                    <div class="section-title"><?= lang('App.customer') ?></div>
                     <p><strong><?= esc($customer['name']) ?></strong></p>
                     <p><?= esc($customer['phone']) ?></p>
                     <?php if (!empty($customer['email'])): ?>
@@ -206,7 +206,7 @@
             </td>
             <td style="width: 50%; vertical-align: top;">
                 <div class="section">
-                    <div class="section-title">Job Reference</div>
+                    <div class="section-title"><?= lang('App.jobCard') ?></div>
                     <p><strong>Job ID:</strong> <?= esc($job['job_id']) ?></p>
                     <p><strong>Check-in:</strong> <?= date('d/m/Y', strtotime($job['checkin_date'])) ?></p>
                     <?php if (!empty($job['delivery_date'])): ?>
@@ -268,7 +268,7 @@
     <!-- Payment History -->
     <?php if (!empty($payments)): ?>
     <div class="section">
-        <div class="section-title">Payment History</div>
+        <div class="section-title"><?= lang('App.jobPayments') ?></div>
         <table class="items-table">
             <thead>
                 <tr>

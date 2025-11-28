@@ -48,15 +48,15 @@
                         
                         <!-- Credit Settings -->
                         <div class="border-top pt-3 mt-3">
-                            <h6 class="mb-3"><i class="bi bi-credit-card me-2"></i>Credit Settings</h6>
+                            <h6 class="mb-3"><i class="bi bi-credit-card me-2"></i><?= lang('App.creditSettings') ?></h6>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Credit Limit (฿)</label>
+                                    <label class="form-label"><?= lang('App.creditLimit') ?> (฿)</label>
                                     <input type="number" class="form-control" name="credit_limit" 
                                            value="<?= old('credit_limit', 0) ?>" step="0.01" min="0">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Payment Terms (Days)</label>
+                                    <label class="form-label"><?= lang('App.creditTerms') ?></label>
                                     <input type="number" class="form-control" name="credit_terms" 
                                            value="<?= old('credit_terms', 30) ?>" min="0">
                                 </div>

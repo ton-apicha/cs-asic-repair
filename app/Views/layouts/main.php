@@ -96,7 +96,7 @@
                 <li class="menu-item <?= str_starts_with(uri_string(), 'quotations') ? 'active' : '' ?>">
                     <a href="<?= base_url('quotations') ?>" class="menu-link <?= str_starts_with(uri_string(), 'quotations') ? 'active' : '' ?>">
                         <i class="bi bi-file-earmark-text menu-icon"></i>
-                        <span class="menu-text">Quotations</span>
+                        <span class="menu-text"><?= lang('App.quotations') ?></span>
                     </a>
                 </li>
                 
@@ -132,7 +132,7 @@
                         <li><a href="<?= base_url('settings') ?>"><?= lang('App.systemSettings') ?></a></li>
                         <li><a href="<?= base_url('settings/branches') ?>"><?= lang('App.branches') ?></a></li>
                         <li><a href="<?= base_url('settings/users') ?>"><?= lang('App.users') ?></a></li>
-                        <li><a href="<?= base_url('settings/backup') ?>"><i class="bi bi-database me-1"></i>Backup</a></li>
+                        <li><a href="<?= base_url('settings/backup') ?>"><i class="bi bi-database me-1"></i><?= lang('App.backup') ?></a></li>
                     </ul>
                 </li>
                 <?php endif; ?>
@@ -218,14 +218,14 @@
                         </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item <?= $currentLocale === 'en' ? 'active' : '' ?>" href="<?= base_url('language/en') ?>">
-                            <span class="fi fi-us me-2"></span>English
+                        <li><a class="dropdown-item <?= $currentLocale === 'en' ? 'active' : '' ?>" href="<?= base_url('language/switch/en') ?>">
+                            🇺🇸 <?= lang('App.english') ?>
                         </a></li>
-                        <li><a class="dropdown-item <?= $currentLocale === 'zh' ? 'active' : '' ?>" href="<?= base_url('language/zh') ?>">
-                            <span class="fi fi-cn me-2"></span>简体中文
+                        <li><a class="dropdown-item <?= $currentLocale === 'zh' ? 'active' : '' ?>" href="<?= base_url('language/switch/zh') ?>">
+                            🇨🇳 <?= lang('App.chinese') ?>
                         </a></li>
-                        <li><a class="dropdown-item <?= $currentLocale === 'th' ? 'active' : '' ?>" href="<?= base_url('language/th') ?>">
-                            <span class="fi fi-th me-2"></span>ไทย
+                        <li><a class="dropdown-item <?= $currentLocale === 'th' ? 'active' : '' ?>" href="<?= base_url('language/switch/th') ?>">
+                            🇹🇭 <?= lang('App.thai') ?>
                         </a></li>
                     </ul>
                 </div>

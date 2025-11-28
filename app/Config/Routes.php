@@ -18,6 +18,9 @@ $routes->get('logout', 'AuthController::logout');
 $routes->get('track', 'PortalController::track');
 $routes->get('portal/history', 'PortalController::history');
 
+// Language Switch (Public)
+$routes->get('language/switch/(:segment)', 'LanguageController::switch/$1');
+
 // ============================================================================
 // Protected Routes (Require Authentication)
 // ============================================================================

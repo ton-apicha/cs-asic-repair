@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= service('request')->getLocale() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -296,9 +296,30 @@
         .portal-footer a:hover {
             color: #fff;
         }
+        
+        /* Language Switcher */
+        .lang-switcher {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        
+        .lang-switcher .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <div class="btn-group btn-group-sm">
+            <a href="<?= base_url('language/switch/en') ?>" class="btn btn-outline-light <?= service('request')->getLocale() === 'en' ? 'active' : '' ?>">EN</a>
+            <a href="<?= base_url('language/switch/th') ?>" class="btn btn-outline-light <?= service('request')->getLocale() === 'th' ? 'active' : '' ?>">TH</a>
+            <a href="<?= base_url('language/switch/zh') ?>" class="btn btn-outline-light <?= service('request')->getLocale() === 'zh' ? 'active' : '' ?>">中</a>
+        </div>
+    </div>
+
     <div class="track-container">
         <!-- Brand Header -->
         <div class="brand-header">
@@ -306,14 +327,14 @@
                 <i class="bi bi-cpu-fill"></i>
                 ASIC Repair
             </div>
-            <div class="brand-subtitle">Professional Mining Hardware Service</div>
+            <div class="brand-subtitle"><?= lang('App.professionalService') ?></div>
         </div>
         
         <!-- Search Card -->
         <div class="search-card">
             <h2 class="search-title">
                 <i class="bi bi-search"></i>
-                Track Your Repair Status
+                <?= lang('App.trackYourStatus') ?>
             </h2>
             
             <form method="GET" action="<?= base_url('track') ?>">
@@ -322,13 +343,13 @@
                            class="form-control form-control-lg" 
                            name="job_id" 
                            value="<?= esc($jobId ?? '') ?>"
-                           placeholder="Enter your Job ID (e.g., 2411001)"
+                           placeholder="<?= lang('App.enterJobId') ?> (e.g., 2411001)"
                            required
                            autofocus>
                 </div>
                 <div class="d-grid">
                     <button type="submit" class="btn btn-track">
-                        <i class="bi bi-search me-2"></i>Track Now
+                        <i class="bi bi-search me-2"></i><?= lang('App.trackNow') ?>
                     </button>
                 </div>
             </form>
@@ -339,7 +360,7 @@
         <div class="error-card">
             <i class="bi bi-exclamation-triangle error-icon"></i>
             <p class="error-text"><?= esc($error) ?></p>
-            <p class="text-muted">Please check your Job ID and try again.</p>
+            <p class="text-muted"><?= lang('App.checkJobIdTryAgain') ?></p>
         </div>
         <?php endif; ?>
         
@@ -350,12 +371,12 @@
                 <div class="job-id-display"><?= esc($job['job_id']) ?></div>
                 <?php
                 $statusText = match($job['status']) {
-                    'new_checkin' => 'Checked In',
-                    'pending_repair' => 'Awaiting Repair',
-                    'in_progress' => 'Repair In Progress',
-                    'repair_done' => 'Repair Complete',
-                    'ready_handover' => 'Ready for Pickup',
-                    'delivered' => 'Delivered',
+                    'new_checkin' => lang('App.checkedIn'),
+                    'pending_repair' => lang('App.awaitingRepair'),
+                    'in_progress' => lang('App.repairInProgress'),
+                    'repair_done' => lang('App.repairComplete'),
+                    'ready_handover' => lang('App.readyForPickup'),
+                    'delivered' => lang('App.delivered'),
                     default => $job['status']
                 };
                 ?>
@@ -365,22 +386,22 @@
             <div class="result-body">
                 <!-- Device Info -->
                 <div class="info-section">
-                    <div class="info-section-title">Device Information</div>
+                    <div class="info-section-title"><?= lang('App.deviceInfo') ?></div>
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">Model</div>
+                            <div class="info-label"><?= lang('App.model') ?></div>
                             <div class="info-value"><?= esc($asset['brand_model'] ?? '-') ?></div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Serial Number</div>
+                            <div class="info-label"><?= lang('App.serialNumber') ?></div>
                             <div class="info-value"><?= esc($asset['serial_number'] ?? '-') ?></div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Check-in Date</div>
+                            <div class="info-label"><?= lang('App.checkInDate') ?></div>
                             <div class="info-value"><?= date('d M Y', strtotime($job['checkin_date'])) ?></div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Estimated Cost</div>
+                            <div class="info-label"><?= lang('App.estimatedCost') ?></div>
                             <div class="info-value">฿<?= number_format($job['grand_total'], 0) ?></div>
                         </div>
                     </div>
@@ -388,13 +409,13 @@
                 
                 <!-- Problem Description -->
                 <div class="info-section">
-                    <div class="info-section-title">Problem Description</div>
+                    <div class="info-section-title"><?= lang('App.problemDescription') ?></div>
                     <p class="mb-0" style="color: #475569;"><?= esc($job['symptom']) ?></p>
                 </div>
                 
                 <!-- Timeline -->
                 <div class="info-section">
-                    <div class="info-section-title">Progress Timeline</div>
+                    <div class="info-section-title"><?= lang('App.progressTimeline') ?></div>
                     <div class="timeline">
                         <?php foreach ($timeline as $step): ?>
                         <div class="timeline-item">
@@ -405,7 +426,7 @@
                                 <div class="timeline-title <?= $step['pending'] ? 'pending' : '' ?>">
                                     <?= $step['label'] ?>
                                     <?php if ($step['current']): ?>
-                                        <span class="badge bg-primary ms-2">Current</span>
+                                        <span class="badge bg-primary ms-2"><?= lang('App.current') ?></span>
                                     <?php endif; ?>
                                 </div>
                                 <div class="timeline-desc"><?= $step['description'] ?></div>
@@ -419,8 +440,8 @@
                 <div class="alert alert-success d-flex align-items-center" role="alert">
                     <i class="bi bi-check-circle-fill me-2 fs-4"></i>
                     <div>
-                        <strong>Your device is ready for pickup!</strong><br>
-                        Please bring your ID and this Job ID when you come to collect.
+                        <strong><?= lang('App.deviceReady') ?></strong><br>
+                        <?= lang('App.bringIdToCollect') ?>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -430,12 +451,11 @@
         
         <!-- Footer -->
         <div class="portal-footer">
-            <p>Need help? Contact us at <a href="tel:02-xxx-xxxx">02-XXX-XXXX</a></p>
-            <p><a href="<?= base_url('login') ?>">Staff Login</a></p>
+            <p><?= lang('App.needHelp') ?> <?= lang('App.contactUs') ?> <a href="tel:02-xxx-xxxx">02-XXX-XXXX</a></p>
+            <p><a href="<?= base_url('login') ?>"><?= lang('App.staffLogin') ?></a></p>
         </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

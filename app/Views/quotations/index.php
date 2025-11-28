@@ -4,10 +4,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">
         <i class="bi bi-file-earmark-text text-primary me-2"></i>
-        Quotations
+        <?= lang('App.quotations') ?>
     </h1>
     <a href="<?= base_url('quotations/create') ?>" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-1"></i>New Quotation
+        <i class="bi bi-plus-lg me-1"></i><?= lang('App.newQuotation') ?>
     </a>
 </div>
 
@@ -17,21 +17,21 @@
         <form method="GET" class="row g-3">
             <div class="col-md-4">
                 <input type="text" class="form-control" name="search" 
-                       value="<?= esc($search ?? '') ?>" placeholder="Search quotation or customer...">
+                       value="<?= esc($search ?? '') ?>" placeholder="<?= lang('App.searchQuotation') ?>">
             </div>
             <div class="col-md-3">
                 <select name="status" class="form-select">
-                    <option value="">All Status</option>
-                    <option value="draft" <?= ($status ?? '') === 'draft' ? 'selected' : '' ?>>Draft</option>
-                    <option value="sent" <?= ($status ?? '') === 'sent' ? 'selected' : '' ?>>Sent</option>
-                    <option value="approved" <?= ($status ?? '') === 'approved' ? 'selected' : '' ?>>Approved</option>
-                    <option value="rejected" <?= ($status ?? '') === 'rejected' ? 'selected' : '' ?>>Rejected</option>
-                    <option value="converted" <?= ($status ?? '') === 'converted' ? 'selected' : '' ?>>Converted</option>
+                    <option value=""><?= lang('App.allStatus') ?></option>
+                    <option value="draft" <?= ($status ?? '') === 'draft' ? 'selected' : '' ?>><?= lang('App.statusDraft') ?></option>
+                    <option value="sent" <?= ($status ?? '') === 'sent' ? 'selected' : '' ?>><?= lang('App.statusSent') ?></option>
+                    <option value="approved" <?= ($status ?? '') === 'approved' ? 'selected' : '' ?>><?= lang('App.statusApproved') ?></option>
+                    <option value="rejected" <?= ($status ?? '') === 'rejected' ? 'selected' : '' ?>><?= lang('App.statusRejected') ?></option>
+                    <option value="converted" <?= ($status ?? '') === 'converted' ? 'selected' : '' ?>><?= lang('App.statusConverted') ?></option>
                 </select>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-secondary w-100">
-                    <i class="bi bi-search me-1"></i>Filter
+                    <i class="bi bi-search me-1"></i><?= lang('App.filter') ?>
                 </button>
             </div>
         </form>
@@ -44,13 +44,13 @@
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
-                    <th>Quotation No</th>
-                    <th>Customer</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Valid Until</th>
-                    <th>Created</th>
-                    <th width="120">Actions</th>
+                    <th><?= lang('App.quotationNo') ?></th>
+                    <th><?= lang('App.customer') ?></th>
+                    <th><?= lang('App.total') ?></th>
+                    <th><?= lang('App.status') ?></th>
+                    <th><?= lang('App.validUntil') ?></th>
+                    <th><?= lang('App.created') ?></th>
+                    <th width="120"><?= lang('App.actions') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -58,7 +58,7 @@
                 <tr>
                     <td colspan="7" class="text-center py-5 text-muted">
                         <i class="bi bi-file-earmark-text fs-1 d-block mb-2 opacity-50"></i>
-                        No quotations found
+                        <?= lang('App.noQuotationsFound') ?>
                     </td>
                 </tr>
                 <?php else: ?>
@@ -82,8 +82,17 @@
                             'converted' => 'bg-primary',
                             default => 'bg-secondary'
                         };
+                        $statusText = match($quotation['status']) {
+                            'draft' => lang('App.statusDraft'),
+                            'sent' => lang('App.statusSent'),
+                            'approved' => lang('App.statusApproved'),
+                            'rejected' => lang('App.statusRejected'),
+                            'expired' => lang('App.statusExpired'),
+                            'converted' => lang('App.statusConverted'),
+                            default => ucfirst($quotation['status'])
+                        };
                         ?>
-                        <span class="badge <?= $statusClass ?>"><?= ucfirst($quotation['status']) ?></span>
+                        <span class="badge <?= $statusClass ?>"><?= $statusText ?></span>
                     </td>
                     <td>
                         <?php if ($quotation['valid_until']): ?>
@@ -100,12 +109,12 @@
                     <td>
                         <div class="btn-group btn-group-sm">
                             <a href="<?= base_url('quotations/view/' . $quotation['id']) ?>" 
-                               class="btn btn-outline-primary" title="View">
+                               class="btn btn-outline-primary" title="<?= lang('App.view') ?>">
                                 <i class="bi bi-eye"></i>
                             </a>
                             <?php if ($quotation['status'] === 'draft'): ?>
                             <a href="<?= base_url('quotations/edit/' . $quotation['id']) ?>" 
-                               class="btn btn-outline-secondary" title="Edit">
+                               class="btn btn-outline-secondary" title="<?= lang('App.edit') ?>">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             <?php endif; ?>
@@ -129,4 +138,3 @@
     <?php endif; ?>
 </div>
 <?= $this->endSection() ?>
-
