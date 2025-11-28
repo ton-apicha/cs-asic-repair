@@ -157,11 +157,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('branches/update/(:num)', 'SettingController::updateBranch/$1');
         $routes->post('branches/delete/(:num)', 'SettingController::deleteBranch/$1');
         
-        // User Management
+        // User Management (Modal-based CRUD)
         $routes->get('users', 'SettingController::users');
-        $routes->get('users/create', 'SettingController::createUser');
         $routes->post('users/store', 'SettingController::storeUser');
-        $routes->get('users/edit/(:num)', 'SettingController::editUser/$1');
         $routes->post('users/update/(:num)', 'SettingController::updateUser/$1');
         $routes->post('users/delete/(:num)', 'SettingController::deleteUser/$1');
         

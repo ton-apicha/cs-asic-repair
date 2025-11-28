@@ -168,20 +168,6 @@ class SettingController extends BaseController
     }
 
     /**
-     * Create user form
-     */
-    public function createUser(): string
-    {
-        $branchModel = new BranchModel();
-
-        return view('settings/user_form', $this->getViewData([
-            'title'    => lang('App.newUser'),
-            'user'     => null,
-            'branches' => $branchModel->getActive(),
-        ]));
-    }
-
-    /**
      * Store new user
      */
     public function storeUser()
@@ -221,27 +207,6 @@ class SettingController extends BaseController
         return redirect()->back()
             ->withInput()
             ->with('error', lang('App.operationFailed'));
-    }
-
-    /**
-     * Edit user form
-     */
-    public function editUser(int $id): string
-    {
-        $userModel = new UserModel();
-        $branchModel = new BranchModel();
-
-        $user = $userModel->find($id);
-
-        if (!$user) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        return view('settings/user_form', $this->getViewData([
-            'title'    => lang('App.editUser'),
-            'user'     => $user,
-            'branches' => $branchModel->getActive(),
-        ]));
     }
 
     /**
