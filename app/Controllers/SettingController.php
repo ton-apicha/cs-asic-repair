@@ -56,7 +56,7 @@ class SettingController extends BaseController
         foreach ($settings as $key) {
             $value = $this->request->getPost($key);
             if ($value !== null) {
-                $this->settingModel->set($key, $value);
+                $this->settingModel->setValue($key, $value);
             }
         }
 
@@ -343,7 +343,7 @@ class SettingController extends BaseController
         $file->move(FCPATH . 'assets/images/', $newName);
 
         // Save logo filename in settings
-        $this->settingModel->set('company_logo', $newName);
+        $this->settingModel->setValue('company_logo', $newName);
 
         return redirect()->to('/settings')
             ->with('success', lang('App.logoUploaded'));
@@ -360,7 +360,7 @@ class SettingController extends BaseController
             unlink(FCPATH . 'assets/images/' . $logo);
         }
 
-        $this->settingModel->set('company_logo', '');
+        $this->settingModel->setValue('company_logo', '');
 
         return redirect()->to('/settings')
             ->with('success', lang('App.logoDeleted'));

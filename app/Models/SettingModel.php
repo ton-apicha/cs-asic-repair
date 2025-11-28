@@ -40,7 +40,7 @@ class SettingModel extends Model
     /**
      * Set a setting value
      */
-    public function set(string $key, $value, ?string $type = null): bool
+    public function setValue(string $key, $value, ?string $type = null): bool
     {
         $existing = $this->where('key', $key)->first();
 
