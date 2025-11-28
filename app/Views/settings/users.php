@@ -184,104 +184,108 @@
 
 <?= $this->section('scripts') ?>
 <script>
-var userModalInstance = null;
+// Use Bootstrap 5 native JavaScript API
+var userModalEl = document.getElementById('userModal');
+var userModal = null;
 
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Clean up any leftover backdrops on page load
-    $('.modal-backdrop').remove();
-    $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+    document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
     
-    // Get the modal element and create Bootstrap modal instance
-    var userModalEl = document.getElementById('userModal');
-    userModalInstance = new bootstrap.Modal(userModalEl, {
-        backdrop: true,
-        keyboard: true
-    });
+    // Create Bootstrap Modal instance ONCE
+    userModal = new bootstrap.Modal(userModalEl);
     
-    // Cleanup on modal hide
+    // Cleanup when modal is hidden
     userModalEl.addEventListener('hidden.bs.modal', function() {
-        $('.modal-backdrop').remove();
-        $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+        document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
     });
 });
 
 function addUser() {
-    var $form = $('#userForm');
-    var $title = $('#userModalTitle');
+    var form = document.getElementById('userForm');
+    var title = document.getElementById('userModalTitle');
     
-    $form[0].reset();
-    $('#userId').val('');
-    $title.html('<i class="bi bi-person-plus me-2"></i><?= lang('App.newUser') ?>');
-    $form.attr('action', '<?= base_url('settings/users/store') ?>');
+    form.reset();
+    document.getElementById('userId').value = '';
+    title.innerHTML = '<i class="bi bi-person-plus me-2"></i><?= lang('App.newUser') ?>';
+    form.action = '<?= base_url('settings/users/store') ?>';
     
     // Show/hide elements for create mode
-    $('#userName').prop('readonly', false);
-    $('#usernameNote').addClass('d-none');
-    $('#passwordLabel').addClass('required');
-    $('#userPassword').prop('required', true);
-    $('#passwordNote').addClass('d-none');
-    $('#statusSection').addClass('d-none');
-    $('#userActive').prop('checked', true);
+    document.getElementById('userName').readOnly = false;
+    document.getElementById('usernameNote').classList.add('d-none');
+    document.getElementById('passwordLabel').classList.add('required');
+    document.getElementById('userPassword').required = true;
+    document.getElementById('passwordNote').classList.add('d-none');
+    document.getElementById('statusSection').classList.add('d-none');
+    document.getElementById('userActive').checked = true;
     
-    userModalInstance.show();
+    userModal.show();
 }
 
 function editUser(user) {
-    var $form = $('#userForm');
-    var $title = $('#userModalTitle');
+    var form = document.getElementById('userForm');
+    var title = document.getElementById('userModalTitle');
     
-    $form[0].reset();
-    $title.html('<i class="bi bi-person-gear me-2"></i><?= lang('App.editUser') ?>');
-    $form.attr('action', '<?= base_url('settings/users/update') ?>/' + user.id);
+    form.reset();
+    title.innerHTML = '<i class="bi bi-person-gear me-2"></i><?= lang('App.editUser') ?>';
+    form.action = '<?= base_url('settings/users/update') ?>/' + user.id;
     
     // Populate form
-    $('#userId').val(user.id);
-    $('#userName').val(user.username).prop('readonly', true);
-    $('#userFullName').val(user.name);
-    $('#userEmail').val(user.email || '');
-    $('#userPhone').val(user.phone || '');
-    $('#userRole').val(user.role);
-    $('#userBranch').val(user.branch_id || '');
-    $('#userActive').prop('checked', user.is_active == 1);
+    document.getElementById('userId').value = user.id;
+    document.getElementById('userName').value = user.username;
+    document.getElementById('userName').readOnly = true;
+    document.getElementById('userFullName').value = user.name;
+    document.getElementById('userEmail').value = user.email || '';
+    document.getElementById('userPhone').value = user.phone || '';
+    document.getElementById('userRole').value = user.role;
+    document.getElementById('userBranch').value = user.branch_id || '';
+    document.getElementById('userActive').checked = user.is_active == 1;
     
     // Show/hide elements for edit mode
-    $('#usernameNote').removeClass('d-none');
-    $('#passwordLabel').removeClass('required');
-    $('#userPassword').prop('required', false);
-    $('#passwordNote').removeClass('d-none');
-    $('#statusSection').removeClass('d-none');
+    document.getElementById('usernameNote').classList.remove('d-none');
+    document.getElementById('passwordLabel').classList.remove('required');
+    document.getElementById('userPassword').required = false;
+    document.getElementById('passwordNote').classList.remove('d-none');
+    document.getElementById('statusSection').classList.remove('d-none');
     
-    userModalInstance.show();
+    userModal.show();
 }
 
 function deleteUser(id, name) {
     if (confirm('<?= lang('App.confirmDelete') ?>\n\n<?= lang('App.user') ?>: ' + name)) {
-        var $form = $('<form>', {
-            method: 'POST',
-            action: '<?= base_url('settings/users/delete') ?>/' + id
-        });
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?= base_url('settings/users/delete') ?>/' + id;
         
-        $form.append($('<input>', {
-            type: 'hidden',
-            name: '<?= csrf_token() ?>',
-            value: '<?= csrf_hash() ?>'
-        }));
+        var csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '<?= csrf_token() ?>';
+        csrf.value = '<?= csrf_hash() ?>';
+        form.appendChild(csrf);
         
-        $('body').append($form);
-        $form.submit();
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
 function togglePassword() {
-    var $password = $('#userPassword');
-    var $icon = $('#toggleIcon');
+    var password = document.getElementById('userPassword');
+    var icon = document.getElementById('toggleIcon');
     
-    if ($password.attr('type') === 'password') {
-        $password.attr('type', 'text');
-        $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+    if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
     } else {
-        $password.attr('type', 'password');
-        $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+        password.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
     }
 }
 </script>
