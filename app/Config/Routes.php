@@ -147,6 +147,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', 'SettingController::index');
         $routes->post('update', 'SettingController::update');
         
+        // Logo Management
+        $routes->post('upload-logo', 'SettingController::uploadLogo');
+        $routes->post('delete-logo', 'SettingController::deleteLogo');
+        
         // Branch Management
         $routes->get('branches', 'SettingController::branches');
         $routes->post('branches/store', 'SettingController::storeBranch');

@@ -48,6 +48,9 @@ class SettingController extends BaseController
             'vat_type',
             'vat_rate',
             'warranty_days',
+            'job_id_prefix',
+            'currency',
+            'default_language',
         ];
 
         foreach ($settings as $key) {
@@ -296,6 +299,71 @@ class SettingController extends BaseController
 
         return redirect()->to('/settings/users')
             ->with('error', lang('App.operationFailed'));
+    }
+
+    // ========================================================================
+    // Logo Management
+    // ========================================================================
+
+    /**
+     * Upload company logo
+     */
+    public function uploadLogo()
+    {
+        $file = $this->request->getFile('logo');
+
+        if (!$file || !$file->isValid()) {
+            return redirect()->to('/settings')
+                ->with('error', lang('App.uploadFailed'));
+        }
+
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($file->getMimeType(), $allowedTypes)) {
+            return redirect()->to('/settings')
+                ->with('error', lang('App.invalidFileType'));
+        }
+
+        // Validate file size (max 2MB)
+        if ($file->getSize() > 2 * 1024 * 1024) {
+            return redirect()->to('/settings')
+                ->with('error', lang('App.fileTooLarge'));
+        }
+
+        // Delete old logo if exists
+        $oldLogo = $this->settingModel->get('company_logo');
+        if ($oldLogo && file_exists(FCPATH . 'assets/images/' . $oldLogo)) {
+            unlink(FCPATH . 'assets/images/' . $oldLogo);
+        }
+
+        // Generate unique filename
+        $newName = 'logo_' . time() . '.' . $file->getExtension();
+
+        // Move file to public/assets/images/
+        $file->move(FCPATH . 'assets/images/', $newName);
+
+        // Save logo filename in settings
+        $this->settingModel->set('company_logo', $newName);
+
+        return redirect()->to('/settings')
+            ->with('success', lang('App.logoUploaded'));
+    }
+
+    /**
+     * Delete company logo
+     */
+    public function deleteLogo()
+    {
+        $logo = $this->settingModel->get('company_logo');
+
+        if ($logo && file_exists(FCPATH . 'assets/images/' . $logo)) {
+            unlink(FCPATH . 'assets/images/' . $logo);
+        }
+
+        $this->settingModel->set('company_logo', '');
+
+        return redirect()->to('/settings')
+            ->with('success', lang('App.logoDeleted'));
     }
 }
 
