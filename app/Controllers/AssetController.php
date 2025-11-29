@@ -28,10 +28,19 @@ class AssetController extends BaseController
     public function index(): string
     {
         $status = $this->request->getGet('status');
+        $branchFilter = $this->getBranchFilter();
         
         $builder = $this->assetModel
             ->select('assets.*, customers.name as customer_name, customers.phone as customer_phone')
             ->join('customers', 'customers.id = assets.customer_id');
+        
+        // Apply branch filter
+        if ($branchFilter !== null) {
+            $builder->groupStart()
+                ->where('assets.branch_id', $branchFilter)
+                ->orWhere('assets.branch_id', null)
+                ->groupEnd();
+        }
         
         if ($status && in_array($status, ['stored', 'repairing', 'repaired', 'returned'])) {
             $builder->where('assets.status', $status);
@@ -81,8 +90,12 @@ class AssetController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        // Get branch_id for the new asset
+        $requestedBranchId = $this->request->getPost('branch_id') ? (int)$this->request->getPost('branch_id') : null;
+        
         $data = [
             'customer_id'        => $this->request->getPost('customer_id'),
+            'branch_id'          => $this->getCreateBranchId($requestedBranchId),
             'brand_model'        => $this->request->getPost('brand_model'),
             'serial_number'      => $this->request->getPost('serial_number'),
             'mac_address'        => $this->request->getPost('mac_address'),
@@ -111,6 +124,12 @@ class AssetController extends BaseController
 
         if (!$asset) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        
+        // Check branch access
+        if (!$this->canAccessBranch($asset['branch_id'] ?? null)) {
+            return redirect()->to('/machines')
+                ->with('error', lang('App.accessDenied'));
         }
 
         // Get customer
@@ -141,6 +160,12 @@ class AssetController extends BaseController
 
         if (!$asset) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        
+        // Check branch access
+        if (!$this->canAccessBranch($asset['branch_id'] ?? null)) {
+            return redirect()->to('/machines')
+                ->with('error', lang('App.accessDenied'));
         }
 
         $customer = $this->customerModel->find($asset['customer_id']);
@@ -234,7 +259,8 @@ class AssetController extends BaseController
             return $this->jsonResponse([]);
         }
 
-        $assets = $this->assetModel->search($term, 10);
+        $branchFilter = $this->getBranchFilter();
+        $assets = $this->assetModel->search($term, 10, $branchFilter);
 
         return $this->jsonResponse($assets);
     }

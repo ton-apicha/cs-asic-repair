@@ -87,11 +87,34 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * Check if current user is admin
+     * Check if current user is admin (includes super admin)
      *
      * @return bool
      */
     protected function isAdmin(): bool
+    {
+        $role = $this->session->get('role');
+        return in_array($role, ['admin', 'super_admin']);
+    }
+
+    /**
+     * Check if current user is Super Admin
+     * Super Admin = role 'super_admin' (can see all branches)
+     *
+     * @return bool
+     */
+    protected function isSuperAdmin(): bool
+    {
+        return $this->session->get('role') === 'super_admin';
+    }
+
+    /**
+     * Check if current user is Branch Admin
+     * Branch Admin = admin role with specific branch_id (can only see their branch)
+     *
+     * @return bool
+     */
+    protected function isBranchAdmin(): bool
     {
         return $this->session->get('role') === 'admin';
     }
@@ -104,6 +127,72 @@ abstract class BaseController extends Controller
     protected function isTechnician(): bool
     {
         return $this->session->get('role') === 'technician';
+    }
+
+    /**
+     * Check if current user can access data from specific branch
+     *
+     * @param int|null $branchId The branch ID to check access for
+     * @return bool
+     */
+    protected function canAccessBranch(?int $branchId): bool
+    {
+        // Super Admin can access all branches
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+        
+        // For branch-specific users, check if branch matches
+        // Also allow access if data has no branch (branch_id = null)
+        return $this->branchId === $branchId || $branchId === null;
+    }
+
+    /**
+     * Get branch filter for database queries
+     * Returns null for Super Admin (no filter = see all), branch_id for others
+     *
+     * @return int|null
+     */
+    protected function getBranchFilter(): ?int
+    {
+        // Super Admin: check if they have selected a specific branch to view
+        if ($this->isSuperAdmin()) {
+            $filterBranchId = $this->session->get('filter_branch_id');
+            return $filterBranchId; // null = all, or specific branch
+        }
+        
+        // Branch Admin / Technician: filter by their branch
+        return $this->branchId;
+    }
+
+    /**
+     * Get the branch ID to use when creating new records
+     * Super Admin can choose, others use their assigned branch
+     *
+     * @param int|null $requestedBranchId Branch ID from form/request
+     * @return int|null
+     */
+    protected function getCreateBranchId(?int $requestedBranchId = null): ?int
+    {
+        if ($this->isSuperAdmin()) {
+            // Super Admin can specify branch or leave null (visible to all)
+            return $requestedBranchId;
+        }
+        
+        // Others always use their assigned branch
+        return $this->branchId;
+    }
+
+    /**
+     * Set the branch ID that Super Admin wants to view
+     *
+     * @param int|null $branchId Branch to view (null = all branches)
+     */
+    protected function setViewingBranch(?int $branchId): void
+    {
+        if ($this->isSuperAdmin()) {
+            $this->session->set('viewingBranchId', $branchId);
+        }
     }
 
     /**
@@ -196,11 +285,20 @@ abstract class BaseController extends Controller
     protected function getViewData(array $data = []): array
     {
         $baseData = [
-            'user'     => $this->user,
-            'branchId' => $this->branchId,
-            'isAdmin'  => $this->isAdmin(),
-            'locale'   => $this->request->getLocale(),
+            'user'            => $this->user,
+            'branchId'        => $this->branchId,
+            'isAdmin'         => $this->isAdmin(),
+            'isSuperAdmin'    => $this->isSuperAdmin(),
+            'isBranchAdmin'   => $this->isBranchAdmin(),
+            'filterBranchId'  => $this->session->get('filter_branch_id'),
+            'locale'          => $this->request->getLocale(),
         ];
+        
+        // For Super Admin, load all branches for the branch selector
+        if ($this->isSuperAdmin()) {
+            $branchModel = model('BranchModel');
+            $baseData['allBranches'] = $branchModel->where('is_active', 1)->findAll();
+        }
         
         return array_merge($baseData, $data);
     }
@@ -225,6 +323,73 @@ abstract class BaseController extends Controller
         if ($locale && in_array($locale, $supportedLocales)) {
             $this->request->setLocale($locale);
         }
+    }
+
+    /**
+     * Execute database operation with error handling
+     * Logs detailed errors but returns generic messages to users
+     *
+     * @param callable $operation Database operation to execute
+     * @param string   $errorMessage Generic error message for user
+     * @return mixed Operation result or false on error
+     */
+    protected function executeDbOperation(callable $operation, string $errorMessage = 'Operation failed')
+    {
+        try {
+            return $operation();
+        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+            // Log detailed error (for debugging)
+            log_message('error', '[DB Error] ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
+            
+            // Store user-friendly error in session
+            $this->session->setFlashdata('error', $errorMessage);
+            
+            return false;
+        } catch (\Exception $e) {
+            // Log unexpected errors
+            log_message('error', '[Unexpected Error] ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
+            
+            $this->session->setFlashdata('error', $errorMessage);
+            
+            return false;
+        }
+    }
+
+    /**
+     * Handle database error for JSON responses
+     * Logs detailed errors but returns generic messages
+     *
+     * @param \Exception $e Exception object
+     * @param string $genericMessage Generic error message for user
+     * @return ResponseInterface
+     */
+    protected function handleDatabaseError(\Exception $e, string $genericMessage = 'Operation failed'): ResponseInterface
+    {
+        // Log detailed error
+        log_message('error', '[DB Error] ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
+        
+        // Return generic error to client (security: don't expose DB details)
+        return $this->errorResponse($genericMessage, 500);
+    }
+
+    /**
+     * Safe redirect with error message
+     * Returns generic error messages to prevent information disclosure
+     *
+     * @param string $route Route to redirect to
+     * @param string $errorMessage Error message to display
+     * @param bool $withInput Whether to preserve input data
+     * @return ResponseInterface
+     */
+    protected function redirectWithError(string $route, string $errorMessage, bool $withInput = false): ResponseInterface
+    {
+        $redirect = redirect()->to($route)->with('error', $errorMessage);
+        
+        if ($withInput) {
+            $redirect = $redirect->withInput();
+        }
+        
+        return $redirect;
     }
 }
 

@@ -38,6 +38,11 @@ class RoleFilter implements FilterInterface
             return $request;
         }
         
+        // Super Admin has access to everything
+        if ($userRole === 'super_admin') {
+            return $request;
+        }
+        
         // Check if user's role is in the allowed roles
         if (in_array($userRole, $arguments)) {
             return $request;

@@ -107,6 +107,12 @@ class QuotationController extends BaseController
             'status'       => QuotationModel::STATUS_DRAFT,
         ]);
 
+        if ($quotationId === false) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create quotation. Please try again.');
+        }
+
         // Add items
         $items = $this->request->getPost('items') ?? [];
         foreach ($items as $item) {
@@ -283,6 +289,11 @@ class QuotationController extends BaseController
             'status'       => JobCardModel::STATUS_NEW_CHECKIN,
             'created_by'   => $this->getUserId(),
         ]);
+
+        if ($newJobId === false) {
+            return redirect()->back()
+                ->with('error', 'Failed to create job card. Please try again.');
+        }
 
         // Update quotation status
         $this->quotationModel->update($id, [

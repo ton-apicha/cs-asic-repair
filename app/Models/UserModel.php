@@ -22,8 +22,6 @@ class UserModel extends Model
         'name',
         'email',
         'phone',
-        'role',
-        'is_active',
         'last_login',
     ];
 
@@ -35,7 +33,7 @@ class UserModel extends Model
     protected $validationRules = [
         'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username,id,{id}]',
         'name'     => 'required|min_length[2]|max_length[255]',
-        'role'     => 'required|in_list[admin,technician]',
+        'role'     => 'required|in_list[admin,technician,super_admin]',
     ];
 
     protected $validationMessages = [];
@@ -129,6 +127,53 @@ class UserModel extends Model
     public function getAdmins(): array
     {
         return $this->getByRole('admin');
+    }
+
+    /**
+     * Set user role (separate method to prevent mass assignment)
+     */
+    public function setRole(int $userId, string $role): bool
+    {
+        if (!in_array($role, ['admin', 'technician', 'super_admin'])) {
+            return false;
+        }
+        
+        return $this->allowedFields(['role'])
+            ->update($userId, ['role' => $role]);
+    }
+
+    /**
+     * Set user active status (separate method to prevent mass assignment)
+     */
+    public function setActiveStatus(int $userId, bool $isActive): bool
+    {
+        return $this->allowedFields(['is_active'])
+            ->update($userId, ['is_active' => $isActive ? 1 : 0]);
+    }
+
+    /**
+     * Create user with role (for admin use)
+     */
+    public function createUserWithRole(array $data, string $role, bool $isActive = true): int|false
+    {
+        // Insert base user data first
+        $baseData = array_intersect_key($data, array_flip($this->allowedFields));
+        $result = $this->insert($baseData);
+        
+        if ($result === false) {
+            return false;
+        }
+        
+        $userId = $this->getInsertID();
+        
+        // Set role and status separately
+        $this->allowedFields(['role', 'is_active'])
+            ->update($userId, [
+                'role' => $role,
+                'is_active' => $isActive ? 1 : 0
+            ]);
+        
+        return $userId;
     }
 }
 

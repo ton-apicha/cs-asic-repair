@@ -35,8 +35,14 @@
                             <td class="fw-semibold"><?= esc($u['username']) ?></td>
                             <td><?= esc($u['name']) ?></td>
                             <td>
-                                <span class="badge bg-<?= $u['role'] === 'admin' ? 'danger' : 'info' ?>">
-                                    <?= $u['role'] === 'admin' ? lang('App.roleAdmin') : lang('App.roleTechnician') ?>
+                                <span class="badge bg-<?= $u['role'] === 'super_admin' ? 'warning text-dark' : ($u['role'] === 'admin' ? 'danger' : 'info') ?>">
+                                    <?php 
+                                        echo match($u['role']) {
+                                            'super_admin' => lang('App.roleSuperAdmin'),
+                                            'admin' => lang('App.roleAdmin'),
+                                            default => lang('App.roleTechnician')
+                                        };
+                                    ?>
                                 </span>
                             </td>
                             <td><?= esc($u['branch_name'] ?? '-') ?></td>
@@ -141,12 +147,14 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label required"><?= lang('App.userRole') ?></label>
-                                <select class="form-select" name="role" id="userRole" required>
+                                <select class="form-select" name="role" id="userRole" required onchange="handleRoleChange()">
                                     <option value="technician"><?= lang('App.roleTechnician') ?></option>
                                     <option value="admin"><?= lang('App.roleAdmin') ?></option>
+                                    <option value="super_admin"><?= lang('App.roleSuperAdmin') ?></option>
                                 </select>
+                                <div class="form-text text-muted" id="roleNote"></div>
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3" id="branchSection">
                                 <label class="form-label"><?= lang('App.branch') ?></label>
                                 <select class="form-select" name="branch_id" id="userBranch">
                                     <option value=""><?= lang('App.all') ?> (<?= lang('App.branches') ?>)</option>
@@ -154,6 +162,7 @@
                                     <option value="<?= $branch['id'] ?>"><?= esc($branch['name']) ?></option>
                                     <?php endforeach; ?>
                                 </select>
+                                <div class="form-text text-muted" id="branchNote"></div>
                             </div>
                         </div>
                     </div>
@@ -286,6 +295,27 @@
             password.type = 'password';
             icon.classList.remove('bi-eye-slash');
             icon.classList.add('bi-eye');
+        }
+    };
+    
+    window.handleRoleChange = function() {
+        var role = document.getElementById('userRole').value;
+        var branchSection = document.getElementById('branchSection');
+        var branchSelect = document.getElementById('userBranch');
+        var roleNote = document.getElementById('roleNote');
+        var branchNote = document.getElementById('branchNote');
+        
+        if (role === 'super_admin') {
+            branchSection.style.opacity = '0.5';
+            branchSelect.value = '';
+            branchSelect.disabled = true;
+            roleNote.innerHTML = '<i class="bi bi-info-circle me-1"></i><?= lang('App.superAdminNote') ?>';
+            branchNote.innerHTML = '<i class="bi bi-lock me-1"></i><?= lang('App.superAdminNoBranch') ?>';
+        } else {
+            branchSection.style.opacity = '1';
+            branchSelect.disabled = false;
+            roleNote.innerHTML = role === 'admin' ? '<i class="bi bi-shield me-1"></i><?= lang('App.adminNote') ?>' : '';
+            branchNote.innerHTML = branchSelect.value ? '' : '<i class="bi bi-info-circle me-1"></i><?= lang('App.branchRequired') ?>';
         }
     };
 })();

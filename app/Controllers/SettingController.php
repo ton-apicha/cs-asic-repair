@@ -175,9 +175,11 @@ class SettingController extends BaseController
         $userModel = new UserModel();
 
         $rules = [
-            'username' => 'required|min_length[3]|is_unique[users.username]',
-            'password' => 'required|min_length[6]',
-            'name'     => 'required|min_length[2]',
+            'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
+            'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/]',
+            'name'     => 'required|min_length[2]|max_length[255]',
+            'email'    => 'permit_empty|valid_email|max_length[255]',
+            'phone'    => 'permit_empty|regex_match[/^[0-9\-\+\(\)\s]{9,20}$/]|max_length[20]',
         ];
 
         if (!$this->validate($rules)) {
@@ -186,20 +188,26 @@ class SettingController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $role = $this->request->getPost('role');
         $branchId = $this->request->getPost('branch_id');
         
+        // Super Admin must have branch_id = NULL
+        if ($role === 'super_admin') {
+            $branchId = null;
+        }
+        
         $data = [
-            'branch_id' => !empty($branchId) ? $branchId : null,
+            'branch_id' => !empty($branchId) ? (int)$branchId : null,
             'username'  => $this->request->getPost('username'),
             'password'  => $this->request->getPost('password'),
             'name'      => $this->request->getPost('name'),
             'email'     => $this->request->getPost('email'),
             'phone'     => $this->request->getPost('phone'),
-            'role'      => $this->request->getPost('role'),
-            'is_active' => 1,
         ];
 
-        if ($userModel->insert($data)) {
+        $userId = $userModel->createUserWithRole($data, $role, true);
+        
+        if ($userId !== false) {
             return redirect()->to('/settings/users')
                 ->with('success', lang('App.userCreated'));
         }
@@ -222,15 +230,20 @@ class SettingController extends BaseController
                 ->with('error', lang('App.recordNotFound'));
         }
 
+        $role = $this->request->getPost('role');
         $branchId = $this->request->getPost('branch_id');
+        $isActive = $this->request->getPost('is_active') ? 1 : 0;
+        
+        // Super Admin must have branch_id = NULL
+        if ($role === 'super_admin') {
+            $branchId = null;
+        }
         
         $data = [
-            'branch_id' => !empty($branchId) ? $branchId : null,
+            'branch_id' => !empty($branchId) ? (int)$branchId : null,
             'name'      => $this->request->getPost('name'),
             'email'     => $this->request->getPost('email'),
             'phone'     => $this->request->getPost('phone'),
-            'role'      => $this->request->getPost('role'),
-            'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
         // Update password only if provided
@@ -239,7 +252,16 @@ class SettingController extends BaseController
             $data['password'] = $password;
         }
 
-        if ($userModel->update($id, $data)) {
+        // Update base user data
+        $updateSuccess = $userModel->update($id, $data);
+        
+        // Update role and active status separately (security: prevent mass assignment)
+        if ($updateSuccess) {
+            $userModel->setRole($id, $role);
+            $userModel->setActiveStatus($id, $isActive);
+        }
+
+        if ($updateSuccess) {
             return redirect()->to('/settings/users')
                 ->with('success', lang('App.userUpdated'));
         }
@@ -305,8 +327,8 @@ class SettingController extends BaseController
             unlink(FCPATH . 'assets/images/' . $oldLogo);
         }
 
-        // Generate unique filename
-        $newName = 'logo_' . time() . '.' . $file->getExtension();
+        // Generate unique filename with MIME-based extension (security)
+        $newName = 'logo_' . time() . '.' . $file->guessExtension();
 
         // Move file to public/assets/images/
         $file->move(FCPATH . 'assets/images/', $newName);

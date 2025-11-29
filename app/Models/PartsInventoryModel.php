@@ -81,14 +81,65 @@ class PartsInventoryModel extends Model
 
     /**
      * Search parts by code or name
+     * 
+     * @param string $term Search term
+     * @param int $limit Result limit
+     * @param int|null $branchId Filter by branch (null = all branches for Super Admin)
      */
-    public function search(string $term, int $limit = 10): array
+    public function search(string $term, int $limit = 10, ?int $branchId = null): array
     {
-        return $this->like('part_code', $term)
+        $builder = $this->groupStart()
+            ->like('part_code', $term)
             ->orLike('name', $term)
-            ->where('is_active', 1)
-            ->limit($limit)
-            ->findAll();
+            ->groupEnd()
+            ->where('is_active', 1);
+        
+        // Apply branch filter - show central warehouse (branch_id=null) + branch-specific
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('branch_id', $branchId)
+                ->orWhere('branch_id', null) // Include central warehouse
+                ->groupEnd();
+        }
+        
+        return $builder->limit($limit)->findAll();
+    }
+
+    /**
+     * Get parts by branch
+     * Shows both central warehouse items and branch-specific items
+     * 
+     * @param int|null $branchId Filter by branch (null = all branches)
+     */
+    public function getByBranch(?int $branchId = null): array
+    {
+        $builder = $this->where('is_active', 1);
+        
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('branch_id', $branchId)
+                ->orWhere('branch_id', null) // Include central warehouse
+                ->groupEnd();
+        }
+        
+        return $builder->findAll();
+    }
+
+    /**
+     * Get all inventory items with branch filter
+     */
+    public function getAllWithBranchFilter(?int $branchId = null): array
+    {
+        $builder = $this->where('is_active', 1);
+        
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('branch_id', $branchId)
+                ->orWhere('branch_id', null)
+                ->groupEnd();
+        }
+        
+        return $builder->orderBy('name', 'ASC')->findAll();
     }
 
     /**

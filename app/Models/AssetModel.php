@@ -17,6 +17,7 @@ class AssetModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'customer_id',
+        'branch_id',
         'brand_model',
         'serial_number',
         'mac_address',
@@ -75,15 +76,67 @@ class AssetModel extends Model
 
     /**
      * Search assets by serial number
+     * 
+     * @param string $term Search term
+     * @param int $limit Result limit
+     * @param int|null $branchId Filter by branch (null = all branches for Super Admin)
      */
-    public function search(string $term, int $limit = 10): array
+    public function search(string $term, int $limit = 10, ?int $branchId = null): array
     {
-        return $this->select('assets.*, customers.name as customer_name, customers.phone as customer_phone')
+        $builder = $this->select('assets.*, customers.name as customer_name, customers.phone as customer_phone')
             ->join('customers', 'customers.id = assets.customer_id')
+            ->groupStart()
             ->like('assets.serial_number', $term)
             ->orLike('assets.brand_model', $term)
-            ->limit($limit)
-            ->findAll();
+            ->groupEnd();
+        
+        // Apply branch filter
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('assets.branch_id', $branchId)
+                ->orWhere('assets.branch_id', null)
+                ->groupEnd();
+        }
+        
+        return $builder->limit($limit)->findAll();
+    }
+
+    /**
+     * Get assets by branch
+     * 
+     * @param int|null $branchId Filter by branch (null = all branches)
+     */
+    public function getByBranch(?int $branchId = null): array
+    {
+        $builder = $this->select('assets.*, customers.name as customer_name')
+            ->join('customers', 'customers.id = assets.customer_id');
+        
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('assets.branch_id', $branchId)
+                ->orWhere('assets.branch_id', null)
+                ->groupEnd();
+        }
+        
+        return $builder->findAll();
+    }
+
+    /**
+     * Get all assets with branch filter applied
+     */
+    public function getAllWithBranchFilter(?int $branchId = null): array
+    {
+        $builder = $this->select('assets.*, customers.name as customer_name')
+            ->join('customers', 'customers.id = assets.customer_id');
+        
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('assets.branch_id', $branchId)
+                ->orWhere('assets.branch_id', null)
+                ->groupEnd();
+        }
+        
+        return $builder->orderBy('assets.created_at', 'DESC')->findAll();
     }
 
     /**

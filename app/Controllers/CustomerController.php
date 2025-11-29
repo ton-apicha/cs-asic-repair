@@ -25,7 +25,8 @@ class CustomerController extends BaseController
      */
     public function index(): string
     {
-        $customers = $this->customerModel->orderBy('created_at', 'DESC')->findAll();
+        $branchFilter = $this->getBranchFilter();
+        $customers = $this->customerModel->getAllWithBranchFilter($branchFilter);
 
         return view('customers/index', $this->getViewData([
             'title'     => lang('App.customers'),
@@ -49,9 +50,11 @@ class CustomerController extends BaseController
     public function store()
     {
         $rules = [
-            'name'  => 'required|min_length[2]|max_length[255]',
-            'phone' => 'required|min_length[9]|max_length[20]',
-            'email' => 'permit_empty|valid_email',
+            'name'    => 'required|min_length[2]|max_length[255]',
+            'phone'   => 'required|regex_match[/^[0-9\-\+\(\)\s]{9,20}$/]|max_length[50]',
+            'email'   => 'permit_empty|valid_email|max_length[255]',
+            'tax_id'  => 'permit_empty|max_length[50]',
+            'address' => 'permit_empty|max_length[65535]',
         ];
 
         if (!$this->validate($rules)) {
@@ -60,13 +63,17 @@ class CustomerController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        // Get branch_id for the new customer
+        $requestedBranchId = $this->request->getPost('branch_id') ? (int)$this->request->getPost('branch_id') : null;
+        
         $data = [
-            'name'    => $this->request->getPost('name'),
-            'phone'   => $this->request->getPost('phone'),
-            'email'   => $this->request->getPost('email'),
-            'address' => $this->request->getPost('address'),
-            'tax_id'  => $this->request->getPost('tax_id'),
-            'notes'   => $this->request->getPost('notes'),
+            'branch_id' => $this->getCreateBranchId($requestedBranchId),
+            'name'      => $this->request->getPost('name'),
+            'phone'     => $this->request->getPost('phone'),
+            'email'     => $this->request->getPost('email'),
+            'address'   => $this->request->getPost('address'),
+            'tax_id'    => $this->request->getPost('tax_id'),
+            'notes'     => $this->request->getPost('notes'),
         ];
 
         if ($this->customerModel->insert($data)) {
@@ -88,6 +95,12 @@ class CustomerController extends BaseController
 
         if (!$customer) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        
+        // Check branch access
+        if (!$this->canAccessBranch($customer['branch_id'] ?? null)) {
+            return redirect()->to('/customers')
+                ->with('error', lang('App.accessDenied'));
         }
 
         // Get assets
@@ -120,6 +133,12 @@ class CustomerController extends BaseController
         if (!$customer) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
+        
+        // Check branch access
+        if (!$this->canAccessBranch($customer['branch_id'] ?? null)) {
+            return redirect()->to('/customers')
+                ->with('error', lang('App.accessDenied'));
+        }
 
         return view('customers/edit', $this->getViewData([
             'title'    => lang('App.editCustomer'),
@@ -139,9 +158,11 @@ class CustomerController extends BaseController
         }
 
         $rules = [
-            'name'  => 'required|min_length[2]|max_length[255]',
-            'phone' => 'required|min_length[9]|max_length[20]',
-            'email' => 'permit_empty|valid_email',
+            'name'    => 'required|min_length[2]|max_length[255]',
+            'phone'   => 'required|regex_match[/^[0-9\-\+\(\)\s]{9,20}$/]|max_length[50]',
+            'email'   => 'permit_empty|valid_email|max_length[255]',
+            'tax_id'  => 'permit_empty|max_length[50]',
+            'address' => 'permit_empty|max_length[65535]',
         ];
 
         if (!$this->validate($rules)) {
@@ -201,7 +222,8 @@ class CustomerController extends BaseController
             return $this->jsonResponse([]);
         }
 
-        $customers = $this->customerModel->search($term, 10);
+        $branchFilter = $this->getBranchFilter();
+        $customers = $this->customerModel->search($term, 10, $branchFilter);
 
         return $this->jsonResponse($customers);
     }

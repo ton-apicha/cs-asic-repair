@@ -147,8 +147,8 @@
                 </div>
                 <div class="user-details">
                     <span class="user-name"><?= esc($user['name'] ?? $user['username']) ?></span>
-                    <span class="user-role badge bg-<?= $user['role'] === 'admin' ? 'danger' : 'info' ?>">
-                        <?= ucfirst($user['role'] ?? 'user') ?>
+                    <span class="user-role badge bg-<?= $user['role'] === 'super_admin' ? 'warning' : ($user['role'] === 'admin' ? 'danger' : 'info') ?>">
+                        <?= $user['role'] === 'super_admin' ? lang('App.roleSuperAdmin') : ucfirst($user['role'] ?? 'user') ?>
                     </span>
                 </div>
                 <a href="<?= base_url('logout') ?>" class="logout-btn" title="<?= lang('App.logout') ?>">
@@ -196,6 +196,46 @@
             </div>
             
             <div class="topbar-right">
+                <?php if (($isSuperAdmin ?? false) && !empty($allBranches)): ?>
+                <!-- Branch Selector for Super Admin -->
+                <div class="dropdown me-2">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-building me-1"></i>
+                        <span class="d-none d-sm-inline">
+                            <?php 
+                                $selectedBranch = session()->get('filter_branch_id');
+                                if ($selectedBranch) {
+                                    foreach ($allBranches as $b) {
+                                        if ($b['id'] == $selectedBranch) {
+                                            echo esc($b['name']);
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    echo lang('App.allBranches');
+                                }
+                            ?>
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header"><i class="bi bi-filter me-1"></i><?= lang('App.filterByBranch') ?></h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item <?= !$selectedBranch ? 'active' : '' ?>" href="<?= base_url('branch/switch/all') ?>">
+                                <i class="bi bi-globe me-2"></i><?= lang('App.allBranches') ?>
+                            </a>
+                        </li>
+                        <?php foreach ($allBranches as $b): ?>
+                        <li>
+                            <a class="dropdown-item <?= $selectedBranch == $b['id'] ? 'active' : '' ?>" href="<?= base_url('branch/switch/' . $b['id']) ?>">
+                                <i class="bi bi-building me-2"></i><?= esc($b['name']) ?>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+                
                 <!-- Dark Mode Toggle -->
                 <button class="theme-toggle topbar-btn" id="themeToggle" title="Toggle Dark Mode">
                     <i class="bi bi-sun-fill"></i>

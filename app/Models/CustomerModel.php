@@ -16,6 +16,7 @@ class CustomerModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        'branch_id',
         'name',
         'phone',
         'email',
@@ -23,7 +24,6 @@ class CustomerModel extends Model
         'tax_id',
         'notes',
         'credit_limit',
-        'credit_used',
         'credit_terms',
     ];
 
@@ -76,12 +76,61 @@ class CustomerModel extends Model
 
     /**
      * Search customers by name or phone
+     * 
+     * @param string $term Search term
+     * @param int $limit Result limit
+     * @param int|null $branchId Filter by branch (null = all branches for Super Admin)
      */
-    public function search(string $term, int $limit = 10): array
+    public function search(string $term, int $limit = 10, ?int $branchId = null): array
     {
-        return $this->like('name', $term)
+        $builder = $this->groupStart()
+            ->like('name', $term)
             ->orLike('phone', $term)
-            ->limit($limit)
+            ->groupEnd();
+        
+        // Apply branch filter
+        if ($branchId !== null) {
+            $builder->groupStart()
+                ->where('branch_id', $branchId)
+                ->orWhere('branch_id', null) // Include customers with no branch (Super Admin created)
+                ->groupEnd();
+        }
+        
+        return $builder->limit($limit)->findAll();
+    }
+
+    /**
+     * Get customers by branch
+     * 
+     * @param int|null $branchId Filter by branch (null = all branches)
+     */
+    public function getByBranch(?int $branchId = null): array
+    {
+        if ($branchId === null) {
+            return $this->findAll();
+        }
+        
+        return $this->groupStart()
+            ->where('branch_id', $branchId)
+            ->orWhere('branch_id', null) // Include global customers
+            ->groupEnd()
+            ->findAll();
+    }
+
+    /**
+     * Get all customers with branch filter applied
+     */
+    public function getAllWithBranchFilter(?int $branchId = null): array
+    {
+        if ($branchId === null) {
+            return $this->orderBy('name', 'ASC')->findAll();
+        }
+        
+        return $this->groupStart()
+            ->where('branch_id', $branchId)
+            ->orWhere('branch_id', null)
+            ->groupEnd()
+            ->orderBy('name', 'ASC')
             ->findAll();
     }
 
@@ -132,6 +181,7 @@ class CustomerModel extends Model
 
     /**
      * Use credit (increase credit_used)
+     * Separate method to prevent mass assignment
      */
     public function useCredit(int $customerId, float $amount): bool
     {
@@ -142,11 +192,13 @@ class CustomerModel extends Model
         
         $newCreditUsed = ($customer['credit_used'] ?? 0) + $amount;
         
-        return $this->update($customerId, ['credit_used' => $newCreditUsed]);
+        return $this->allowedFields(['credit_used'])
+            ->update($customerId, ['credit_used' => $newCreditUsed]);
     }
 
     /**
      * Pay credit (decrease credit_used)
+     * Separate method to prevent mass assignment
      */
     public function payCredit(int $customerId, float $amount): bool
     {
@@ -157,7 +209,8 @@ class CustomerModel extends Model
         
         $newCreditUsed = max(0, ($customer['credit_used'] ?? 0) - $amount);
         
-        return $this->update($customerId, ['credit_used' => $newCreditUsed]);
+        return $this->allowedFields(['credit_used'])
+            ->update($customerId, ['credit_used' => $newCreditUsed]);
     }
 
     /**

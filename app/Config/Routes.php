@@ -21,6 +21,9 @@ $routes->get('portal/history', 'PortalController::history');
 // Language Switch (Public)
 $routes->get('language/switch/(:segment)', 'LanguageController::switch/$1');
 
+// Branch Switch (for Super Admin)
+$routes->get('branch/switch/(:segment)', 'BranchController::switch/$1');
+
 // ============================================================================
 // Protected Routes (Require Authentication)
 // ============================================================================
@@ -141,9 +144,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     });
     
     // ========================================================================
-    // Settings (Admin Only)
+    // Settings (Admin & Super Admin Only)
     // ========================================================================
-    $routes->group('settings', ['filter' => 'role:admin'], function ($routes) {
+    $routes->group('settings', ['filter' => 'role:admin,super_admin'], function ($routes) {
         $routes->get('/', 'SettingController::index');
         $routes->post('update', 'SettingController::update');
         

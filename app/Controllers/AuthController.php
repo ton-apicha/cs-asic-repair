@@ -56,6 +56,24 @@ class AuthController extends BaseController
 
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
+        $ip = $this->request->getIPAddress();
+
+        // Rate limiting: Check login attempts
+        $cacheKey = 'login_attempts_' . md5($ip . $username);
+        $cache = \Config\Services::cache();
+        $attempts = $cache->get($cacheKey) ?? 0;
+
+        // Block if too many attempts (5 in 15 minutes)
+        if ($attempts >= 5) {
+            $ttl = $cache->getMetaData($cacheKey)['expire'] ?? time();
+            $remainingTime = max(0, $ttl - time());
+            $minutes = ceil($remainingTime / 60);
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', lang('App.tooManyAttempts', ['minutes' => $minutes]) ?: 
+                    "Too many login attempts. Please try again in {$minutes} minute(s).");
+        }
 
         // Find user by username
         $user = $this->userModel->where('username', $username)
@@ -63,6 +81,10 @@ class AuthController extends BaseController
             ->first();
 
         if (! $user) {
+            // Increment failed attempts
+            $cache->save($cacheKey, $attempts + 1, 900); // 15 minutes
+            $this->logFailedLogin($username);
+            
             return redirect()->back()
                 ->withInput()
                 ->with('error', lang('App.invalidCredentials'));
@@ -70,12 +92,26 @@ class AuthController extends BaseController
 
         // Verify password
         if (! password_verify($password, $user['password'])) {
-            // Log failed login attempt
+            // Increment failed attempts
+            $cache->save($cacheKey, $attempts + 1, 900); // 15 minutes
             $this->logFailedLogin($username);
+            
+            $remaining = 5 - ($attempts + 1);
+            $errorMsg = lang('App.invalidCredentials');
+            if ($remaining > 0 && $remaining <= 2) {
+                $errorMsg .= " ({$remaining} attempts remaining)";
+            }
+            
             return redirect()->back()
                 ->withInput()
-                ->with('error', lang('App.invalidCredentials'));
+                ->with('error', $errorMsg);
         }
+
+        // Clear failed attempts on successful login
+        $cache->delete($cacheKey);
+
+        // Regenerate session ID to prevent session fixation
+        session()->regenerate();
 
         // Set session data
         $sessionData = [

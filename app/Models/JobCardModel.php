@@ -29,17 +29,12 @@ class JobCardModel extends Model
         'is_warranty_claim',
         'original_job_id',
         'labor_cost',
-        'parts_cost',
-        'total_cost',
-        'vat_amount',
-        'grand_total',
         'amount_paid',
         'checkin_date',
         'repair_start_date',
         'repair_end_date',
         'delivery_date',
         'cancel_reason',
-        'is_locked',
         'created_by',
     ];
 
@@ -373,7 +368,7 @@ class JobCardModel extends Model
             $grandTotal = $totalCost;
         }
 
-        $this->withoutAudit()->update($jobId, [
+        $this->withoutAudit()->updateCalculatedTotals($jobId, [
             'parts_cost'  => $partsCost,
             'total_cost'  => $totalCost,
             'vat_amount'  => $vatAmount,
@@ -456,6 +451,38 @@ class JobCardModel extends Model
             'in_progress' => $inProgressCount,
             'delivered'   => $deliveredCount,
         ];
+    }
+
+    /**
+     * Lock job (prevent further edits)
+     * Separate method to prevent mass assignment
+     */
+    public function lockJob(int $jobId): bool
+    {
+        return $this->allowedFields(['is_locked'])
+            ->update($jobId, ['is_locked' => 1]);
+    }
+
+    /**
+     * Unlock job (allow edits again)
+     * Separate method to prevent mass assignment
+     */
+    public function unlockJob(int $jobId): bool
+    {
+        return $this->allowedFields(['is_locked'])
+            ->update($jobId, ['is_locked' => 0]);
+    }
+
+    /**
+     * Update calculated totals (parts_cost, total_cost, vat_amount, grand_total)
+     * This is called internally by calculateTotals() - not for direct controller use
+     * 
+     * @internal
+     */
+    protected function updateCalculatedTotals(int $jobId, array $totals): bool
+    {
+        return $this->allowedFields(['parts_cost', 'total_cost', 'vat_amount', 'grand_total'])
+            ->update($jobId, $totals);
     }
 }
 

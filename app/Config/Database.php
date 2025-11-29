@@ -32,7 +32,7 @@ class Database extends Config
         'pConnect'     => false,
         'DBDebug'      => true,
         'charset'      => 'utf8',
-        'DBCollat'     => 'utf8_general_ci',
+        'DBCollat'     => '', // SQLite3 doesn't support MySQL collations
         'swapPre'      => '',
         'encrypt'      => false,
         'compress'     => false,

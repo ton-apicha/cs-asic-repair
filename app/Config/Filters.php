@@ -50,7 +50,6 @@ class Filters extends BaseFilters
         'after' => [
             'pagecache',
             'performance',
-            // 'toolbar', // Temporarily disabled for debugging
         ],
     ];
 
@@ -63,12 +62,12 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+            'csrf',
+            'invalidchars',
         ],
         'after' => [
             // 'honeypot',
-            // 'secureheaders',
+            'secureheaders',
         ],
     ];
 

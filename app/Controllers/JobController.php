@@ -36,11 +36,22 @@ class JobController extends BaseController
     public function index(): string
     {
         $status = $this->request->getGet('status');
+        $branchFilter = $this->getBranchFilter();
         
         $builder = $this->jobModel
             ->select('job_cards.*, customers.name as customer_name, assets.serial_number, assets.brand_model')
             ->join('customers', 'customers.id = job_cards.customer_id')
             ->join('assets', 'assets.id = job_cards.asset_id');
+        
+        // Apply branch filter
+        if ($branchFilter !== null) {
+            $builder->where('job_cards.branch_id', $branchFilter);
+        }
+        
+        // Technician can only see jobs assigned to them
+        if ($this->isTechnician()) {
+            $builder->where('job_cards.technician_id', $this->getUserId());
+        }
         
         if ($status) {
             $builder->where('job_cards.status', $status);
@@ -60,8 +71,8 @@ class JobController extends BaseController
      */
     public function kanban(): string
     {
-        $branchId = $this->getBranchId();
-        $jobsByStatus = $this->jobModel->getGroupedByStatus($branchId);
+        $branchFilter = $this->getBranchFilter();
+        $jobsByStatus = $this->jobModel->getGroupedByStatus($branchFilter);
 
         return view('jobs/kanban', $this->getViewData([
             'title'        => lang('App.kanbanBoard'),
@@ -117,7 +128,12 @@ class JobController extends BaseController
             'customer_id'   => 'required|is_natural_no_zero',
             'brand_model'   => 'required|max_length[255]',
             'serial_number' => 'required|max_length[100]',
-            'symptom'       => 'required|min_length[3]',
+            'mac_address'   => 'permit_empty|max_length[50]',
+            'hash_rate'     => 'permit_empty|max_length[50]',
+            'symptom'       => 'required|min_length[3]|max_length[65535]',
+            'diagnosis'     => 'permit_empty|max_length[65535]',
+            'solution'      => 'permit_empty|max_length[65535]',
+            'notes'         => 'permit_empty|max_length[65535]',
         ];
 
         if (!$this->validate($rules)) {
@@ -135,7 +151,13 @@ class JobController extends BaseController
                 'phone' => $this->request->getPost('customer_phone'),
                 'email' => $this->request->getPost('customer_email'),
             ];
-            $this->customerModel->insert($customerData);
+            
+            if ($this->customerModel->insert($customerData) === false) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Failed to create customer. Please try again.');
+            }
+            
             $customerId = $this->customerModel->getInsertID();
         }
 
@@ -150,11 +172,12 @@ class JobController extends BaseController
         ];
         $asset = $this->assetModel->getOrCreate($assetData);
 
-        // Create job
+        // Create job - use getCreateBranchId for proper branch assignment
+        $requestedBranchId = $this->request->getPost('branch_id') ? (int)$this->request->getPost('branch_id') : null;
         $jobData = [
             'customer_id'       => $customerId,
             'asset_id'          => $asset['id'],
-            'branch_id'         => $this->request->getPost('branch_id') ?: $this->getBranchId(),
+            'branch_id'         => $this->getCreateBranchId($requestedBranchId) ?: $this->getBranchId(),
             'technician_id'     => $this->request->getPost('technician_id'),
             'symptom'           => $this->request->getPost('symptom'),
             'notes'             => $this->request->getPost('notes'),
@@ -188,13 +211,26 @@ class JobController extends BaseController
         if (!$job) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
+        
+        // Check branch access
+        if (!$this->canAccessBranch($job['branch_id'])) {
+            return redirect()->to('/jobs')
+                ->with('error', lang('App.accessDenied'));
+        }
+        
+        // Technician can only view their assigned jobs
+        if ($this->isTechnician() && $job['technician_id'] != $this->getUserId()) {
+            return redirect()->to('/jobs')
+                ->with('error', lang('App.accessDenied'));
+        }
 
         $inventoryModel = new PartsInventoryModel();
+        $branchFilter = $this->getBranchFilter();
 
         return view('jobs/view', $this->getViewData([
             'title' => lang('App.jobCard') . ' #' . $job['job_id'],
             'job'   => $job,
-            'parts' => $inventoryModel->where('is_active', 1)->findAll(),
+            'parts' => $inventoryModel->getByBranch($branchFilter),
         ]));
     }
 
@@ -207,6 +243,18 @@ class JobController extends BaseController
 
         if (!$job) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        
+        // Check branch access
+        if (!$this->canAccessBranch($job['branch_id'])) {
+            return redirect()->to('/jobs')
+                ->with('error', lang('App.accessDenied'));
+        }
+        
+        // Technician can only edit their assigned jobs
+        if ($this->isTechnician() && $job['technician_id'] != $this->getUserId()) {
+            return redirect()->to('/jobs')
+                ->with('error', lang('App.accessDenied'));
         }
 
         // Check if job is locked
@@ -501,8 +549,8 @@ class JobController extends BaseController
      */
     public function getByStatus()
     {
-        $branchId = $this->getBranchId();
-        $jobsByStatus = $this->jobModel->getGroupedByStatus($branchId);
+        $branchFilter = $this->getBranchFilter();
+        $jobsByStatus = $this->jobModel->getGroupedByStatus($branchFilter);
 
         return $this->successResponse('Jobs retrieved', $jobsByStatus);
     }

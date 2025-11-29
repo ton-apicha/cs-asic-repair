@@ -25,14 +25,23 @@ class InventoryController extends BaseController
     public function index(): string
     {
         $category = $this->request->getGet('category');
+        $branchFilter = $this->getBranchFilter();
         
-        $builder = $this->inventoryModel->where('is_active', 1);
+        // Get parts visible to this user/branch
+        $parts = $this->inventoryModel->getByBranch($branchFilter);
         
+        // Filter by category if specified
         if ($category) {
-            $builder->where('category', $category);
+            $parts = array_filter($parts, function($part) use ($category) {
+                return $part['category'] === $category;
+            });
         }
-
-        $parts = $builder->orderBy('name', 'ASC')->findAll();
+        
+        // Sort by name
+        usort($parts, function($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+        
         $categories = $this->inventoryModel->getCategories();
 
         return view('inventory/index', $this->getViewData([
@@ -85,7 +94,11 @@ class InventoryController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        // Get branch_id for the new part (null = Central Warehouse)
+        $requestedBranchId = $this->request->getPost('branch_id') ? (int)$this->request->getPost('branch_id') : null;
+        
         $data = [
+            'branch_id'     => $this->getCreateBranchId($requestedBranchId),
             'part_code'     => $this->request->getPost('part_code'),
             'name'          => $this->request->getPost('name'),
             'description'   => $this->request->getPost('description'),
@@ -255,7 +268,8 @@ class InventoryController extends BaseController
             return $this->jsonResponse([]);
         }
 
-        $parts = $this->inventoryModel->search($term, 10);
+        $branchFilter = $this->getBranchFilter();
+        $parts = $this->inventoryModel->search($term, 10, $branchFilter);
 
         return $this->jsonResponse($parts);
     }
@@ -265,7 +279,8 @@ class InventoryController extends BaseController
      */
     public function lowStock(): string
     {
-        $parts = $this->inventoryModel->getLowStock($this->getBranchId());
+        $branchFilter = $this->getBranchFilter();
+        $parts = $this->inventoryModel->getLowStock($branchFilter);
 
         return view('inventory/low_stock', $this->getViewData([
             'title' => lang('App.lowStockAlert'),
