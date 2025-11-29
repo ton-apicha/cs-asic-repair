@@ -163,7 +163,6 @@ class JobCardModel extends Model
                 break;
             case self::STATUS_DELIVERED:
                 $updates['delivery_date'] = date('Y-m-d H:i:s');
-                $updates['is_locked'] = 1;
                 // Deduct stock
                 $this->deductPartsStock($jobId);
                 break;
@@ -171,6 +170,11 @@ class JobCardModel extends Model
 
         if (!empty($updates)) {
             $this->withoutAudit()->update($jobId, $updates);
+        }
+
+        // Lock job when delivered (separate to prevent mass assignment)
+        if ($data['data']['status'] === self::STATUS_DELIVERED) {
+            $this->withoutAudit()->lockJob($jobId);
         }
 
         // Update asset status
