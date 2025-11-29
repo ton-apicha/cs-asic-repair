@@ -191,7 +191,7 @@ abstract class BaseController extends Controller
     protected function setViewingBranch(?int $branchId): void
     {
         if ($this->isSuperAdmin()) {
-            $this->session->set('viewingBranchId', $branchId);
+            $this->session->set('filter_branch_id', $branchId);
         }
     }
 
