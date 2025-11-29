@@ -54,12 +54,24 @@ class DashboardController extends BaseController
             $branchId
         );
 
-        // Get recent jobs
-        $recentJobs = $this->jobModel->select('job_cards.*, customers.name as customer_name')
+        // Get recent jobs with all relations (prevent N+1 queries)
+        $builder = $this->jobModel
+            ->select('job_cards.*, 
+                customers.name as customer_name,
+                branches.name as branch_name,
+                users.name as technician_name')
             ->join('customers', 'customers.id = job_cards.customer_id')
+            ->join('branches', 'branches.id = job_cards.branch_id', 'left')
+            ->join('users', 'users.id = job_cards.technician_id', 'left')
             ->orderBy('job_cards.created_at', 'DESC')
-            ->limit(10)
-            ->findAll();
+            ->limit(10);
+        
+        // Apply branch filter for non-admin
+        if ($branchId !== null) {
+            $builder->where('job_cards.branch_id', $branchId);
+        }
+        
+        $recentJobs = $builder->findAll();
 
         // Get jobs grouped by status for Kanban (technician view)
         $jobsByStatus = [];

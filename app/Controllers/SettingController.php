@@ -130,9 +130,16 @@ class SettingController extends BaseController
 
     /**
      * Delete branch
+     * Admin only
      */
     public function deleteBranch(int $id)
     {
+        // Admin authorization check
+        if (!$this->isAdmin()) {
+            return redirect()->to('/settings/branches')
+                ->with('error', lang('App.accessDenied'));
+        }
+
         $branchModel = new BranchModel();
 
         if ($branchModel->delete($id)) {
@@ -272,9 +279,16 @@ class SettingController extends BaseController
 
     /**
      * Delete user
+     * Admin only
      */
     public function deleteUser(int $id)
     {
+        // Admin authorization check
+        if (!$this->isAdmin()) {
+            return redirect()->to('/settings/users')
+                ->with('error', lang('App.accessDenied'));
+        }
+
         $userModel = new UserModel();
 
         // Prevent self-deletion
@@ -342,9 +356,16 @@ class SettingController extends BaseController
 
     /**
      * Delete company logo
+     * Admin only
      */
     public function deleteLogo()
     {
+        // Admin authorization check
+        if (!$this->isAdmin()) {
+            return redirect()->to('/settings')
+                ->with('error', lang('App.accessDenied'));
+        }
+
         $logo = $this->settingModel->get('company_logo');
 
         if ($logo && file_exists(FCPATH . 'assets/images/' . $logo)) {
