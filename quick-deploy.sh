@@ -97,24 +97,33 @@ echo -e "${YELLOW}🌐 Domain Setup:${NC}"
 echo "   Do you have a domain name? (leave empty to use IP address)"
 read -p "   Domain (or press Enter): " DOMAIN
 
+USE_HTTPS=true
 if [ -z "$DOMAIN" ]; then
+    # No domain provided - use IP with HTTP
     DOMAIN="http://${SERVER_IP}"
+    USE_HTTPS=false
     echo -e "${CYAN}   Using IP: ${GREEN}${DOMAIN}${NC}"
 else
-    DOMAIN="http://${DOMAIN}"
+    # Domain provided - use HTTPS
+    DOMAIN="https://${DOMAIN}"
     echo -e "${CYAN}   Using domain: ${GREEN}${DOMAIN}${NC}"
+    echo -e "${YELLOW}   ⚠️  Note: You'll need to setup SSL with ./setup-ssl.sh after DNS is configured${NC}"
 fi
+
+# Escape domain for sed (escape forward slashes, ampersands, and backslashes)
+ESCAPED_DOMAIN=$(echo "$DOMAIN" | sed 's/[\/&\\]/\\&/g')
 
 # Update .env file
 echo -e "${YELLOW}📝 Configuring .env file...${NC}"
-sed -i "s|app.baseURL = 'https://your-domain.com/'|app.baseURL = '${DOMAIN}/'|g" .env
+sed -i "s|app.baseURL = 'https://your-domain.com/'|app.baseURL = '${ESCAPED_DOMAIN}/'|g" .env
 sed -i "s|database.default.password = CHANGE_THIS_STRONG_PASSWORD|database.default.password = ${DB_PASS}|g" .env
 sed -i "s|DB_ROOT_PASSWORD = CHANGE_THIS_ROOT_PASSWORD|DB_ROOT_PASSWORD = ${ROOT_PASS}|g" .env
 sed -i "s|encryption.key = CHANGE_THIS_32_CHARACTER_KEY_HERE|encryption.key = hex2bin:${ENC_KEY}|g" .env
 
-# If using IP, disable force HTTPS
-if [[ $DOMAIN == http://* ]]; then
+# Disable force HTTPS only when using IP address (not domain)
+if [ "$USE_HTTPS" = false ]; then
     sed -i "s|app.forceGlobalSecureRequests = true|app.forceGlobalSecureRequests = false|g" .env
+    echo -e "${YELLOW}   ℹ️  HTTPS enforcement disabled (using IP address)${NC}"
 fi
 
 # Make scripts executable
@@ -153,10 +162,16 @@ echo -e "   2. Test the application"
 echo -e "   3. Go to Settings and configure your company info"
 echo ""
 
-if [[ $DOMAIN == http://* ]]; then
+if [ "$USE_HTTPS" = false ]; then
     echo -e "${YELLOW}🔒 Setup SSL Certificate (Recommended):${NC}"
     echo -e "   ${BOLD}After configuring your domain DNS:${NC}"
-    echo -e "   ${CYAN}sudo ./setup-ssl.sh${NC}"
+    echo -e "   ${CYAN}cd /var/www/cs-asic-repair && sudo ./setup-ssl.sh${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}🔒 Next Step - Setup SSL Certificate:${NC}"
+    echo -e "   ${BOLD}1. Point your domain DNS A record to: ${GREEN}${SERVER_IP}${NC}"
+    echo -e "   ${BOLD}2. Wait for DNS propagation (5-30 minutes)${NC}"
+    echo -e "   ${BOLD}3. Run SSL setup:${NC} ${CYAN}cd /var/www/cs-asic-repair && sudo ./setup-ssl.sh${NC}"
     echo ""
 fi
 
@@ -170,8 +185,9 @@ echo ""
 echo -e "${GREEN}${BOLD}🎊 Your ASIC Repair System is now live!${NC}"
 echo ""
 
-# Save credentials to file
-cat > /root/CREDENTIALS.txt << EOF
+# Save credentials to file with restricted permissions
+CREDS_FILE="/root/CREDENTIALS.txt"
+cat > "$CREDS_FILE" << EOF
 ASIC Repair Management System - Deployment Info
 ================================================
 
@@ -196,7 +212,10 @@ Deployment Date: $(date)
 IMPORTANT: Change Super Admin password immediately after first login!
 EOF
 
-echo -e "${YELLOW}💾 Credentials saved to: ${CYAN}/root/CREDENTIALS.txt${NC}"
-echo -e "${YELLOW}   View anytime: ${CYAN}cat /root/CREDENTIALS.txt${NC}"
-echo ""
+# Set restrictive permissions (read/write for root only)
+chmod 600 "$CREDS_FILE"
 
+echo -e "${YELLOW}💾 Credentials saved to: ${CYAN}${CREDS_FILE}${NC}"
+echo -e "${YELLOW}   View anytime: ${CYAN}cat ${CREDS_FILE}${NC}"
+echo -e "${GREEN}   🔒 File secured with 600 permissions (root only)${NC}"
+echo ""
