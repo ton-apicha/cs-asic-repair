@@ -55,14 +55,21 @@ docker compose exec -T app composer install --no-dev --optimize-autoloader
 echo -e "${YELLOW}🗄️  Step 5: Running database migrations...${NC}"
 docker compose exec -T app php spark migrate || echo "Warning: Migrations may have already been run"
 
-echo -e "${YELLOW}🔐 Step 6: Setting permissions...${NC}"
+echo -e "${YELLOW}📁 Step 6: Creating writable directories...${NC}"
+docker compose exec -T app mkdir -p /var/www/html/writable/cache
+docker compose exec -T app mkdir -p /var/www/html/writable/logs
+docker compose exec -T app mkdir -p /var/www/html/writable/session
+docker compose exec -T app mkdir -p /var/www/html/writable/uploads
+docker compose exec -T app mkdir -p /var/www/html/writable/debugbar
+
+echo -e "${YELLOW}🔐 Step 7: Setting permissions...${NC}"
 docker compose exec -T app chown -R www-data:www-data /var/www/html/writable
 docker compose exec -T app chmod -R 775 /var/www/html/writable
 
-echo -e "${YELLOW}👤 Step 7: Creating/Resetting Super Admin account...${NC}"
+echo -e "${YELLOW}👤 Step 8: Creating/Resetting Super Admin account...${NC}"
 docker compose exec -T app php spark user:create-superadmin
 
-echo -e "${YELLOW}🧹 Step 8: Clearing cache...${NC}"
+echo -e "${YELLOW}🧹 Step 9: Clearing cache...${NC}"
 docker compose exec -T app php spark cache:clear
 
 echo -e "${GREEN}"
