@@ -12,7 +12,7 @@
 
     <form action="<?= base_url('jobs/store') ?>" method="POST" id="jobForm">
         <?= csrf_field() ?>
-        
+
         <div class="row g-4">
             <!-- Customer Section -->
             <div class="col-lg-6">
@@ -36,23 +36,23 @@
                             <!-- Customer search/select -->
                             <input type="hidden" name="customer_id" id="customer_id">
                             <input type="hidden" name="new_customer" id="new_customer" value="0">
-                            
+
                             <div class="mb-3">
                                 <label class="form-label required"><?= lang('App.customerName') ?></label>
-                                <input type="text" class="form-control customer-autocomplete" 
-                                       id="customer_name" name="customer_name"
-                                       data-target="#customer_id"
-                                       data-phone-target="#customer_phone"
-                                       placeholder="<?= lang('App.searchCustomer') ?>"
-                                       required>
+                                <input type="text" class="form-control customer-autocomplete"
+                                    id="customer_name" name="customer_name"
+                                    data-target="#customer_id"
+                                    data-phone-target="#customer_phone"
+                                    placeholder="<?= lang('App.searchCustomer') ?>"
+                                    required>
                                 <div class="form-text">พิมพ์เพื่อค้นหา หรือกรอกชื่อใหม่เพื่อสร้างลูกค้าใหม่</div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label required"><?= lang('App.customerPhone') ?></label>
                                 <input type="text" class="form-control" id="customer_phone" name="customer_phone" required>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label"><?= lang('App.customerEmail') ?></label>
                                 <input type="email" class="form-control" name="customer_email">
@@ -74,7 +74,7 @@
                             <input type="hidden" name="asset_id" value="<?= $asset['id'] ?>">
                             <input type="hidden" name="serial_number" value="<?= esc($asset['serial_number']) ?>">
                             <input type="hidden" name="brand_model" value="<?= esc($asset['brand_model']) ?>">
-                            
+
                             <div class="mb-3">
                                 <label class="form-label"><?= lang('App.assetBrandModel') ?></label>
                                 <input type="text" class="form-control" value="<?= esc($asset['brand_model']) ?>" readonly>
@@ -89,7 +89,7 @@
                                 <input type="text" class="form-control" id="serial_number" name="serial_number" required>
                                 <div id="serial_status" class="form-text"></div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label required"><?= lang('App.assetBrandModel') ?></label>
                                 <select class="form-select" id="brand_model" name="brand_model" required>
@@ -116,7 +116,7 @@
                                     </optgroup>
                                 </select>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label"><?= lang('App.assetMacAddress') ?></label>
@@ -127,7 +127,7 @@
                                     <input type="text" class="form-control" name="hash_rate" placeholder="e.g., 110">
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label"><?= lang('App.assetCondition') ?></label>
                                 <textarea class="form-control" name="external_condition" rows="2" placeholder="รอยขีดข่วน, สติ๊กเกอร์พิเศษ ฯลฯ"></textarea>
@@ -147,10 +147,10 @@
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label class="form-label required"><?= lang('App.jobSymptom') ?></label>
-                                <textarea class="form-control symptom-autocomplete" name="symptom" rows="3" 
-                                          placeholder="<?= lang('App.symptomPlaceholder') ?>" required></textarea>
+                                <textarea class="form-control symptom-autocomplete" name="symptom" rows="3"
+                                    placeholder="<?= lang('App.symptomPlaceholder') ?>" required></textarea>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label"><?= lang('App.jobTechnician') ?></label>
@@ -161,7 +161,7 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label class="form-label"><?= lang('App.laborCost') ?></label>
                                     <div class="input-group">
@@ -180,7 +180,7 @@
                                     <i class="bi bi-shield-check me-1"></i><?= lang('App.isWarrantyClaim') ?>
                                 </label>
                             </div>
-                            
+
                             <div class="mb-3 d-none" id="original_job_container">
                                 <label class="form-label"><?= lang('App.originalJobId') ?></label>
                                 <input type="text" class="form-control" name="original_job_id" placeholder="เลขที่ใบงานเดิม">
@@ -206,60 +206,98 @@
 
 <?= $this->section('scripts') ?>
 <script>
-$(document).ready(function() {
-    // Customer autocomplete
-    $('#customer_name').on('customer:selected', function(e, item) {
-        $('#customer_id').val(item.id);
-        $('#customer_phone').val(item.phone);
-        $('#new_customer').val('0');
-    });
-
-    // If customer not found, mark as new
-    $('#customer_name').on('autocompletechange', function() {
-        if (!$('#customer_id').val()) {
-            $('#new_customer').val('1');
-        }
-    });
-
-    // Serial number check
-    var serialTimer;
-    $('#serial_number').on('input', function() {
-        clearTimeout(serialTimer);
-        var serial = $(this).val();
-        
-        if (serial.length < 3) {
-            $('#serial_status').html('').removeClass('text-success text-warning');
-            return;
-        }
-
-        serialTimer = setTimeout(function() {
-            $.get('<?= base_url('machines/check-serial') ?>', { serial: serial }, function(response) {
-                if (response.exists) {
-                    $('#serial_status').html('<i class="bi bi-check-circle"></i> พบเครื่องในระบบ - ' + response.asset.brand_model)
-                        .removeClass('text-warning').addClass('text-success');
-                    $('#brand_model').val(response.asset.brand_model);
-                    if (response.asset.customer) {
-                        $('#customer_id').val(response.asset.customer_id);
-                        $('#customer_name').val(response.asset.customer.name);
-                        $('#customer_phone').val(response.asset.customer.phone);
+    $(document).ready(function() {
+        // Customer autocomplete
+        $('.customer-autocomplete').autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: '<?= base_url('api/customers/search') ?>',
+                    dataType: 'json',
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        response($.map(data, function(item) {
+                            return {
+                                label: item.name + ' (' + item.phone + ')',
+                                value: item.name,
+                                id: item.id,
+                                phone: item.phone,
+                                email: item.email
+                            };
+                        }));
                     }
-                } else {
-                    $('#serial_status').html('<i class="bi bi-info-circle"></i> เครื่องใหม่ - จะถูกบันทึกเข้าระบบ')
-                        .removeClass('text-success').addClass('text-warning');
+                });
+            },
+            minLength: 2,
+            select: function(event, ui) {
+                $('#customer_id').val(ui.item.id);
+                $('#customer_phone').val(ui.item.phone);
+                $('#new_customer').val('0');
+                $(this).trigger('customer:selected', [ui.item]);
+                return true;
+            },
+            change: function(event, ui) {
+                if (!ui.item) {
+                    $('#customer_id').val('');
+                    $('#new_customer').val('1');
                 }
-            });
-        }, 500);
-    });
+            }
+        });
 
-    // Warranty claim toggle
-    $('#is_warranty_claim').on('change', function() {
-        if ($(this).is(':checked')) {
-            $('#original_job_container').removeClass('d-none');
-        } else {
-            $('#original_job_container').addClass('d-none');
-        }
+        $('#customer_name').on('customer:selected', function(e, item) {
+            $('#customer_id').val(item.id);
+            $('#customer_phone').val(item.phone);
+            $('#new_customer').val('0');
+        });
+
+        // If customer not found, mark as new
+        $('#customer_name').on('autocompletechange', function() {
+            if (!$('#customer_id').val()) {
+                $('#new_customer').val('1');
+            }
+        });
+
+        // Serial number check
+        var serialTimer;
+        $('#serial_number').on('input', function() {
+            clearTimeout(serialTimer);
+            var serial = $(this).val();
+
+            if (serial.length < 3) {
+                $('#serial_status').html('').removeClass('text-success text-warning');
+                return;
+            }
+
+            serialTimer = setTimeout(function() {
+                $.get('<?= base_url('machines/check-serial') ?>', {
+                    serial: serial
+                }, function(response) {
+                    if (response.exists) {
+                        $('#serial_status').html('<i class="bi bi-check-circle"></i> พบเครื่องในระบบ - ' + response.asset.brand_model)
+                            .removeClass('text-warning').addClass('text-success');
+                        $('#brand_model').val(response.asset.brand_model);
+                        if (response.asset.customer) {
+                            $('#customer_id').val(response.asset.customer_id);
+                            $('#customer_name').val(response.asset.customer.name);
+                            $('#customer_phone').val(response.asset.customer.phone);
+                        }
+                    } else {
+                        $('#serial_status').html('<i class="bi bi-info-circle"></i> เครื่องใหม่ - จะถูกบันทึกเข้าระบบ')
+                            .removeClass('text-success').addClass('text-warning');
+                    }
+                });
+            }, 500);
+        });
+
+        // Warranty claim toggle
+        $('#is_warranty_claim').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#original_job_container').removeClass('d-none');
+            } else {
+                $('#original_job_container').addClass('d-none');
+            }
+        });
     });
-});
 </script>
 <?= $this->endSection() ?>
-
