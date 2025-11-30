@@ -45,6 +45,13 @@ COPY . .
 # Generate optimized autoloader
 RUN composer dump-autoload --optimize --no-dev
 
+# Create writable directories if they don't exist
+RUN mkdir -p /var/www/html/writable/cache \
+    && mkdir -p /var/www/html/writable/logs \
+    && mkdir -p /var/www/html/writable/session \
+    && mkdir -p /var/www/html/writable/uploads \
+    && mkdir -p /var/www/html/writable/debugbar
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
