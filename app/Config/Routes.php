@@ -186,6 +186,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('dashboard/stats', 'DashboardController::getStats');
         $routes->get('jobs/by-status', 'JobController::getByStatus');
         $routes->post('jobs/update-order', 'JobController::updateOrder');
+        $routes->get('customers/search', 'CustomerController::search');
+        $routes->get('machines/search', 'AssetController::search');
     });
 });
 
