@@ -15,14 +15,11 @@ class CreateSuperAdmin extends BaseCommand
     public function run(array $params)
     {
         $userModel = new UserModel();
+        $db = \Config\Database::connect();
 
         // Check if superadmin already exists
         $existing = $userModel->where('username', 'superadmin')->first();
-        if ($existing) {
-            CLI::write('Super Admin already exists!', 'yellow');
-            return;
-        }
-
+        
         $data = [
             'username'  => 'superadmin',
             'password'  => password_hash('super123', PASSWORD_DEFAULT),
@@ -32,13 +29,29 @@ class CreateSuperAdmin extends BaseCommand
             'branch_id' => null,
             'is_active' => 1,
         ];
-
-        // Skip validation and audit for CLI command
-        $userModel->skipValidation(true);
         
-        // Insert directly using query builder to bypass audit
-        $db = \Config\Database::connect();
-        $db->table('users')->insert($data);
+        if ($existing) {
+            // Update existing Super Admin
+            $db->table('users')
+                ->where('username', 'superadmin')
+                ->update([
+                    'password' => $data['password'],
+                    'is_active' => 1,
+                    'role' => 'super_admin',
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            
+            CLI::write('✅ Super Admin password reset successfully!', 'green');
+            CLI::write('Username: superadmin', 'cyan');
+            CLI::write('Password: super123', 'cyan');
+            return;
+        }
+        
+        // Insert new Super Admin
+        $db->table('users')->insert(array_merge($data, [
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]));
         
         CLI::write('✅ Super Admin created successfully!', 'green');
         CLI::write('Username: superadmin', 'cyan');

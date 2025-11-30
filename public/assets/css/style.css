@@ -482,6 +482,126 @@
 [data-theme="dark"] .theme-toggle .bi-moon-fill { display: inline; }
 [data-theme="dark"] .theme-toggle .bi-sun-fill { display: none; }
 
+/* Theme Transition Animation */
+:root {
+    --theme-transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    *,
+    *::before,
+    *::after {
+        transition: var(--theme-transition);
+    }
+    
+    /* Prevent layout shift animations */
+    * {
+        transition-property: background-color, color, border-color, box-shadow, fill, stroke;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Mobile Card View for Tables */
+.mobile-card-view {
+    display: none;
+}
+
+@media (max-width: 991.98px) {
+    .table-responsive {
+        display: none !important;
+    }
+    
+    .mobile-card-view {
+        display: block;
+    }
+    
+    .mobile-job-card,
+    .mobile-customer-card,
+    .mobile-inventory-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        transition: all 200ms ease;
+    }
+    
+    .mobile-job-card:hover,
+    .mobile-customer-card:hover,
+    .mobile-inventory-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .mobile-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .mobile-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .mobile-card-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+    }
+    
+    .mobile-card-body {
+        display: grid;
+        gap: 0.75rem;
+    }
+    
+    .mobile-card-field {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-card-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .mobile-card-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        text-align: right;
+    }
+    
+    .mobile-card-actions {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .mobile-card-actions .btn {
+        flex: 1;
+        min-width: 80px;
+    }
+}
+
 /* ============================================================================
    Base Styles
    ============================================================================ */

@@ -223,6 +223,95 @@
             </a>
         </div>
     <?php else: ?>
+        <!-- Mobile Card View -->
+        <div class="mobile-card-view">
+            <?php foreach ($jobs as $job): ?>
+                <div class="mobile-job-card">
+                    <div class="mobile-card-header">
+                        <div>
+                            <div class="mobile-card-title">
+                                <a href="<?= base_url('jobs/view/' . $job['id']) ?>" style="text-decoration: none; color: inherit;">
+                                    <?= esc($job['job_id']) ?>
+                                </a>
+                                <?php if ($job['is_warranty_claim']): ?>
+                                    <span class="badge bg-danger ms-1">W</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="mobile-card-subtitle"><?= esc($job['customer_name']) ?></div>
+                        </div>
+                        <?php
+                        $statusClass = match($job['status']) {
+                            'new_checkin' => 'badge-status-new',
+                            'pending_repair' => 'badge-status-pending',
+                            'in_progress' => 'badge-status-progress',
+                            'repair_done' => 'badge-status-done',
+                            'ready_handover' => 'badge-status-ready',
+                            'delivered' => 'badge-status-delivered',
+                            'cancelled' => 'badge-status-cancelled',
+                            default => 'bg-secondary'
+                        };
+                        $statusText = match($job['status']) {
+                            'new_checkin' => lang('App.statusNewCheckin'),
+                            'pending_repair' => lang('App.statusPendingRepair'),
+                            'in_progress' => lang('App.statusInProgress'),
+                            'repair_done' => lang('App.statusRepairDone'),
+                            'ready_handover' => lang('App.statusReadyHandover'),
+                            'delivered' => lang('App.statusDelivered'),
+                            'cancelled' => lang('App.statusCancelled'),
+                            default => $job['status']
+                        };
+                        ?>
+                        <span class="badge <?= $statusClass ?>"><?= $statusText ?></span>
+                    </div>
+                    
+                    <div class="mobile-card-body">
+                        <div class="mobile-card-field">
+                            <span class="mobile-card-label">
+                                <i class="bi bi-cpu"></i> <?= lang('App.asset') ?>
+                            </span>
+                            <span class="mobile-card-value" style="text-align: right; font-size: 0.85rem;">
+                                <?= esc($job['brand_model']) ?><br>
+                                <small class="text-muted"><?= esc($job['serial_number']) ?></small>
+                            </span>
+                        </div>
+                        
+                        <div class="mobile-card-field">
+                            <span class="mobile-card-label">
+                                <i class="bi bi-cash-coin"></i> <?= lang('App.grandTotal') ?>
+                            </span>
+                            <span class="mobile-card-value" style="color: var(--success); font-size: 1.1rem;">
+                                ฿<?= number_format($job['grand_total'], 0) ?>
+                            </span>
+                        </div>
+                        
+                        <div class="mobile-card-field">
+                            <span class="mobile-card-label">
+                                <i class="bi bi-calendar"></i> <?= lang('App.date') ?>
+                            </span>
+                            <span class="mobile-card-value text-muted">
+                                <?= date('d M Y', strtotime($job['created_at'])) ?>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-card-actions">
+                        <a href="<?= base_url('jobs/view/' . $job['id']) ?>" class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye me-1"></i><?= lang('App.view') ?>
+                        </a>
+                        <?php if (!$job['is_locked']): ?>
+                            <a href="<?= base_url('jobs/edit/' . $job['id']) ?>" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-pencil me-1"></i><?= lang('App.edit') ?>
+                            </a>
+                        <?php endif; ?>
+                        <a href="<?= base_url('jobs/print/' . $job['id']) ?>" class="btn btn-info btn-sm" target="_blank">
+                            <i class="bi bi-printer me-1"></i><?= lang('App.print') ?>
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        
+        <!-- Desktop Table View -->
         <div class="table-responsive">
             <table class="table jobs-table" id="jobsTable">
                 <thead>

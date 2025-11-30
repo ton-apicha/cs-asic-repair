@@ -1,0 +1,73 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+
+# Documentation
+README.md
+*.md
+docs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+writable/logs/*
+
+# Cache
+writable/cache/*
+writable/session/*
+writable/debugbar/*
+
+# Environment
+.env
+.env.*
+!.env.production
+
+# Dependencies (will be installed in container)
+vendor/
+node_modules/
+
+# Tests
+tests/
+phpunit.xml
+.phpunit.result.cache
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Backup files
+*.sql
+*.sql.gz
+backups/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# User uploads (keep structure but not files)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Writable directories (keep structure)
+writable/uploads/*
+!writable/uploads/.gitkeep
+

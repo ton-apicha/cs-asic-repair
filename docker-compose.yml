@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: asic-repair-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - asic-network
+    depends_on:
+      - db
+    environment:
+      - DB_HOSTNAME=db
+      - DB_DATABASE=${DB_DATABASE:-asic_repair_db}
+      - DB_USERNAME=${DB_USERNAME:-asic_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  db:
+    image: mysql:8.0
+    container_name: asic-repair-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-asic_repair_db}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME:-asic_user}
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - asic-network
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+
+  nginx:
+    image: nginx:alpine
+    container_name: asic-repair-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/ssl/:/etc/nginx/ssl/
+      - nginx-logs:/var/log/nginx
+    networks:
+      - asic-network
+    depends_on:
+      - app
+
+volumes:
+  dbdata:
+    driver: local
+  nginx-logs:
+    driver: local
+
+networks:
+  asic-network:
+    driver: bridge
+
