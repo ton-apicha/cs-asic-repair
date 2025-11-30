@@ -51,7 +51,7 @@ fi
 
 # Stop nginx temporarily
 echo -e "${YELLOW}🛑 Stopping nginx...${NC}"
-docker-compose stop nginx
+docker compose stop nginx
 
 # Get certificate
 echo -e "${YELLOW}🔐 Obtaining SSL certificate...${NC}"
@@ -69,7 +69,7 @@ if [ $? -ne 0 ]; then
     echo "  1. Domain DNS is pointing to this server"
     echo "  2. Port 80 is accessible from the internet"
     echo "  3. No firewall blocking the connection"
-    docker-compose start nginx
+    docker compose start nginx
     exit 1
 fi
 
@@ -102,19 +102,19 @@ sed -i "s|app.forceGlobalSecureRequests = false|app.forceGlobalSecureRequests = 
 
 # Restart nginx
 echo -e "${YELLOW}🔄 Restarting nginx...${NC}"
-docker-compose start nginx
+docker compose start nginx
 
 # Test nginx configuration
 echo -e "${YELLOW}🧪 Testing nginx configuration...${NC}"
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 if [ $? -eq 0 ]; then
-    docker-compose restart nginx
+    docker compose restart nginx
 fi
 
 # Setup auto-renewal
 echo -e "${YELLOW}⏰ Setting up automatic renewal...${NC}"
-(crontab -l 2>/dev/null | grep -v "certbot renew"; echo "0 3 * * * certbot renew --quiet --post-hook 'cd $(pwd) && docker-compose exec nginx nginx -s reload'") | crontab -
+(crontab -l 2>/dev/null | grep -v "certbot renew"; echo "0 3 * * * certbot renew --quiet --post-hook 'cd $(pwd) && docker compose exec nginx nginx -s reload'") | crontab -
 
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════════════════════════╗"

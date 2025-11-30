@@ -31,7 +31,7 @@ Complete guide for deploying to Digital Ocean using Docker.
 # Create Ubuntu 22.04 Droplet, then SSH in and run:
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
-apt-get install -y docker-compose git
+apt-get install -y docker compose git
 ```
 
 ---
@@ -103,7 +103,7 @@ database.default.password = YOUR_STRONG_DB_PASSWORD
 DB_ROOT_PASSWORD = YOUR_STRONG_ROOT_PASSWORD
 
 # Generate encryption key (after deployment):
-# docker-compose exec app php spark key:generate
+# docker compose exec app php spark key:generate
 encryption.key = YOUR_32_CHAR_ENCRYPTION_KEY
 ```
 
@@ -170,7 +170,7 @@ Follow the prompts to:
 apt-get install -y certbot python3-certbot-nginx
 
 # Stop nginx
-docker-compose stop nginx
+docker compose stop nginx
 
 # Get certificate
 certbot certonly --standalone \
@@ -188,7 +188,7 @@ cp /etc/letsencrypt/live/yourdomain.com/privkey.pem docker/nginx/ssl/
 nano docker/nginx/conf.d/default.conf
 
 # Restart nginx
-docker-compose start nginx
+docker compose start nginx
 ```
 
 ---
@@ -212,7 +212,7 @@ Wait 5-30 minutes for DNS propagation.
 
 ```bash
 # Access application
-docker-compose exec app bash
+docker compose exec app bash
 
 # Run password reset
 php spark user:create-superadmin
@@ -245,46 +245,46 @@ Login and go to **Settings** to configure:
 
 ```bash
 # All logs
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f app
-docker-compose logs -f nginx
-docker-compose logs -f db
+docker compose logs -f app
+docker compose logs -f nginx
+docker compose logs -f db
 ```
 
 ### Restart services:
 
 ```bash
 # All services
-docker-compose restart
+docker compose restart
 
 # Specific service
-docker-compose restart app
-docker-compose restart nginx
+docker compose restart app
+docker compose restart nginx
 ```
 
 ### Stop/Start application:
 
 ```bash
 # Stop
-docker-compose down
+docker compose down
 
 # Start
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Access container shell:
 
 ```bash
 # PHP application
-docker-compose exec app bash
+docker compose exec app bash
 
 # MySQL database
-docker-compose exec db mysql -u root -p
+docker compose exec db mysql -u root -p
 
 # Nginx
-docker-compose exec nginx sh
+docker compose exec nginx sh
 ```
 
 ### Update application:
@@ -294,9 +294,9 @@ docker-compose exec nginx sh
 git pull origin main
 
 # Rebuild and restart
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 
 # Or use deploy script
 ./deploy.sh
@@ -310,19 +310,19 @@ docker-compose up -d
 
 # Restore from backup
 gunzip backup_file.sql.gz
-docker-compose exec -T db mysql -u root -p asic_repair_db < backup_file.sql
+docker compose exec -T db mysql -u root -p asic_repair_db < backup_file.sql
 
 # Run migrations
-docker-compose exec app php spark migrate
+docker compose exec app php spark migrate
 
 # Rollback migration
-docker-compose exec app php spark migrate:rollback
+docker compose exec app php spark migrate:rollback
 ```
 
 ### Clear cache:
 
 ```bash
-docker-compose exec app php spark cache:clear
+docker compose exec app php spark cache:clear
 ```
 
 ---
@@ -333,23 +333,23 @@ docker-compose exec app php spark cache:clear
 
 ```bash
 # Check if containers are running
-docker-compose ps
+docker compose ps
 
 # Check nginx logs
-docker-compose logs nginx
+docker compose logs nginx
 
 # Restart all services
-docker-compose restart
+docker compose restart
 ```
 
 ### Database connection errors:
 
 ```bash
 # Check database logs
-docker-compose logs db
+docker compose logs db
 
 # Verify database is running
-docker-compose exec db mysql -u root -p -e "SHOW DATABASES;"
+docker compose exec db mysql -u root -p -e "SHOW DATABASES;"
 
 # Check .env database settings
 cat .env | grep database
@@ -359,8 +359,8 @@ cat .env | grep database
 
 ```bash
 # Fix writable directory permissions
-docker-compose exec app chown -R www-data:www-data /var/www/html/writable
-docker-compose exec app chmod -R 775 /var/www/html/writable
+docker compose exec app chown -R www-data:www-data /var/www/html/writable
+docker compose exec app chmod -R 775 /var/www/html/writable
 ```
 
 ### SSL certificate errors:
@@ -370,7 +370,7 @@ docker-compose exec app chmod -R 775 /var/www/html/writable
 ls -la docker/nginx/ssl/
 
 # Test nginx configuration
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # Renew certificate manually
 certbot renew --force-renewal
@@ -416,12 +416,12 @@ git pull origin main
 git pull origin main
 
 # Rebuild containers
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 
 # Run migrations
-docker-compose exec app php spark migrate
+docker compose exec app php spark migrate
 ```
 
 ---
@@ -447,7 +447,7 @@ Already configured in nginx config.
 ### Setup Redis cache (optional):
 
 ```yaml
-# Add to docker-compose.yml
+# Add to docker compose.yml
 redis:
   image: redis:alpine
   container_name: asic-repair-redis

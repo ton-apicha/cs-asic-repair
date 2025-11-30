@@ -40,30 +40,30 @@ echo -e "${YELLOW}📦 Step 1: Pulling latest code...${NC}"
 git pull origin main || echo "Warning: Could not pull latest code. Continuing..."
 
 echo -e "${YELLOW}🐳 Step 2: Building Docker containers...${NC}"
-docker-compose down --remove-orphans
-docker-compose build --no-cache
+docker compose down --remove-orphans
+docker compose build --no-cache
 
 echo -e "${YELLOW}🚀 Step 3: Starting containers...${NC}"
-docker-compose up -d
+docker compose up -d
 
 echo -e "${YELLOW}⏳ Waiting for services to be ready...${NC}"
 sleep 10
 
 echo -e "${YELLOW}📚 Step 4: Installing Composer dependencies...${NC}"
-docker-compose exec -T app composer install --no-dev --optimize-autoloader
+docker compose exec -T app composer install --no-dev --optimize-autoloader
 
 echo -e "${YELLOW}🗄️  Step 5: Running database migrations...${NC}"
-docker-compose exec -T app php spark migrate || echo "Warning: Migrations may have already been run"
+docker compose exec -T app php spark migrate || echo "Warning: Migrations may have already been run"
 
 echo -e "${YELLOW}🔐 Step 6: Setting permissions...${NC}"
-docker-compose exec -T app chown -R www-data:www-data /var/www/html/writable
-docker-compose exec -T app chmod -R 775 /var/www/html/writable
+docker compose exec -T app chown -R www-data:www-data /var/www/html/writable
+docker compose exec -T app chmod -R 775 /var/www/html/writable
 
 echo -e "${YELLOW}👤 Step 7: Creating/Resetting Super Admin account...${NC}"
-docker-compose exec -T app php spark user:create-superadmin
+docker compose exec -T app php spark user:create-superadmin
 
 echo -e "${YELLOW}🧹 Step 8: Clearing cache...${NC}"
-docker-compose exec -T app php spark cache:clear
+docker compose exec -T app php spark cache:clear
 
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════════════════════════╗"
@@ -86,9 +86,9 @@ echo "   3. Configure your domain DNS to point to: $SERVER_IP"
 echo "   4. Review and update .env file for production settings"
 echo ""
 echo -e "${BLUE}📊 Useful Commands:${NC}"
-echo "   View logs:        docker-compose logs -f app"
-echo "   Restart:          docker-compose restart"
-echo "   Stop:             docker-compose down"
+echo "   View logs:        docker compose logs -f app"
+echo "   Restart:          docker compose restart"
+echo "   Stop:             docker compose down"
 echo "   Backup database:  ./backup-db.sh"
 echo ""
 

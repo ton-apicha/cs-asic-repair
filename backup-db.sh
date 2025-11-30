@@ -28,7 +28,7 @@ BACKUP_FILE="$BACKUP_DIR/asic_repair_backup_$TIMESTAMP.sql"
 echo -e "${YELLOW}📦 Creating database backup...${NC}"
 
 # Create backup
-docker-compose exec -T db mysqldump \
+docker compose exec -T db mysqldump \
     -u ${DB_USERNAME:-asic_user} \
     -p${DB_PASSWORD} \
     ${DB_DATABASE:-asic_repair_db} \

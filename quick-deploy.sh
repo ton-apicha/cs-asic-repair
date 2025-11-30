@@ -37,8 +37,16 @@ if ! command -v docker &> /dev/null; then
     echo -e "${YELLOW}Installing Docker...${NC}"
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh get-docker.sh
-    apt-get install -y docker-compose
     rm get-docker.sh
+    echo -e "${GREEN}✅ Docker installed successfully${NC}"
+fi
+
+# Verify docker compose is available
+if ! docker compose version &> /dev/null; then
+    echo -e "${RED}❌ Docker Compose plugin not found!${NC}"
+    echo -e "${YELLOW}Installing Docker Compose plugin...${NC}"
+    apt-get update
+    apt-get install -y docker-compose-plugin
 fi
 
 # Check if Git is installed
@@ -176,10 +184,10 @@ else
 fi
 
 echo -e "${BLUE}${BOLD}🛠️  Useful Commands:${NC}"
-echo -e "   View logs:        ${CYAN}docker-compose logs -f app${NC}"
-echo -e "   Restart:          ${CYAN}docker-compose restart${NC}"
+echo -e "   View logs:        ${CYAN}docker compose logs -f app${NC}"
+echo -e "   Restart:          ${CYAN}docker compose restart${NC}"
 echo -e "   Backup database:  ${CYAN}./backup-db.sh${NC}"
-echo -e "   Stop:             ${CYAN}docker-compose down${NC}"
+echo -e "   Stop:             ${CYAN}docker compose down${NC}"
 echo ""
 
 echo -e "${GREEN}${BOLD}🎊 Your ASIC Repair System is now live!${NC}"
