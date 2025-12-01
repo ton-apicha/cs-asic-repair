@@ -29,7 +29,7 @@ class SettingController extends BaseController
         $settings = $this->settingModel->getAll();
 
         return view('settings/index', $this->getViewData([
-            'title'    => lang('App.systemSettings'),
+            'title' => lang('App.systemSettings'),
             'settings' => $settings,
         ]));
     }
@@ -77,7 +77,7 @@ class SettingController extends BaseController
         $branches = $branchModel->findAll();
 
         return view('settings/branches', $this->getViewData([
-            'title'    => lang('App.branches'),
+            'title' => lang('App.branches'),
             'branches' => $branches,
         ]));
     }
@@ -97,9 +97,9 @@ class SettingController extends BaseController
         $branchModel = new BranchModel();
 
         $data = [
-            'name'    => $this->request->getPost('name'),
+            'name' => $this->request->getPost('name'),
             'address' => $this->request->getPost('address'),
-            'phone'   => $this->request->getPost('phone'),
+            'phone' => $this->request->getPost('phone'),
         ];
 
         if ($branchModel->insert($data)) {
@@ -127,9 +127,9 @@ class SettingController extends BaseController
         $branchModel = new BranchModel();
 
         $data = [
-            'name'      => $this->request->getPost('name'),
-            'address'   => $this->request->getPost('address'),
-            'phone'     => $this->request->getPost('phone'),
+            'name' => $this->request->getPost('name'),
+            'address' => $this->request->getPost('address'),
+            'phone' => $this->request->getPost('phone'),
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
@@ -176,14 +176,23 @@ class SettingController extends BaseController
     {
         $userModel = new UserModel();
         $branchModel = new BranchModel();
-        
-        $users = $userModel->select('users.*, branches.name as branch_name')
-            ->join('branches', 'branches.id = users.branch_id', 'left')
-            ->findAll();
+
+        $builder = $userModel->select('users.*, branches.name as branch_name')
+            ->join('branches', 'branches.id = users.branch_id', 'left');
+
+        // Filter based on role
+        if (!$this->isSuperAdmin()) {
+            // Admin: show only users in their branch (exclude super_admin role)
+            $builder->where('users.branch_id', $this->getBranchId())
+                ->where('users.role !=', 'super_admin');
+        }
+        // Super Admin: see all users (no filter)
+
+        $users = $builder->findAll();
 
         return view('settings/users', $this->getViewData([
-            'title'    => lang('App.users'),
-            'users'    => $users,
+            'title' => lang('App.users'),
+            'users' => $users,
             'branches' => $branchModel->getActive(),
         ]));
     }
@@ -197,10 +206,10 @@ class SettingController extends BaseController
 
         $rules = [
             'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
-            'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/]',
-            'name'     => 'required|min_length[2]|max_length[255]',
-            'email'    => 'permit_empty|valid_email|max_length[255]',
-            'phone'    => 'permit_empty|regex_match[/^[0-9\-\+\(\)\s]{9,20}$/]|max_length[20]',
+            'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)/]',
+            'name' => 'required|min_length[2]|max_length[255]',
+            'email' => 'permit_empty|valid_email|max_length[255]',
+            'phone' => 'permit_empty|regex_match[/^[0-9\\-\\+\\(\\)\\s]{9,20}$/]|max_length[20]',
         ];
 
         if (!$this->validate($rules)) {
@@ -211,23 +220,36 @@ class SettingController extends BaseController
 
         $role = $this->request->getPost('role');
         $branchId = $this->request->getPost('branch_id');
-        
+
+        // Security checks for Admin
+        if (!$this->isSuperAdmin()) {
+            // Admin CANNOT create super_admin users
+            if ($role === 'super_admin') {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', lang('App.accessDenied'));
+            }
+
+            // Admin can only create users in their own branch
+            $branchId = $this->getBranchId();
+        }
+
         // Super Admin must have branch_id = NULL
         if ($role === 'super_admin') {
             $branchId = null;
         }
-        
+
         $data = [
-            'branch_id' => !empty($branchId) ? (int)$branchId : null,
-            'username'  => $this->request->getPost('username'),
-            'password'  => $this->request->getPost('password'),
-            'name'      => $this->request->getPost('name'),
-            'email'     => $this->request->getPost('email'),
-            'phone'     => $this->request->getPost('phone'),
+            'branch_id' => !empty($branchId) ? (int) $branchId : null,
+            'username' => $this->request->getPost('username'),
+            'password' => $this->request->getPost('password'),
+            'name' => $this->request->getPost('name'),
+            'email' => $this->request->getPost('email'),
+            'phone' => $this->request->getPost('phone'),
         ];
 
         $userId = $userModel->createUserWithRole($data, $role, true);
-        
+
         if ($userId !== false) {
             return redirect()->to('/settings/users')
                 ->with('success', lang('App.userCreated'));
@@ -251,20 +273,49 @@ class SettingController extends BaseController
                 ->with('error', lang('App.recordNotFound'));
         }
 
-        $role = $this->request->getPost('role');
-        $branchId = $this->request->getPost('branch_id');
+        // Security checks for Admin
+        if (!$this->isSuperAdmin()) {
+            // Admin CANNOT edit super_admin users
+            if ($user['role'] === 'super_admin') {
+                return redirect()->to('/settings/users')
+                    ->with('error', lang('App.accessDenied'));
+            }
+
+            // Admin CANNOT edit users from other branches
+            if ($user['branch_id'] !== $this->getBranchId()) {
+                return redirect()->to('/settings/users')
+                    ->with('error', lang('App.accessDenied'));
+            }
+
+            $newRole = $this->request->getPost('role');
+
+            // Admin CANNOT change role to super_admin
+            if ($newRole === 'super_admin') {
+                return redirect()->back()
+                    ->with('error', lang('App.accessDenied'));
+            }
+
+            // Force branch_id to be admin's branch (prevent moving users)
+            $branchId = $this->getBranchId();
+        } else {
+            // Super Admin can change branch
+            $branchId = $this->request->getPost('branch_id');
+            $newRole = $this->request->getPost('role');
+        }
+
+        $role = $newRole ?? $this->request->getPost('role');
         $isActive = $this->request->getPost('is_active') ? 1 : 0;
-        
+
         // Super Admin must have branch_id = NULL
         if ($role === 'super_admin') {
             $branchId = null;
         }
-        
+
         $data = [
-            'branch_id' => !empty($branchId) ? (int)$branchId : null,
-            'name'      => $this->request->getPost('name'),
-            'email'     => $this->request->getPost('email'),
-            'phone'     => $this->request->getPost('phone'),
+            'branch_id' => !empty($branchId) ? (int) $branchId : null,
+            'name' => $this->request->getPost('name'),
+            'email' => $this->request->getPost('email'),
+            'phone' => $this->request->getPost('phone'),
         ];
 
         // Update password only if provided
@@ -275,7 +326,7 @@ class SettingController extends BaseController
 
         // Update base user data
         $updateSuccess = $userModel->update($id, $data);
-        
+
         // Update role and active status separately (security: prevent mass assignment)
         if ($updateSuccess) {
             $userModel->setRole($id, $role);
@@ -293,22 +344,36 @@ class SettingController extends BaseController
 
     /**
      * Delete user
-     * Admin only
      */
     public function deleteUser(int $id)
     {
-        // Admin authorization check
-        if (!$this->isAdmin()) {
-            return redirect()->to('/settings/users')
-                ->with('error', lang('App.accessDenied'));
-        }
-
         $userModel = new UserModel();
 
         // Prevent self-deletion
         if ($id == $this->getUserId()) {
             return redirect()->to('/settings/users')
                 ->with('error', 'Cannot delete your own account');
+        }
+
+        $user = $userModel->find($id);
+        if (!$user) {
+            return redirect()->to('/settings/users')
+                ->with('error', lang('App.recordNotFound'));
+        }
+
+        // Security checks for Admin
+        if (!$this->isSuperAdmin()) {
+            // Admin CANNOT delete super_admin users
+            if ($user['role'] === 'super_admin') {
+                return redirect()->to('/settings/users')
+                    ->with('error', lang('App.accessDenied'));
+            }
+
+            // Admin CANNOT delete users from other branches
+            if ($user['branch_id'] !== $this->getBranchId()) {
+                return redirect()->to('/settings/users')
+                    ->with('error', lang('App.accessDenied'));
+            }
         }
 
         if ($userModel->delete($id)) {
