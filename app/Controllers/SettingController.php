@@ -84,9 +84,16 @@ class SettingController extends BaseController
 
     /**
      * Store new branch
+     * Super Admin only
      */
     public function storeBranch()
     {
+        // Only Super Admin can create branches
+        if (!$this->isSuperAdmin()) {
+            return redirect()->to('/settings/branches')
+                ->with('error', lang('App.accessDenied'));
+        }
+
         $branchModel = new BranchModel();
 
         $data = [
@@ -107,9 +114,16 @@ class SettingController extends BaseController
 
     /**
      * Update branch
+     * Super Admin only
      */
     public function updateBranch(int $id)
     {
+        // Only Super Admin can update branches
+        if (!$this->isSuperAdmin()) {
+            return redirect()->to('/settings/branches')
+                ->with('error', lang('App.accessDenied'));
+        }
+
         $branchModel = new BranchModel();
 
         $data = [
@@ -130,12 +144,12 @@ class SettingController extends BaseController
 
     /**
      * Delete branch
-     * Admin only
+     * Super Admin only
      */
     public function deleteBranch(int $id)
     {
-        // Admin authorization check
-        if (!$this->isAdmin()) {
+        // Only Super Admin can delete branches
+        if (!$this->isSuperAdmin()) {
             return redirect()->to('/settings/branches')
                 ->with('error', lang('App.accessDenied'));
         }
