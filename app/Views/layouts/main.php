@@ -142,6 +142,9 @@
                                     <li><a href="<?= base_url('admin/database') ?>" class="<?= str_starts_with(uri_string(), 'admin/database') ? 'active' : '' ?>">
                                             <i class="bi bi-database-gear me-1"></i>Database Manager
                                         </a></li>
+                                    <li><a href="<?= base_url('admin/logs') ?>" class="<?= str_starts_with(uri_string(), 'admin/logs') ? 'active' : '' ?>">
+                                            <i class="bi bi-file-text me-1"></i>Application Logs
+                                        </a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
