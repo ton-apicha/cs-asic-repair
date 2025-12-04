@@ -194,6 +194,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('database/connections', 'Admin\DatabaseManagementController::getConnections');
         $routes->post('database/kill-process', 'Admin\DatabaseManagementController::killProcess');
         $routes->get('database/slow-queries', 'Admin\DatabaseManagementController::getSlowQueries');
+
+        // Log Management
+        $routes->get('logs', 'Admin\LogManagementController::index');
+        $routes->get('logs/application', 'Admin\LogManagementController::getApplicationLogs');
+        $routes->get('logs/stats', 'Admin\LogManagementController::getLogStats');
+        $routes->get('logs/download', 'Admin\LogManagementController::downloadLog');
+        $routes->post('logs/clear-old', 'Admin\LogManagementController::clearOldLogs');
     });
 
     // ========================================================================
