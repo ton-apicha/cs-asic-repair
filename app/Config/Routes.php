@@ -184,6 +184,16 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('system/restart-container', 'Admin\SystemMonitorController::restartContainer');
         $routes->get('system/container-logs', 'Admin\SystemMonitorController::getContainerLogs');
         $routes->post('system/clear-cache', 'Admin\SystemMonitorController::clearCache');
+
+        // Database Management
+        $routes->get('database', 'Admin\DatabaseManagementController::index');
+        $routes->get('database/status', 'Admin\DatabaseManagementController::getStatus');
+        $routes->get('database/tables', 'Admin\DatabaseManagementController::getTables');
+        $routes->post('database/optimize-table', 'Admin\DatabaseManagementController::optimizeTable');
+        $routes->post('database/optimize-all', 'Admin\DatabaseManagementController::optimizeAll');
+        $routes->get('database/connections', 'Admin\DatabaseManagementController::getConnections');
+        $routes->post('database/kill-process', 'Admin\DatabaseManagementController::killProcess');
+        $routes->get('database/slow-queries', 'Admin\DatabaseManagementController::getSlowQueries');
     });
 
     // ========================================================================
