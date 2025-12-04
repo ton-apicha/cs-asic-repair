@@ -33,7 +33,7 @@ class SystemMetricModel extends Model
      */
     public function getMetrics(string $type, string $period = '24h'): array
     {
-        $hours = match($period) {
+        $hours = match ($period) {
             '1h' => 1,
             '6h' => 6,
             '24h' => 24,
@@ -41,11 +41,11 @@ class SystemMetricModel extends Model
             '30d' => 720,
             default => 24,
         };
-        
+
         $startTime = date('Y-m-d H:i:s', strtotime("-{$hours} hours"));
-        
+
         return $this->where('metric_type', $type)
-            ->where('recorded_at >=', $start Time)
+            ->where('recorded_at >=', $startTime)
             ->orderBy('recorded_at', 'ASC')
             ->findAll();
     }
