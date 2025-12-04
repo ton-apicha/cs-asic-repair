@@ -23,6 +23,8 @@ class CustomerModel extends Model
         'address',
         'tax_id',
         'notes',
+        'vip_status',
+        'is_active',
         'credit_limit',
         'credit_terms',
     ];
@@ -87,7 +89,7 @@ class CustomerModel extends Model
             ->like('name', $term)
             ->orLike('phone', $term)
             ->groupEnd();
-        
+
         // Apply branch filter
         if ($branchId !== null) {
             $builder->groupStart()
@@ -95,7 +97,7 @@ class CustomerModel extends Model
                 ->orWhere('branch_id', null) // Include customers with no branch (Super Admin created)
                 ->groupEnd();
         }
-        
+
         return $builder->limit($limit)->findAll();
     }
 
@@ -109,7 +111,7 @@ class CustomerModel extends Model
         if ($branchId === null) {
             return $this->findAll();
         }
-        
+
         return $this->groupStart()
             ->where('branch_id', $branchId)
             ->orWhere('branch_id', null) // Include global customers
@@ -125,7 +127,7 @@ class CustomerModel extends Model
         if ($branchId === null) {
             return $this->orderBy('name', 'ASC')->findAll();
         }
-        
+
         return $this->groupStart()
             ->where('branch_id', $branchId)
             ->orWhere('branch_id', null)
@@ -140,7 +142,7 @@ class CustomerModel extends Model
     public function getWithHistory(int $id): ?array
     {
         $customer = $this->find($id);
-        
+
         if (!$customer) {
             return null;
         }
@@ -175,7 +177,7 @@ class CustomerModel extends Model
         if (!$customer) {
             return 0;
         }
-        
+
         return max(0, ($customer['credit_limit'] ?? 0) - ($customer['credit_used'] ?? 0));
     }
 
@@ -189,9 +191,9 @@ class CustomerModel extends Model
         if (!$customer) {
             return false;
         }
-        
+
         $newCreditUsed = ($customer['credit_used'] ?? 0) + $amount;
-        
+
         return $this->allowedFields(['credit_used'])
             ->update($customerId, ['credit_used' => $newCreditUsed]);
     }
@@ -206,9 +208,9 @@ class CustomerModel extends Model
         if (!$customer) {
             return false;
         }
-        
+
         $newCreditUsed = max(0, ($customer['credit_used'] ?? 0) - $amount);
-        
+
         return $this->allowedFields(['credit_used'])
             ->update($customerId, ['credit_used' => $newCreditUsed]);
     }
@@ -233,4 +235,3 @@ class CustomerModel extends Model
         return $this->getWithOutstandingBalance();
     }
 }
-
