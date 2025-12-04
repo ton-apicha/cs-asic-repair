@@ -69,10 +69,10 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         $this->session = session();
-        
+
         // Set locale from session or cookie
         $this->setLocale();
-        
+
         // Load user data if logged in
         if ($this->session->get('isLoggedIn')) {
             $this->user = [
@@ -141,10 +141,14 @@ abstract class BaseController extends Controller
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         // For branch-specific users, check if branch matches
-        // Also allow access if data has no branch (branch_id = null)
-        return $this->branchId === $branchId || $branchId === null;
+        // Convert to int for comparison to handle type coercion
+        $userBranchId = $this->branchId !== null ? (int)$this->branchId : null;
+        $targetBranchId = $branchId !== null ? (int)$branchId : null;
+
+        // Allow access if branches match, or if data has no branch (branch_id = null)
+        return $userBranchId === $targetBranchId || $targetBranchId === null;
     }
 
     /**
@@ -160,7 +164,7 @@ abstract class BaseController extends Controller
             $filterBranchId = $this->session->get('filter_branch_id');
             return $filterBranchId; // null = all, or specific branch
         }
-        
+
         // Branch Admin / Technician: filter by their branch
         return $this->branchId;
     }
@@ -178,7 +182,7 @@ abstract class BaseController extends Controller
             // Super Admin can specify branch or leave null (visible to all)
             return $requestedBranchId;
         }
-        
+
         // Others always use their assigned branch
         return $this->branchId;
     }
@@ -244,11 +248,11 @@ abstract class BaseController extends Controller
             'success' => true,
             'message' => $message,
         ];
-        
+
         if ($data !== null) {
             $response['data'] = $data;
         }
-        
+
         return $this->jsonResponse($response);
     }
 
@@ -267,11 +271,11 @@ abstract class BaseController extends Controller
             'success' => false,
             'message' => $message,
         ];
-        
+
         if ($errors !== null) {
             $response['errors'] = $errors;
         }
-        
+
         return $this->jsonResponse($response, $status);
     }
 
@@ -293,13 +297,13 @@ abstract class BaseController extends Controller
             'filterBranchId'  => $this->session->get('filter_branch_id'),
             'locale'          => $this->request->getLocale(),
         ];
-        
+
         // For Super Admin, load all branches for the branch selector
         if ($this->isSuperAdmin()) {
             $branchModel = model('BranchModel');
             $baseData['allBranches'] = $branchModel->where('is_active', 1)->findAll();
         }
-        
+
         return array_merge($baseData, $data);
     }
 
@@ -313,12 +317,12 @@ abstract class BaseController extends Controller
 
         // Check session first
         $locale = $this->session->get('locale');
-        
+
         // Then check cookie
         if (!$locale) {
             $locale = $this->request->getCookie('locale');
         }
-        
+
         // Validate locale
         if ($locale && in_array($locale, $supportedLocales)) {
             $this->request->setLocale($locale);
@@ -340,17 +344,17 @@ abstract class BaseController extends Controller
         } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
             // Log detailed error (for debugging)
             log_message('error', '[DB Error] ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
-            
+
             // Store user-friendly error in session
             $this->session->setFlashdata('error', $errorMessage);
-            
+
             return false;
         } catch (\Exception $e) {
             // Log unexpected errors
             log_message('error', '[Unexpected Error] ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
-            
+
             $this->session->setFlashdata('error', $errorMessage);
-            
+
             return false;
         }
     }
@@ -367,7 +371,7 @@ abstract class BaseController extends Controller
     {
         // Log detailed error
         log_message('error', '[DB Error] ' . $e->getMessage() . ' | File: ' . $e->getFile() . ':' . $e->getLine());
-        
+
         // Return generic error to client (security: don't expose DB details)
         return $this->errorResponse($genericMessage, 500);
     }
@@ -384,12 +388,11 @@ abstract class BaseController extends Controller
     protected function redirectWithError(string $route, string $errorMessage, bool $withInput = false): ResponseInterface
     {
         $redirect = redirect()->to($route)->with('error', $errorMessage);
-        
+
         if ($withInput) {
             $redirect = $redirect->withInput();
         }
-        
+
         return $redirect;
     }
 }
-
