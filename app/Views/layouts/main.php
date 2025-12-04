@@ -130,7 +130,7 @@
                                 <span class="menu-text"><?= lang('App.settings') ?></span>
                                 <i class="bi bi-chevron-down submenu-arrow"></i>
                             </a>
-                            <ul class="submenu <?= str_starts_with(uri_string(), 'settings') || str_starts_with(uri_string(), 'admin/system') ? 'show' : '' ?>">
+                            <ul class="submenu <?= str_starts_with(uri_string(), 'settings') || str_starts_with(uri_string(), 'admin/system') || str_starts_with(uri_string(), 'admin/database') ? 'show' : '' ?>">
                                 <li><a href="<?= base_url('settings') ?>"><?= lang('App.systemSettings') ?></a></li>
                                 <li><a href="<?= base_url('settings/branches') ?>"><?= lang('App.branches') ?></a></li>
                                 <li><a href="<?= base_url('settings/users') ?>"><?= lang('App.users') ?></a></li>
@@ -138,6 +138,9 @@
                                 <?php if ($isSuperAdmin ?? false): ?>
                                     <li><a href="<?= base_url('admin/system') ?>" class="<?= str_starts_with(uri_string(), 'admin/system') ? 'active' : '' ?>">
                                             <i class="bi bi-speedometer2 me-1"></i>System Monitor
+                                        </a></li>
+                                    <li><a href="<?= base_url('admin/database') ?>" class="<?= str_starts_with(uri_string(), 'admin/database') ? 'active' : '' ?>">
+                                            <i class="bi bi-database-gear me-1"></i>Database Manager
                                         </a></li>
                                 <?php endif; ?>
                             </ul>
