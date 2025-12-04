@@ -51,15 +51,15 @@ class DatabaseManager
 
         $query = $this->db->query("
             SELECT 
-                table_name,
-                ROUND((data_length + index_length) / 1024 / 1024, 2) AS size_mb,
-                table_rows,
-                engine,
-                create_time,
-                update_time
+                TABLE_NAME AS table_name,
+                ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 2) AS size_mb,
+                TABLE_ROWS AS table_rows,
+                ENGINE AS engine,
+                CREATE_TIME AS create_time,
+                UPDATE_TIME AS update_time
             FROM information_schema.TABLES
-            WHERE table_schema = ?
-            ORDER BY (data_length + index_length) DESC
+            WHERE TABLE_SCHEMA = ?
+            ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC
         ", [$dbName]);
 
         return $query->getResultArray();
