@@ -175,32 +175,27 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     });
 
     // ========================================================================
-    // System Monitoring (Super Admin Only)
+    // Safe System Monitoring (Super Admin Only)
+    // All dangerous actions removed - read-only monitoring only
     // ========================================================================
     $routes->group('admin', ['filter' => 'role:super_admin'], function ($routes) {
-        $routes->get('system', 'Admin\SystemMonitorController::index');
-        $routes->get('system/metrics', 'Admin\SystemMonitorController::getMetrics');
-        $routes->get('system/containers', 'Admin\SystemMonitorController::getContainers');
-        $routes->post('system/restart-container', 'Admin\SystemMonitorController::restartContainer');
-        $routes->get('system/container-logs', 'Admin\SystemMonitorController::getContainerLogs');
-        $routes->post('system/clear-cache', 'Admin\SystemMonitorController::clearCache');
+        // New unified monitoring dashboard
+        $routes->get('monitoring', 'Admin\MonitoringController::index');
+        $routes->get('monitoring/metrics', 'Admin\MonitoringController::getMetrics');
+        $routes->get('monitoring/container-logs', 'Admin\MonitoringController::getContainerLogs');
+        $routes->get('monitoring/logs', 'Admin\MonitoringController::getApplicationLogs');
+        $routes->get('monitoring/database', 'Admin\MonitoringController::getDatabaseInfo');
 
-        // Database Management
-        $routes->get('database', 'Admin\DatabaseManagementController::index');
-        $routes->get('database/status', 'Admin\DatabaseManagementController::getStatus');
-        $routes->get('database/tables', 'Admin\DatabaseManagementController::getTables');
-        $routes->post('database/optimize-table', 'Admin\DatabaseManagementController::optimizeTable');
-        $routes->post('database/optimize-all', 'Admin\DatabaseManagementController::optimizeAll');
-        $routes->get('database/connections', 'Admin\DatabaseManagementController::getConnections');
-        $routes->post('database/kill-process', 'Admin\DatabaseManagementController::killProcess');
-        $routes->get('database/slow-queries', 'Admin\DatabaseManagementController::getSlowQueries');
-
-        // Log Management
-        $routes->get('logs', 'Admin\LogManagementController::index');
-        $routes->get('logs/application', 'Admin\LogManagementController::getApplicationLogs');
-        $routes->get('logs/stats', 'Admin\LogManagementController::getLogStats');
-        $routes->get('logs/download', 'Admin\LogManagementController::downloadLog');
-        $routes->post('logs/clear-old', 'Admin\LogManagementController::clearOldLogs');
+        // Legacy routes (redirect to new monitoring)
+        $routes->get('system', function () {
+            return redirect()->to('/admin/monitoring');
+        });
+        $routes->get('database', function () {
+            return redirect()->to('/admin/monitoring');
+        });
+        $routes->get('logs', function () {
+            return redirect()->to('/admin/monitoring');
+        });
     });
 
     // ========================================================================
