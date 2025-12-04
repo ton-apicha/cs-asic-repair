@@ -330,7 +330,7 @@
                                 <th>Service</th>
                                 <th>Status</th>
                                 <th>Health</th>
-                                <th>Logs</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -355,11 +355,7 @@
                                             <span class="text-warning"><i class="bi bi-exclamation-triangle-fill"></i> <?= ucfirst($container['health']) ?></span>
                                         <?php endif; ?>
                                     </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="viewLogs('<?= esc($container['service']) ?>')">
-                                            <i class="bi bi-terminal"></i> View
-                                        </button>
-                                    </td>
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -527,23 +523,6 @@
         </div>
     </div>
 </div>
-
-<!-- Logs Modal -->
-<div class="modal fade" id="logsModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title"><i class="bi bi-terminal me-2"></i>Container Logs: <span id="modal-service"></span></h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-0">
-                <div class="log-viewer" id="modal-logs" style="max-height: 500px; border-radius: 0;">
-                    Loading...
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -603,15 +582,7 @@
         });
     }
 
-    function viewLogs(service) {
-        $('#modal-service').text(service);
-        $('#modal-logs').html('<div class="text-center py-4"><div class="spinner-border text-light"></div></div>');
-        $('#logsModal').modal('show');
-
-        $.get('<?= base_url('admin/monitoring/container-logs') ?>', {
-            service: service,
-            lines: 100
-        }, function(response) {
+    , function(response) {
             if (response.success && response.data.logs) {
                 const lines = response.data.logs.split('\n');
                 let html = '';
