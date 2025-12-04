@@ -65,7 +65,7 @@ class CustomerController extends BaseController
 
         // Get branch_id for the new customer
         $requestedBranchId = $this->request->getPost('branch_id') ? (int)$this->request->getPost('branch_id') : null;
-        
+
         $data = [
             'branch_id' => $this->getCreateBranchId($requestedBranchId),
             'name'      => $this->request->getPost('name'),
@@ -89,14 +89,14 @@ class CustomerController extends BaseController
     /**
      * View customer details
      */
-    public function view(int $id): string
+    public function view(int $id): string|\CodeIgniter\HTTP\RedirectResponse
     {
         $customer = $this->customerModel->find($id);
 
         if (!$customer) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
-        
+
         // Check branch access
         if (!$this->canAccessBranch($customer['branch_id'] ?? null)) {
             return redirect()->to('/customers')
@@ -126,14 +126,14 @@ class CustomerController extends BaseController
     /**
      * Edit customer form
      */
-    public function edit(int $id): string
+    public function edit(int $id): string|\CodeIgniter\HTTP\RedirectResponse
     {
         $customer = $this->customerModel->find($id);
 
         if (!$customer) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
-        
+
         // Check branch access
         if (!$this->canAccessBranch($customer['branch_id'] ?? null)) {
             return redirect()->to('/customers')
@@ -217,7 +217,7 @@ class CustomerController extends BaseController
     public function search()
     {
         $term = $this->request->getGet('term');
-        
+
         if (strlen($term) < 2) {
             return $this->jsonResponse([]);
         }
@@ -242,4 +242,3 @@ class CustomerController extends BaseController
         return $this->successResponse('History retrieved', $customer);
     }
 }
-
