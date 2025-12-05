@@ -172,6 +172,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('backup/download/(:any)', 'BackupController::download/$1');
         $routes->post('backup/restore', 'BackupController::restore');
         $routes->post('backup/delete/(:any)', 'BackupController::delete/$1');
+
+        // User Preferences (AJAX)
+        $routes->post('theme', 'SettingController::updateTheme');
+        $routes->post('language', 'SettingController::updateLanguage');
+
+        // Login History
+        $routes->get('login-history', 'SettingController::loginHistory');
     });
 
     // ========================================================================

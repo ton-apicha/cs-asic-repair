@@ -79,6 +79,18 @@
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem(this.config.themeKey, newTheme);
 
+            // Save to server (if logged in)
+            if (typeof jQuery !== 'undefined') {
+                jQuery.post('/settings/theme', { theme: newTheme })
+                    .done(function (response) {
+                        console.log('Theme preference saved to server');
+                    })
+                    .fail(function () {
+                        // Silently fail - localStorage still has the value
+                        console.log('Could not save theme to server');
+                    });
+            }
+
             // Animate toggle
             const themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {

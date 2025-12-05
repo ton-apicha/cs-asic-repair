@@ -456,5 +456,102 @@ class SettingController extends BaseController
         return redirect()->to('/settings')
             ->with('success', lang('App.logoDeleted'));
     }
-}
 
+    // ========================================================================
+    // User Preferences
+    // ========================================================================
+
+    /**
+     * Update user theme preference (AJAX)
+     */
+    public function updateTheme()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $theme = $this->request->getPost('theme');
+        if (!in_array($theme, ['light', 'dark'])) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid theme'
+            ]);
+        }
+
+        $userModel = new UserModel();
+        $userId = $this->getUserId();
+
+        // Update theme preference in database
+        $updated = $userModel->update($userId, ['theme_preference' => $theme]);
+
+        // Also update session
+        if ($updated) {
+            $user = session('user');
+            $user['theme_preference'] = $theme;
+            session()->set('user', $user);
+        }
+
+        return $this->response->setJSON([
+            'success' => $updated,
+            'message' => $updated ? 'Theme updated' : 'Failed to update theme',
+            'theme' => $theme
+        ]);
+    }
+
+    /**
+     * Update user language preference (AJAX)
+     */
+    public function updateLanguage()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $language = $this->request->getPost('language');
+        if (!in_array($language, ['en', 'th', 'zh'])) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid language'
+            ]);
+        }
+
+        $userModel = new UserModel();
+        $userId = $this->getUserId();
+
+        // Update language preference in database
+        $updated = $userModel->update($userId, ['language_preference' => $language]);
+
+        // Also update session
+        if ($updated) {
+            $user = session('user');
+            $user['language_preference'] = $language;
+            session()->set('user', $user);
+            session()->set('locale', $language);
+        }
+
+        return $this->response->setJSON([
+            'success' => $updated,
+            'message' => $updated ? 'Language updated' : 'Failed to update language',
+            'language' => $language
+        ]);
+    }
+
+    // ========================================================================
+    // Login History
+    // ========================================================================
+
+    /**
+     * View login history (read-only)
+     */
+    public function loginHistory(): string
+    {
+        $loginHistoryModel = new \App\Models\LoginHistoryModel();
+
+        $history = $loginHistoryModel->getUserHistory($this->getUserId(), 20);
+
+        return view('settings/login_history', $this->getViewData([
+            'title' => 'ประวัติการเข้าสู่ระบบ',
+            'history' => $history,
+        ]));
+    }
+}
