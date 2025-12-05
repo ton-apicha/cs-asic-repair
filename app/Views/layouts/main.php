@@ -31,6 +31,7 @@
     <!-- Custom CSS -->
     <link href="<?= base_url('assets/css/style.css') ?>?v=<?= time() ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/spinner.css') ?>?v=<?= time() ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/print.css') ?>?v=<?= time() ?>" rel="stylesheet">
 
     <?= $this->renderSection('styles') ?>
 </head>
@@ -460,6 +461,7 @@
 
     <!-- Custom JS -->
     <script src="<?= base_url('assets/js/app.js') ?>?v=<?= time() ?>"></script>
+    <script src="<?= base_url('assets/js/print-preview.js') ?>?v=<?= time() ?>"></script>
 
     <script>
         // CSRF Setup for AJAX
