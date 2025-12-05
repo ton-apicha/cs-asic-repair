@@ -462,6 +462,7 @@
     <!-- Custom JS -->
     <script src="<?= base_url('assets/js/app.js') ?>?v=<?= time() ?>"></script>
     <script src="<?= base_url('assets/js/print-preview.js') ?>?v=<?= time() ?>"></script>
+    <script src="<?= base_url('assets/js/shortcuts.js') ?>?v=<?= time() ?>"></script>
 
     <script>
         // CSRF Setup for AJAX
