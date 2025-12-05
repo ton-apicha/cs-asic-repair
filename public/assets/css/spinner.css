@@ -1,0 +1,378 @@
+/**
+ * ASIC Repair - Loading Spinner Styles
+ * Global spinners and skeleton loaders for better UX
+ */
+
+/* ============================================================================
+   Global Spinner Overlay
+   ============================================================================ */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.2s ease;
+}
+
+.spinner-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Main Spinner Container */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Spinner Circle */
+.spinner-circle {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Spinner Text */
+.spinner-text {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================================
+   Button Spinners
+   ============================================================================ */
+.btn-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-spinner .spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+}
+
+.btn.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn.loading .btn-text {
+    visibility: hidden;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -0.5rem;
+    margin-top: -0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* ============================================================================
+   Skeleton Loaders (for tables and cards)
+   ============================================================================ */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--border-color) 25%,
+        rgba(255, 255, 255, 0.3) 50%,
+        var(--border-color) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 1rem;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-text.shorter {
+    width: 40%;
+}
+
+.skeleton-text.tiny {
+    width: 25%;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 80%;
+    margin-bottom: 0.75rem;
+}
+
+.skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.skeleton-badge {
+    width: 60px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+.skeleton-button {
+    width: 80px;
+    height: 32px;
+    border-radius: 6px;
+}
+
+/* Skeleton Table Row */
+.skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.skeleton-row .skeleton-cell {
+    height: 1rem;
+    border-radius: 4px;
+}
+
+.skeleton-row .skeleton-cell:nth-child(1) { width: 80px; }
+.skeleton-row .skeleton-cell:nth-child(2) { flex: 2; }
+.skeleton-row .skeleton-cell:nth-child(3) { flex: 1; }
+.skeleton-row .skeleton-cell:nth-child(4) { width: 80px; }
+.skeleton-row .skeleton-cell:nth-child(5) { width: 100px; }
+
+/* Skeleton Card */
+.skeleton-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+}
+
+.skeleton-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.skeleton-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* ============================================================================
+   Progress Bar (for long operations)
+   ============================================================================ */
+.progress-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    min-width: 320px;
+    max-width: 90vw;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.progress-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.progress-status {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-percent {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+/* ============================================================================
+   Inline Spinner (for fields/inputs)
+   ============================================================================ */
+.inline-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.inline-spinner .spinner-sm {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* ============================================================================
+   Content Loading State
+   ============================================================================ */
+.content-loading {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content-loading::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--body-bg);
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.content-loading::after {
+    content: '';
+    position: relative;
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+/* ============================================================================
+   Animations
+   ============================================================================ */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Loading dots animation */
+.loading-dots::after {
+    content: '.';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+}
+
+/* ============================================================================
+   Dark Mode Adjustments
+   ============================================================================ */
+[data-theme="dark"] .spinner-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--border-color) 25%,
+        rgba(255, 255, 255, 0.05) 50%,
+        var(--border-color) 75%
+    );
+    background-size: 200% 100%;
+}
+
+[data-theme="dark"] .progress-container {
+    background: var(--card-bg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================================
+   Responsive Adjustments
+   ============================================================================ */
+@media (max-width: 576px) {
+    .spinner-circle {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .progress-container {
+        min-width: 280px;
+        padding: 1.5rem;
+    }
+    
+    .progress-title {
+        font-size: 1rem;
+    }
+}

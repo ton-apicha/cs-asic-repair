@@ -7,6 +7,11 @@
     <meta name="description" content="ASIC Repair Management System">
     <meta name="<?= csrf_token() ?>" content="<?= csrf_hash() ?>">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="<?= base_url('favicon.svg') ?>">
+    <link rel="alternate icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= base_url('favicon.svg') ?>">
+
     <title><?= $title ?? 'ASIC Repair' ?> - R-POS</title>
 
     <!-- Google Fonts - Inter -->
@@ -25,6 +30,7 @@
 
     <!-- Custom CSS -->
     <link href="<?= base_url('assets/css/style.css') ?>?v=<?= time() ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/spinner.css') ?>?v=<?= time() ?>" rel="stylesheet">
 
     <?= $this->renderSection('styles') ?>
 </head>
@@ -424,9 +430,12 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-        <div class="loading-spinner"></div>
+    <!-- Global Loading Spinner -->
+    <div class="spinner-overlay" id="globalSpinner" style="display: none;" role="status" aria-label="กำลังโหลด">
+        <div class="spinner-container">
+            <div class="spinner-circle"></div>
+            <span class="spinner-text" id="spinnerText">กำลังโหลด...</span>
+        </div>
     </div>
 
     <!-- Debug Info -->

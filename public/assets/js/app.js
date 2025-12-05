@@ -3,19 +3,19 @@
  * R-POS/CRM Application
  */
 
-(function() {
+(function () {
     'use strict';
-    
+
     // Wait for DOM to be ready
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         App.init();
     });
-    
+
     // ========================================================================
     // Main Application Object
     // ========================================================================
     const App = {
-        
+
         // Configuration
         config: {
             sidebarCollapseKey: 'sidebar_collapsed',
@@ -23,13 +23,13 @@
             toastDuration: 4000,
             debounceDelay: 300
         },
-        
+
         /**
          * Initialize application
          */
-        init: function() {
+        init: function () {
             console.log('Initializing ASIC Repair System...');
-            
+
             this.initTheme();
             this.initSidebar();
             this.initSubmenu();
@@ -40,30 +40,30 @@
             this.initFlyout();
             this.initPageTransitions();
             this.initMobileNav();
-            
+
             console.log('App initialized successfully');
         },
-        
+
         // ====================================================================
         // Theme (Dark Mode)
         // ====================================================================
-        initTheme: function() {
+        initTheme: function () {
             const savedTheme = localStorage.getItem(this.config.themeKey);
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
+
             // Apply saved theme or system preference
             if (savedTheme) {
                 document.documentElement.setAttribute('data-theme', savedTheme);
             } else if (prefersDark) {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
-            
+
             // Theme toggle button
             const themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {
                 themeToggle.addEventListener('click', () => this.toggleTheme());
             }
-            
+
             // Listen for system theme changes
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
                 if (!localStorage.getItem(this.config.themeKey)) {
@@ -71,14 +71,14 @@
                 }
             });
         },
-        
-        toggleTheme: function() {
+
+        toggleTheme: function () {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
+
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem(this.config.themeKey, newTheme);
-            
+
             // Animate toggle
             const themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {
@@ -86,25 +86,25 @@
                 setTimeout(() => themeToggle.classList.remove('bounce'), 600);
             }
         },
-        
+
         // ====================================================================
         // Page Transitions
         // ====================================================================
-        initPageTransitions: function() {
+        initPageTransitions: function () {
             const mainContent = document.querySelector('.main-content');
             if (mainContent) {
                 mainContent.classList.add('page-transition');
             }
         },
-        
+
         // ====================================================================
         // Mobile Navigation
         // ====================================================================
-        initMobileNav: function() {
+        initMobileNav: function () {
             // Add active state to mobile nav items
             const currentPath = window.location.pathname;
             const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-            
+
             mobileNavLinks.forEach(link => {
                 const href = link.getAttribute('href');
                 if (href && currentPath.includes(href.replace(/\//g, ''))) {
@@ -112,85 +112,85 @@
                 }
             });
         },
-        
+
         // ====================================================================
         // Sidebar
         // ====================================================================
-        initSidebar: function() {
+        initSidebar: function () {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebarClose = document.getElementById('sidebarClose');
             const sidebarCollapse = document.getElementById('sidebarCollapse');
             const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-            
+
             // Check for saved collapse state
             const isCollapsed = localStorage.getItem(this.config.sidebarCollapseKey) === 'true';
             if (isCollapsed && window.innerWidth >= 992) {
                 document.body.classList.add('sidebar-collapsed');
             }
-            
+
             // Mobile: Open sidebar
             if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
+                sidebarToggle.addEventListener('click', function () {
                     sidebar.classList.add('show');
                     sidebarBackdrop.classList.add('show');
                     document.body.style.overflow = 'hidden';
                 });
             }
-            
+
             // Mobile: Close sidebar
             if (sidebarClose) {
-                sidebarClose.addEventListener('click', function() {
+                sidebarClose.addEventListener('click', function () {
                     App.closeSidebar();
                 });
             }
-            
+
             // Close on backdrop click
             if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener('click', function() {
+                sidebarBackdrop.addEventListener('click', function () {
                     App.closeSidebar();
                 });
             }
-            
+
             // Desktop: Collapse/Expand sidebar
             if (sidebarCollapse) {
-                sidebarCollapse.addEventListener('click', function() {
+                sidebarCollapse.addEventListener('click', function () {
                     document.body.classList.toggle('sidebar-collapsed');
                     const collapsed = document.body.classList.contains('sidebar-collapsed');
                     localStorage.setItem(App.config.sidebarCollapseKey, collapsed);
                 });
             }
-            
+
             // Handle window resize
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 if (window.innerWidth >= 992) {
                     App.closeSidebar();
                 }
             });
         },
-        
-        closeSidebar: function() {
+
+        closeSidebar: function () {
             const sidebar = document.getElementById('sidebar');
             const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-            
+
             if (sidebar) sidebar.classList.remove('show');
             if (sidebarBackdrop) sidebarBackdrop.classList.remove('show');
             document.body.style.overflow = '';
         },
-        
+
         // ====================================================================
         // Submenu Toggle
         // ====================================================================
-        initSubmenu: function() {
+        initSubmenu: function () {
             const submenuToggles = document.querySelectorAll('.submenu-toggle');
-            
-            submenuToggles.forEach(function(toggle) {
-                toggle.addEventListener('click', function(e) {
+
+            submenuToggles.forEach(function (toggle) {
+                toggle.addEventListener('click', function (e) {
                     e.preventDefault();
-                    
+
                     const menuItem = this.closest('.menu-item');
                     const submenu = menuItem.querySelector('.submenu');
-                    
+
                     // Close other open submenus (optional - accordion style)
                     // const otherItems = document.querySelectorAll('.menu-item.open');
                     // otherItems.forEach(function(item) {
@@ -199,50 +199,50 @@
                     //         item.querySelector('.submenu').classList.remove('show');
                     //     }
                     // });
-                    
+
                     // Toggle current submenu
                     menuItem.classList.toggle('open');
                     submenu.classList.toggle('show');
                 });
             });
         },
-        
+
         // ====================================================================
         // Bootstrap Tooltips
         // ====================================================================
-        initTooltips: function() {
+        initTooltips: function () {
             if (typeof bootstrap !== 'undefined') {
                 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-                tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             }
         },
-        
+
         // ====================================================================
         // jQuery Autocomplete
         // ====================================================================
-        initAutocomplete: function() {
+        initAutocomplete: function () {
             if (typeof jQuery === 'undefined' || typeof jQuery.ui === 'undefined') {
                 return;
             }
-            
+
             const $ = jQuery;
-            
+
             // Customer Autocomplete
             $('#customerSearch').autocomplete({
-                source: function(request, response) {
+                source: function (request, response) {
                     $.ajax({
                         url: App.getBaseUrl() + 'customers/search',
                         data: { term: request.term },
                         dataType: 'json',
-                        success: function(data) {
+                        success: function (data) {
                             response(data);
                         }
                     });
                 },
                 minLength: 2,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     $('#customerId').val(ui.item.id);
                     $('#customerSearch').val(ui.item.label);
                     if (ui.item.phone) {
@@ -251,21 +251,21 @@
                     return false;
                 }
             });
-            
+
             // Asset/Serial Number Autocomplete
             $('#serialSearch').autocomplete({
-                source: function(request, response) {
+                source: function (request, response) {
                     $.ajax({
                         url: App.getBaseUrl() + 'assets/search',
                         data: { term: request.term },
                         dataType: 'json',
-                        success: function(data) {
+                        success: function (data) {
                             response(data);
                         }
                     });
                 },
                 minLength: 2,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     $('#assetId').val(ui.item.id);
                     if (ui.item.model) {
                         $('#assetModel').val(ui.item.model);
@@ -273,21 +273,21 @@
                     return false;
                 }
             });
-            
+
             // Parts/Inventory Autocomplete
             $('#partSearch').autocomplete({
-                source: function(request, response) {
+                source: function (request, response) {
                     $.ajax({
                         url: App.getBaseUrl() + 'inventory/search',
                         data: { term: request.term },
                         dataType: 'json',
-                        success: function(data) {
+                        success: function (data) {
                             response(data);
                         }
                     });
                 },
                 minLength: 2,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     $('#partId').val(ui.item.id);
                     $('#partName').val(ui.item.label);
                     if (ui.item.price) {
@@ -297,13 +297,13 @@
                 }
             });
         },
-        
+
         // ====================================================================
         // Confirm Dialogs
         // ====================================================================
-        initConfirmDialogs: function() {
-            document.querySelectorAll('[data-confirm]').forEach(function(element) {
-                element.addEventListener('click', function(e) {
+        initConfirmDialogs: function () {
+            document.querySelectorAll('[data-confirm]').forEach(function (element) {
+                element.addEventListener('click', function (e) {
                     const message = this.dataset.confirm || 'Are you sure?';
                     if (!confirm(message)) {
                         e.preventDefault();
@@ -313,29 +313,29 @@
                 });
             });
         },
-        
+
         // ====================================================================
         // Kanban Board
         // ====================================================================
-        initKanban: function() {
+        initKanban: function () {
             if (typeof Sortable === 'undefined') {
                 return;
             }
-            
+
             const kanbanColumns = document.querySelectorAll('.kanban-column-body');
-            
-            kanbanColumns.forEach(function(column) {
+
+            kanbanColumns.forEach(function (column) {
                 new Sortable(column, {
                     group: 'kanban',
                     animation: 150,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
-                    
-                    onEnd: function(evt) {
+
+                    onEnd: function (evt) {
                         const jobId = evt.item.dataset.id;
                         const newStatus = evt.to.closest('.kanban-column').dataset.status;
                         const oldStatus = evt.from.closest('.kanban-column').dataset.status;
-                        
+
                         if (newStatus !== oldStatus) {
                             App.updateJobStatus(jobId, newStatus);
                         }
@@ -343,24 +343,24 @@
                 });
             });
         },
-        
-        updateJobStatus: function(jobId, status) {
+
+        updateJobStatus: function (jobId, status) {
             if (typeof jQuery === 'undefined') {
                 console.error('jQuery not available');
                 return;
             }
-            
+
             const $ = jQuery;
-            
+
             $.ajax({
                 url: App.getBaseUrl() + 'jobs/update-status/' + jobId,
                 method: 'POST',
                 data: { status: status },
                 dataType: 'json',
-                beforeSend: function() {
+                beforeSend: function () {
                     App.showLoading();
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
                         App.showToast('Job status updated', 'success');
                     } else {
@@ -369,87 +369,87 @@
                         location.reload();
                     }
                 },
-                error: function() {
+                error: function () {
                     App.showToast('Failed to update job status', 'danger');
                     location.reload();
                 },
-                complete: function() {
+                complete: function () {
                     App.hideLoading();
                 }
             });
         },
-        
+
         // ====================================================================
         // Flyout Sidebar
         // ====================================================================
-        initFlyout: function() {
+        initFlyout: function () {
             const flyout = document.querySelector('.flyout-sidebar');
             const backdrop = document.querySelector('.flyout-sidebar-backdrop');
-            
+
             if (!flyout) return;
-            
+
             // Close on backdrop click
             if (backdrop) {
-                backdrop.addEventListener('click', function() {
+                backdrop.addEventListener('click', function () {
                     App.closeFlyout();
                 });
             }
-            
+
             // Close button
             const closeBtn = flyout.querySelector('.flyout-close');
             if (closeBtn) {
-                closeBtn.addEventListener('click', function() {
+                closeBtn.addEventListener('click', function () {
                     App.closeFlyout();
                 });
             }
-            
+
             // ESC key to close
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && flyout.classList.contains('show')) {
                     App.closeFlyout();
                 }
             });
         },
-        
-        openFlyout: function(content) {
+
+        openFlyout: function (content) {
             const flyout = document.querySelector('.flyout-sidebar');
             const backdrop = document.querySelector('.flyout-sidebar-backdrop');
             const body = flyout.querySelector('.flyout-sidebar-body');
-            
+
             if (content && body) {
                 body.innerHTML = content;
             }
-            
+
             flyout.classList.add('show');
             backdrop.classList.add('show');
             document.body.style.overflow = 'hidden';
         },
-        
-        closeFlyout: function() {
+
+        closeFlyout: function () {
             const flyout = document.querySelector('.flyout-sidebar');
             const backdrop = document.querySelector('.flyout-sidebar-backdrop');
-            
+
             if (flyout) flyout.classList.remove('show');
             if (backdrop) backdrop.classList.remove('show');
             document.body.style.overflow = '';
         },
-        
+
         // ====================================================================
         // Toast Notifications
         // ====================================================================
-        showToast: function(message, type) {
+        showToast: function (message, type) {
             type = type || 'info';
-            
+
             const toastEl = document.getElementById('appToast');
             if (!toastEl || typeof bootstrap === 'undefined') {
                 console.log('Toast:', type, message);
                 return;
             }
-            
+
             const toastIcon = document.getElementById('toastIcon');
             const toastTitle = document.getElementById('toastTitle');
             const toastBody = document.getElementById('toastBody');
-            
+
             // Set icon and colors based on type
             const typeConfig = {
                 success: { icon: 'bi-check-circle-fill', title: 'Success', class: 'text-success' },
@@ -457,57 +457,125 @@
                 warning: { icon: 'bi-exclamation-triangle-fill', title: 'Warning', class: 'text-warning' },
                 info: { icon: 'bi-info-circle-fill', title: 'Info', class: 'text-info' }
             };
-            
+
             const config = typeConfig[type] || typeConfig.info;
-            
+
             toastIcon.className = 'bi ' + config.icon + ' me-2 ' + config.class;
             toastTitle.textContent = config.title;
             toastBody.textContent = message;
-            
+
             const toast = new bootstrap.Toast(toastEl, {
                 autohide: true,
                 delay: this.config.toastDuration
             });
-            
+
             toast.show();
         },
-        
+
         // ====================================================================
-        // Loading Overlay
+        // Loading Spinner (Enhanced)
         // ====================================================================
-        showLoading: function() {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.style.display = 'flex';
+        showLoading: function (message) {
+            const spinner = document.getElementById('globalSpinner');
+            const spinnerText = document.getElementById('spinnerText');
+
+            if (spinner) {
+                if (spinnerText && message) {
+                    spinnerText.textContent = message;
+                } else if (spinnerText) {
+                    spinnerText.textContent = 'กำลังโหลด...';
+                }
+                spinner.style.display = 'flex';
             }
         },
-        
-        hideLoading: function() {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.style.display = 'none';
+
+        hideLoading: function () {
+            const spinner = document.getElementById('globalSpinner');
+            if (spinner) {
+                spinner.classList.add('fade-out');
+                setTimeout(() => {
+                    spinner.style.display = 'none';
+                    spinner.classList.remove('fade-out');
+                }, 200);
             }
         },
-        
+
+        /**
+         * Show button loading state
+         * @param {HTMLElement|jQuery} button - Button element
+         * @param {string} loadingText - Text to show while loading
+         */
+        setButtonLoading: function (button, loadingText) {
+            const btn = button.jquery ? button[0] : button;
+            if (!btn) return;
+
+            btn.dataset.originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('loading');
+
+            if (loadingText) {
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${loadingText}`;
+            }
+        },
+
+        /**
+         * Reset button loading state
+         * @param {HTMLElement|jQuery} button - Button element
+         */
+        resetButton: function (button) {
+            const btn = button.jquery ? button[0] : button;
+            if (!btn) return;
+
+            btn.disabled = false;
+            btn.classList.remove('loading');
+
+            if (btn.dataset.originalText) {
+                btn.innerHTML = btn.dataset.originalText;
+                delete btn.dataset.originalText;
+            }
+        },
+
+        /**
+         * Generate skeleton loader HTML for tables
+         * @param {number} rows - Number of skeleton rows
+         * @param {number} cols - Number of columns
+         */
+        generateTableSkeleton: function (rows, cols) {
+            rows = rows || 5;
+            cols = cols || 5;
+
+            let html = '<div class="skeleton-table">';
+            for (let i = 0; i < rows; i++) {
+                html += '<div class="skeleton-row">';
+                for (let j = 0; j < cols; j++) {
+                    html += '<div class="skeleton skeleton-cell"></div>';
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+
+            return html;
+        },
+
         // ====================================================================
         // Utilities
         // ====================================================================
-        getBaseUrl: function() {
+        getBaseUrl: function () {
             // Get base URL from the page or default
             const baseEl = document.querySelector('base');
             if (baseEl) return baseEl.href;
-            
+
             // Try to extract from current URL
             const path = window.location.pathname;
             const segments = path.split('/');
             if (segments.length > 1 && segments[1]) {
                 return window.location.origin + '/' + segments[1] + '/';
             }
-            
+
             return window.location.origin + '/';
         },
-        
-        debounce: function(func, wait) {
+
+        debounce: function (func, wait) {
             let timeout;
             return function executedFunction(...args) {
                 const later = () => {
@@ -518,21 +586,21 @@
                 timeout = setTimeout(later, wait);
             };
         },
-        
-        formatCurrency: function(amount, locale, currency) {
+
+        formatCurrency: function (amount, locale, currency) {
             locale = locale || 'th-TH';
             currency = currency || 'THB';
-            
+
             return new Intl.NumberFormat(locale, {
                 style: 'currency',
                 currency: currency
             }).format(amount);
         },
-        
-        formatDate: function(dateString, locale) {
+
+        formatDate: function (dateString, locale) {
             locale = locale || 'th-TH';
             const date = new Date(dateString);
-            
+
             return new Intl.DateTimeFormat(locale, {
                 year: 'numeric',
                 month: 'short',
@@ -542,40 +610,40 @@
             }).format(date);
         }
     };
-    
+
     // Expose to global scope
     window.App = App;
-    
+
 })();
 
 // ============================================================================
 // jQuery Extensions (if jQuery is available)
 // ============================================================================
 if (typeof jQuery !== 'undefined') {
-    (function($) {
+    (function ($) {
         'use strict';
-        
+
         // AJAX form submit with loading state
-        $.fn.ajaxForm = function(options) {
-            return this.each(function() {
+        $.fn.ajaxForm = function (options) {
+            return this.each(function () {
                 const $form = $(this);
-                
-                $form.on('submit', function(e) {
+
+                $form.on('submit', function (e) {
                     e.preventDefault();
-                    
+
                     const $submitBtn = $form.find('[type="submit"]');
                     const originalText = $submitBtn.html();
-                    
+
                     $.ajax({
                         url: $form.attr('action'),
                         method: $form.attr('method') || 'POST',
                         data: $form.serialize(),
                         dataType: 'json',
-                        beforeSend: function() {
+                        beforeSend: function () {
                             $submitBtn.prop('disabled', true)
                                 .html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
                         },
-                        success: function(response) {
+                        success: function (response) {
                             if (response.success) {
                                 if (options && options.onSuccess) {
                                     options.onSuccess(response);
@@ -588,23 +656,23 @@ if (typeof jQuery !== 'undefined') {
                                 App.showToast(response.message || 'An error occurred', 'danger');
                             }
                         },
-                        error: function(xhr) {
+                        error: function (xhr) {
                             let message = 'An error occurred';
                             if (xhr.responseJSON && xhr.responseJSON.message) {
                                 message = xhr.responseJSON.message;
                             }
                             App.showToast(message, 'danger');
                         },
-                        complete: function() {
+                        complete: function () {
                             $submitBtn.prop('disabled', false).html(originalText);
                         }
                     });
                 });
             });
         };
-        
+
         // Confirmation before action
-        $(document).on('click', '[data-confirm]', function(e) {
+        $(document).on('click', '[data-confirm]', function (e) {
             const message = $(this).data('confirm') || 'Are you sure you want to proceed?';
             if (!confirm(message)) {
                 e.preventDefault();
@@ -612,11 +680,11 @@ if (typeof jQuery !== 'undefined') {
                 return false;
             }
         });
-        
+
         // Auto-submit form on change
-        $(document).on('change', '[data-auto-submit]', function() {
+        $(document).on('change', '[data-auto-submit]', function () {
             $(this).closest('form').submit();
         });
-        
+
     })(jQuery);
 }
