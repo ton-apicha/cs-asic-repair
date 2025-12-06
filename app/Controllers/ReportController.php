@@ -520,4 +520,67 @@ class ReportController extends BaseController
             'values' => $values
         ]);
     }
+
+    // ========================================================================
+    // Export Methods
+    // ========================================================================
+
+    /**
+     * Export sales report to CSV
+     */
+    public function exportSalesCsv()
+    {
+        $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
+        $endDate = $this->request->getGet('end_date') ?? date('Y-m-d');
+        $branchId = $this->request->getGet('branch_id');
+
+        $paymentModel = new PaymentModel();
+
+        $payments = $paymentModel
+            ->select('payments.*, job_cards.job_id, customers.name as customer_name')
+            ->join('job_cards', 'job_cards.id = payments.job_card_id')
+            ->join('customers', 'customers.id = job_cards.customer_id')
+            ->where('payments.payment_date >=', $startDate . ' 00:00:00')
+            ->where('payments.payment_date <=', $endDate . ' 23:59:59');
+
+        if ($branchId) {
+            $payments->where('job_cards.branch_id', $branchId);
+        }
+
+        $data = $payments->findAll();
+
+        $exportHelper = new \App\Libraries\ExportHelper();
+        $formattedData = $exportHelper::formatPaymentsForExport($data);
+        $columns = $exportHelper::getPaymentExportColumns();
+
+        $filename = 'sales_report_' . $startDate . '_to_' . $endDate;
+
+        return $exportHelper::toExcel($formattedData, $filename, $columns);
+    }
+
+    /**
+     * Export KPI summary to PDF
+     */
+    public function exportKpiPdf()
+    {
+        $jobModel = new JobCardModel();
+        $paymentModel = new PaymentModel();
+        $inventoryModel = new PartsInventoryModel();
+
+        $monthlyRevenue = $paymentModel->getMonthlyRevenue((int)date('Y'), (int)date('m'));
+        $jobStats = $jobModel->getStats();
+        $inventoryValue = $inventoryModel->getTotalValue();
+
+        $html = view('reports/kpi_pdf', [
+            'monthlyRevenue' => $monthlyRevenue,
+            'jobStats' => $jobStats,
+            'inventoryValue' => $inventoryValue,
+            'generatedAt' => date('Y-m-d H:i:s'),
+        ]);
+
+        $exportHelper = new \App\Libraries\ExportHelper();
+        $filename = 'kpi_report_' . date('Y-m');
+
+        return $exportHelper::toPDF($html, $filename);
+    }
 }

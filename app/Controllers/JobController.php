@@ -37,22 +37,22 @@ class JobController extends BaseController
     {
         $status = $this->request->getGet('status');
         $branchFilter = $this->getBranchFilter();
-        
+
         $builder = $this->jobModel
             ->select('job_cards.*, customers.name as customer_name, assets.serial_number, assets.brand_model')
             ->join('customers', 'customers.id = job_cards.customer_id')
             ->join('assets', 'assets.id = job_cards.asset_id');
-        
+
         // Apply branch filter
         if ($branchFilter !== null) {
             $builder->where('job_cards.branch_id', $branchFilter);
         }
-        
+
         // Technician can only see jobs assigned to them
         if ($this->isTechnician()) {
             $builder->where('job_cards.technician_id', $this->getUserId());
         }
-        
+
         if ($status) {
             $builder->where('job_cards.status', $status);
         }
@@ -101,7 +101,7 @@ class JobController extends BaseController
     public function createFromAsset(int $assetId): string
     {
         $asset = $this->assetModel->getWithHistory($assetId);
-        
+
         if (!$asset) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
@@ -151,13 +151,13 @@ class JobController extends BaseController
                 'phone' => $this->request->getPost('customer_phone'),
                 'email' => $this->request->getPost('customer_email'),
             ];
-            
+
             if ($this->customerModel->insert($customerData) === false) {
                 return redirect()->back()
                     ->withInput()
                     ->with('error', 'Failed to create customer. Please try again.');
             }
-            
+
             $customerId = $this->customerModel->getInsertID();
         }
 
@@ -191,7 +191,7 @@ class JobController extends BaseController
         if ($this->jobModel->insert($jobData)) {
             $jobId = $this->jobModel->getInsertID();
             $job = $this->jobModel->find($jobId);
-            
+
             return redirect()->to('/jobs/view/' . $jobId)
                 ->with('success', lang('App.jobCreated') . ' - ' . $job['job_id']);
         }
@@ -211,13 +211,13 @@ class JobController extends BaseController
         if (!$job) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
-        
+
         // Check branch access
         if (!$this->canAccessBranch($job['branch_id'])) {
             return redirect()->to('/jobs')
                 ->with('error', lang('App.accessDenied'));
         }
-        
+
         // Technician can only view their assigned jobs
         if ($this->isTechnician() && $job['technician_id'] != $this->getUserId()) {
             return redirect()->to('/jobs')
@@ -244,13 +244,13 @@ class JobController extends BaseController
         if (!$job) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
-        
+
         // Check branch access
         if (!$this->canAccessBranch($job['branch_id'])) {
             return redirect()->to('/jobs')
                 ->with('error', lang('App.accessDenied'));
         }
-        
+
         // Technician can only edit their assigned jobs
         if ($this->isTechnician() && $job['technician_id'] != $this->getUserId()) {
             return redirect()->to('/jobs')
@@ -296,7 +296,7 @@ class JobController extends BaseController
         if ($this->jobModel->update($id, $data)) {
             // Recalculate totals
             $this->jobModel->calculateTotals($id);
-            
+
             return redirect()->to('/jobs/view/' . $id)
                 ->with('success', lang('App.jobUpdated'));
         }
@@ -420,14 +420,14 @@ class JobController extends BaseController
 
         $customer = $this->customerModel->find($job['customer_id']);
         $asset = $this->assetModel->find($job['asset_id']);
-        
+
         // Validate required related records exist
         if (!$customer || !$asset) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
                 'Required customer or asset data not found for this job.'
             );
         }
-        
+
         // Get parts used
         $jobPartsModel = new \App\Models\JobPartsModel();
         $parts = $jobPartsModel->select('job_parts.*, parts_inventory.part_code, parts_inventory.name')
@@ -437,7 +437,7 @@ class JobController extends BaseController
 
         $pdfGenerator = new \App\Libraries\PdfGenerator();
         $pdf = $pdfGenerator->generateJobCard($job, $customer, $asset, $parts);
-        
+
         return $this->response
             ->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', 'inline; filename="JobCard-' . $job['job_id'] . '.pdf"')
@@ -456,21 +456,21 @@ class JobController extends BaseController
         }
 
         $customer = $this->customerModel->find($job['customer_id']);
-        
+
         // Validate required customer record exists
         if (!$customer) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
                 'Required customer data not found for this job.'
             );
         }
-        
+
         // Get payments
         $paymentModel = new \App\Models\PaymentModel();
         $payments = $paymentModel->where('job_card_id', $id)->findAll();
 
         $pdfGenerator = new \App\Libraries\PdfGenerator();
         $pdf = $pdfGenerator->generateReceipt($job, $customer, $payments);
-        
+
         return $this->response
             ->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', 'inline; filename="Receipt-' . $job['job_id'] . '.pdf"')
@@ -492,7 +492,7 @@ class JobController extends BaseController
         $quantity = (int) $this->request->getPost('quantity') ?: 1;
 
         $jobPartsModel = new JobPartsModel();
-        
+
         if ($jobPartsModel->addPartToJob($id, $partId, $quantity, null, $this->getUserId())) {
             return $this->successResponse(lang('App.operationSuccess'));
         }
@@ -506,7 +506,7 @@ class JobController extends BaseController
     public function removePart(int $id)
     {
         $jobPartId = $this->request->getPost('job_part_id');
-        
+
         $jobPartsModel = new JobPartsModel();
         $jobPart = $jobPartsModel->find($jobPartId);
 
@@ -532,9 +532,9 @@ class JobController extends BaseController
     public function getSymptoms()
     {
         $term = $this->request->getGet('term');
-        
+
         $symptomModel = new SymptomHistoryModel();
-        
+
         if ($term) {
             $symptoms = $symptomModel->search($term, 10);
         } else {
@@ -563,5 +563,42 @@ class JobController extends BaseController
         // For future implementation of job ordering within columns
         return $this->successResponse('Order updated');
     }
-}
 
+    /**
+     * Export jobs to CSV
+     */
+    public function exportCsv()
+    {
+        $status = $this->request->getGet('status');
+        $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
+        $endDate = $this->request->getGet('end_date') ?? date('Y-m-d');
+        $branchFilter = $this->getBranchFilter();
+
+        $builder = $this->jobModel
+            ->select('job_cards.*, customers.name as customer_name, assets.serial_number, assets.brand_model, users.name as technician_name')
+            ->join('customers', 'customers.id = job_cards.customer_id')
+            ->join('assets', 'assets.id = job_cards.asset_id')
+            ->join('users', 'users.id = job_cards.technician_id', 'left')
+            ->where('job_cards.checkin_date >=', $startDate . ' 00:00:00')
+            ->where('job_cards.checkin_date <=', $endDate . ' 23:59:59');
+
+        if ($branchFilter !== null) {
+            $builder->where('job_cards.branch_id', $branchFilter);
+        }
+
+        if ($status) {
+            $builder->where('job_cards.status', $status);
+        }
+
+        $jobs = $builder->orderBy('job_cards.created_at', 'DESC')->findAll();
+
+        // Format data for export
+        $exportHelper = new \App\Libraries\ExportHelper();
+        $formattedData = $exportHelper::formatJobsForExport($jobs);
+        $columns = $exportHelper::getJobExportColumns();
+
+        $filename = 'jobs_export_' . date('Y-m-d_His');
+
+        return $exportHelper::toExcel($formattedData, $filename, $columns);
+    }
+}

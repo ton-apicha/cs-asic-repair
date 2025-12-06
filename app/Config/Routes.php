@@ -87,6 +87,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         // Symptoms
         $routes->get('symptoms', 'JobController::getSymptoms');
+
+        // Export
+        $routes->get('export-csv', 'JobController::exportCsv');
     });
 
     // ========================================================================
@@ -132,6 +135,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('api/job-trend', 'ReportController::jobTrendApi');
         $routes->get('api/top-parts', 'ReportController::topPartsApi');
         $routes->get('api/technician-performance', 'ReportController::technicianPerformanceApi');
+
+        // Export routes
+        $routes->get('export/sales-csv', 'ReportController::exportSalesCsv');
+        $routes->get('export/kpi-pdf', 'ReportController::exportKpiPdf');
     });
 
     // ========================================================================
