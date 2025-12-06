@@ -174,16 +174,24 @@ class JobController extends BaseController
 
         // Create job - use getCreateBranchId for proper branch assignment
         $requestedBranchId = $this->request->getPost('branch_id') ? (int)$this->request->getPost('branch_id') : null;
+
+        // Handle optional foreign keys - convert empty to null
+        $technicianId = $this->request->getPost('technician_id');
+        $technicianId = !empty($technicianId) ? (int)$technicianId : null;
+
+        $originalJobId = $this->request->getPost('original_job_id');
+        $originalJobId = !empty($originalJobId) ? (int)$originalJobId : null;
+
         $jobData = [
             'customer_id'       => $customerId,
             'asset_id'          => $asset['id'],
             'branch_id'         => $this->getCreateBranchId($requestedBranchId) ?: $this->getBranchId(),
-            'technician_id'     => $this->request->getPost('technician_id'),
+            'technician_id'     => $technicianId,
             'symptom'           => $this->request->getPost('symptom'),
             'notes'             => $this->request->getPost('notes'),
             'status'            => JobCardModel::STATUS_NEW_CHECKIN,
             'is_warranty_claim' => $this->request->getPost('is_warranty_claim') ? 1 : 0,
-            'original_job_id'   => $this->request->getPost('original_job_id'),
+            'original_job_id'   => $originalJobId,
             'labor_cost'        => $this->request->getPost('labor_cost') ?: 0,
             'created_by'        => $this->getUserId(),
         ];
