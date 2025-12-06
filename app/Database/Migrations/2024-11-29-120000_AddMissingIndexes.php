@@ -16,9 +16,13 @@ class AddMissingIndexes extends Migration
     {
         // Add index for parts_inventory.branch_id (separate from unique key)
         // This improves performance for queries filtering by branch only
-        if (!$this->db->indexExists('parts_inventory', ['branch_id'])) {
+        // Using try-catch as the index may already exist
+        try {
             $this->forge->addKey('branch_id');
             $this->forge->processIndexes('parts_inventory');
+        } catch (\Exception $e) {
+            // Index may already exist, skip
+            log_message('info', 'AddMissingIndexes: branch_id index may already exist: ' . $e->getMessage());
         }
 
         // Note: Other indexes already exist in their respective migrations:
@@ -34,9 +38,11 @@ class AddMissingIndexes extends Migration
     public function down()
     {
         // Remove the added index
-        if ($this->db->indexExists('parts_inventory', ['branch_id'])) {
+        try {
             $this->forge->dropKey('parts_inventory', 'branch_id');
+        } catch (\Exception $e) {
+            // Index may not exist, skip
+            log_message('info', 'AddMissingIndexes down: ' . $e->getMessage());
         }
     }
 }
-
