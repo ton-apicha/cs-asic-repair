@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>Job Card - <?= esc($job['job_id']) ?></title>
     <style>
+        /* Import Sarabun font for Thai support */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,9 +15,9 @@
         }
 
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 12px;
-            line-height: 1.5;
+            font-family: 'Sarabun', 'DejaVu Sans', sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
             color: #333;
             padding: 20px;
         }

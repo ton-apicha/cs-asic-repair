@@ -13,18 +13,19 @@ use Dompdf\Options;
 class PdfGenerator
 {
     protected Dompdf $dompdf;
-    
+
     public function __construct()
     {
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
-        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isFontSubsettingEnabled', true);
+        $options->set('defaultFont', 'sans-serif');
         $options->set('chroot', WRITEPATH);
-        
+
         $this->dompdf = new Dompdf($options);
     }
-    
+
     /**
      * Generate Job Card PDF
      */
@@ -36,10 +37,10 @@ class PdfGenerator
             'asset'    => $asset,
             'parts'    => $parts,
         ]);
-        
+
         return $this->render($html, 'A4', 'portrait');
     }
-    
+
     /**
      * Generate Receipt PDF
      */
@@ -50,10 +51,10 @@ class PdfGenerator
             'customer' => $customer,
             'payments' => $payments,
         ]);
-        
+
         return $this->render($html, 'A4', 'portrait');
     }
-    
+
     /**
      * Generate Quotation PDF
      */
@@ -64,10 +65,10 @@ class PdfGenerator
             'customer'  => $customer,
             'items'     => $items,
         ]);
-        
+
         return $this->render($html, 'A4', 'portrait');
     }
-    
+
     /**
      * Render HTML to PDF
      */
@@ -76,10 +77,10 @@ class PdfGenerator
         $this->dompdf->loadHtml($html);
         $this->dompdf->setPaper($paper, $orientation);
         $this->dompdf->render();
-        
+
         return $this->dompdf->output();
     }
-    
+
     /**
      * Stream PDF to browser
      */
@@ -88,10 +89,10 @@ class PdfGenerator
         $this->dompdf->loadHtml($html);
         $this->dompdf->setPaper($paper, $orientation);
         $this->dompdf->render();
-        
+
         $this->dompdf->stream($filename, ['Attachment' => false]);
     }
-    
+
     /**
      * Download PDF
      */
@@ -100,8 +101,7 @@ class PdfGenerator
         $this->dompdf->loadHtml($html);
         $this->dompdf->setPaper($paper, $orientation);
         $this->dompdf->render();
-        
+
         $this->dompdf->stream($filename, ['Attachment' => true]);
     }
 }
-
