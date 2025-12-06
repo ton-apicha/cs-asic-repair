@@ -93,15 +93,15 @@ class PartsInventoryModel extends Model
             ->orLike('name', $term)
             ->groupEnd()
             ->where('is_active', 1);
-        
+
         // Apply branch filter - show central warehouse (branch_id=null) + branch-specific
         if ($branchId !== null) {
             $builder->groupStart()
                 ->where('branch_id', $branchId)
-                ->orWhere('branch_id', null) // Include central warehouse
+                ->orWhere('branch_id IS NULL') // Include central warehouse
                 ->groupEnd();
         }
-        
+
         return $builder->limit($limit)->findAll();
     }
 
@@ -114,14 +114,14 @@ class PartsInventoryModel extends Model
     public function getByBranch(?int $branchId = null): array
     {
         $builder = $this->where('is_active', 1);
-        
+
         if ($branchId !== null) {
             $builder->groupStart()
                 ->where('branch_id', $branchId)
-                ->orWhere('branch_id', null) // Include central warehouse
+                ->orWhere('branch_id IS NULL') // Include central warehouse
                 ->groupEnd();
         }
-        
+
         return $builder->findAll();
     }
 
@@ -131,14 +131,14 @@ class PartsInventoryModel extends Model
     public function getAllWithBranchFilter(?int $branchId = null): array
     {
         $builder = $this->where('is_active', 1);
-        
+
         if ($branchId !== null) {
             $builder->groupStart()
                 ->where('branch_id', $branchId)
-                ->orWhere('branch_id', null)
+                ->orWhere('branch_id IS NULL')
                 ->groupEnd();
         }
-        
+
         return $builder->orderBy('name', 'ASC')->findAll();
     }
 
@@ -153,7 +153,7 @@ class PartsInventoryModel extends Model
         if ($branchId) {
             $builder->groupStart()
                 ->where('branch_id', $branchId)
-                ->orWhere('branch_id', null)
+                ->orWhere('branch_id IS NULL')
                 ->groupEnd();
         }
 
@@ -193,7 +193,7 @@ class PartsInventoryModel extends Model
         }
 
         $newQuantity = $part['quantity'] - $quantity;
-        
+
         // Log transaction
         $transactionModel = new StockTransactionModel();
         $transactionModel->insert([
@@ -223,7 +223,7 @@ class PartsInventoryModel extends Model
         }
 
         $newQuantity = $part['quantity'] + $quantity;
-        
+
         // Log transaction
         $transactionModel = new StockTransactionModel();
         $transactionModel->insert([
@@ -253,7 +253,7 @@ class PartsInventoryModel extends Model
         }
 
         $difference = $newQuantity - $part['quantity'];
-        
+
         // Log transaction
         $transactionModel = new StockTransactionModel();
         $transactionModel->insert([
@@ -282,7 +282,7 @@ class PartsInventoryModel extends Model
         if ($branchId) {
             $builder->groupStart()
                 ->where('branch_id', $branchId)
-                ->orWhere('branch_id', null)
+                ->orWhere('branch_id IS NULL')
                 ->groupEnd();
         }
 
@@ -290,4 +290,3 @@ class PartsInventoryModel extends Model
         return (float) ($result['total_value'] ?? 0);
     }
 }
-
