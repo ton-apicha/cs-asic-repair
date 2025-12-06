@@ -233,12 +233,15 @@ class JobController extends BaseController
         }
 
         $inventoryModel = new PartsInventoryModel();
-        $branchFilter = $this->getBranchFilter();
+
+        // Get parts by job's branch (not user's filter) - ensures correct parts for this job
+        // Pass job's branch_id, which will also include central warehouse parts (branch_id IS NULL)
+        $jobBranchId = $job['branch_id'] ?? null;
 
         return view('jobs/view', $this->getViewData([
             'title' => lang('App.jobCard') . ' #' . $job['job_id'],
             'job'   => $job,
-            'parts' => $inventoryModel->getByBranch($branchFilter),
+            'parts' => $inventoryModel->getByBranch($jobBranchId),
         ]));
     }
 
