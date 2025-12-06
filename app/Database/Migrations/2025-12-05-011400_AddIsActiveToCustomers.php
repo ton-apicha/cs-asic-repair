@@ -12,6 +12,11 @@ class AddIsActiveToCustomers extends Migration
 {
     public function up()
     {
+        // Check if column already exists
+        if ($this->db->fieldExists('is_active', 'customers')) {
+            return; // Column already exists, skip
+        }
+
         $fields = [
             'is_active' => [
                 'type'       => 'TINYINT',
@@ -27,6 +32,8 @@ class AddIsActiveToCustomers extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('customers', 'is_active');
+        if ($this->db->fieldExists('is_active', 'customers')) {
+            $this->forge->dropColumn('customers', 'is_active');
+        }
     }
 }
