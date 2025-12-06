@@ -22,13 +22,13 @@ class AuthController extends BaseController
     /**
      * Display login page
      *
-     * @return string
+     * @return string|\CodeIgniter\HTTP\RedirectResponse
      */
-    public function login(): string
+    public function login()
     {
         // If already logged in, redirect to dashboard
         if ($this->session->get('isLoggedIn')) {
-            return redirect()->to('/dashboard')->send();
+            return redirect()->to('/dashboard');
         }
 
         return view('auth/login', [
@@ -68,10 +68,10 @@ class AuthController extends BaseController
             $ttl = $cache->getMetaData($cacheKey)['expire'] ?? time();
             $remainingTime = max(0, $ttl - time());
             $minutes = ceil($remainingTime / 60);
-            
+
             return redirect()->back()
                 ->withInput()
-                ->with('error', lang('App.tooManyAttempts', ['minutes' => $minutes]) ?: 
+                ->with('error', lang('App.tooManyAttempts', ['minutes' => $minutes]) ?:
                     "Too many login attempts. Please try again in {$minutes} minute(s).");
         }
 
@@ -84,7 +84,7 @@ class AuthController extends BaseController
             // Increment failed attempts
             $cache->save($cacheKey, $attempts + 1, 900); // 15 minutes
             $this->logFailedLogin($username);
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', lang('App.invalidCredentials'));
@@ -95,13 +95,13 @@ class AuthController extends BaseController
             // Increment failed attempts
             $cache->save($cacheKey, $attempts + 1, 900); // 15 minutes
             $this->logFailedLogin($username);
-            
+
             $remaining = 5 - ($attempts + 1);
             $errorMsg = lang('App.invalidCredentials');
             if ($remaining > 0 && $remaining <= 2) {
                 $errorMsg .= " ({$remaining} attempts remaining)";
             }
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', $errorMsg);
