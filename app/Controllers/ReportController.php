@@ -34,7 +34,7 @@ class ReportController extends BaseController
         $branchId = $this->request->getGet('branch_id');
 
         $paymentModel = new PaymentModel();
-        
+
         $payments = $paymentModel->getByDateRange(
             $startDate . ' 00:00:00',
             $endDate . ' 23:59:59',
@@ -108,7 +108,7 @@ class ReportController extends BaseController
         $endDate = $this->request->getGet('end_date') ?? date('Y-m-d');
 
         $jobModel = new JobCardModel();
-        
+
         $claims = $jobModel->select('job_cards.*, customers.name as customer_name, assets.serial_number')
             ->join('customers', 'customers.id = job_cards.customer_id')
             ->join('assets', 'assets.id = job_cards.asset_id')
@@ -124,7 +124,7 @@ class ReportController extends BaseController
         $totalJobs = $jobModel->where('created_at >=', $startDate . ' 00:00:00')
             ->where('created_at <=', $endDate . ' 23:59:59')
             ->countAllResults();
-        
+
         $claimRate = $totalJobs > 0 ? (count($claims) / $totalJobs) * 100 : 0;
 
         return view('reports/warranty', $this->getViewData([
@@ -246,11 +246,11 @@ class ReportController extends BaseController
         $totalCompleted = $jobModel->where('status', 'delivered')
             ->where('delivery_date >=', $monthStart)
             ->countAllResults();
-        
+
         $totalClaims = $jobModel->where('is_warranty_claim', 1)
             ->where('created_at >=', $monthStart)
             ->countAllResults();
-        
+
         $claimRate = $totalCompleted > 0 ? ($totalClaims / $totalCompleted) * 100 : 0;
         $ftfr = 100 - $claimRate; // First Time Fix Rate
 
@@ -268,5 +268,256 @@ class ReportController extends BaseController
             'inventoryValue' => $inventoryValue,
         ]));
     }
-}
 
+    // ========================================================================
+    // API Endpoints for Charts (AJAX)
+    // ========================================================================
+
+    /**
+     * Get revenue data for charts (AJAX)
+     */
+    public function revenueApi()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $period = $this->request->getGet('period') ?? 'weekly';
+        $paymentModel = new PaymentModel();
+
+        $labels = [];
+        $values = [];
+
+        switch ($period) {
+            case 'daily':
+                // Last 7 days
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = date('Y-m-d', strtotime("-{$i} days"));
+                    $labels[] = date('d M', strtotime($date));
+                    $values[] = (float) $paymentModel->getDailyRevenue($date);
+                }
+                break;
+
+            case 'weekly':
+                // Last 8 weeks
+                for ($i = 7; $i >= 0; $i--) {
+                    $weekStart = date('Y-m-d', strtotime("-{$i} weeks monday"));
+                    $weekEnd = date('Y-m-d', strtotime("-{$i} weeks sunday"));
+                    $labels[] = 'W' . date('W', strtotime($weekStart));
+
+                    $payments = $paymentModel->getByDateRange(
+                        $weekStart . ' 00:00:00',
+                        $weekEnd . ' 23:59:59'
+                    );
+                    $values[] = array_sum(array_column($payments, 'amount'));
+                }
+                break;
+
+            case 'monthly':
+                // Last 12 months
+                for ($i = 11; $i >= 0; $i--) {
+                    $year = (int) date('Y', strtotime("-{$i} months"));
+                    $month = (int) date('m', strtotime("-{$i} months"));
+                    $labels[] = date('M Y', strtotime("-{$i} months"));
+                    $values[] = (float) $paymentModel->getMonthlyRevenue($year, $month);
+                }
+                break;
+
+            default:
+                // Default: last 7 days
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = date('Y-m-d', strtotime("-{$i} days"));
+                    $labels[] = date('d M', strtotime($date));
+                    $values[] = (float) $paymentModel->getDailyRevenue($date);
+                }
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'labels' => $labels,
+            'values' => $values,
+            'period' => $period
+        ]);
+    }
+
+    /**
+     * Get job status distribution for charts (AJAX)
+     */
+    public function jobStatusApi()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $jobModel = new JobCardModel();
+        $stats = $jobModel->getStats();
+
+        $statusLabels = [
+            'new_checkin' => 'รับเครื่องใหม่',
+            'pending_repair' => 'รอซ่อม',
+            'in_progress' => 'กำลังซ่อม',
+            'repair_done' => 'ซ่อมเสร็จ',
+            'ready_handover' => 'พร้อมส่งมอบ',
+            'delivered' => 'ส่งมอบแล้ว',
+            'cancelled' => 'ยกเลิก'
+        ];
+
+        $labels = [];
+        $values = [];
+        $colors = [
+            '#6366f1', // new_checkin
+            '#f59e0b', // pending
+            '#3b82f6', // in_progress
+            '#10b981', // repair_done
+            '#06b6d4', // ready_handover  
+            '#8b5cf6', // delivered
+            '#ef4444'  // cancelled
+        ];
+
+        foreach ($stats['by_status'] as $status) {
+            $labels[] = $statusLabels[$status['status']] ?? $status['status'];
+            $values[] = (int) $status['count'];
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'labels' => $labels,
+            'data' => $values,
+            'colors' => array_slice($colors, 0, count($values))
+        ]);
+    }
+
+    /**
+     * Get job trend data for charts (AJAX)
+     */
+    public function jobTrendApi()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $period = $this->request->getGet('period') ?? '30d';
+        $jobModel = new JobCardModel();
+
+        $days = match ($period) {
+            '7d' => 7,
+            '30d' => 30,
+            '90d' => 90,
+            default => 30,
+        };
+
+        $labels = [];
+        $newJobs = [];
+        $completedJobs = [];
+
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+
+            if ($days > 30) {
+                // Show only every 3rd day for longer periods
+                if ($i % 3 !== 0 && $i !== 0) continue;
+            }
+
+            $labels[] = date('d/m', strtotime($date));
+
+            // Count new jobs on this date
+            $newCount = $jobModel
+                ->where('DATE(checkin_date)', $date)
+                ->countAllResults(false);
+            $newJobs[] = $newCount;
+
+            // Count completed jobs on this date
+            $completedCount = $jobModel
+                ->where('DATE(delivery_date)', $date)
+                ->where('status', 'delivered')
+                ->countAllResults(false);
+            $completedJobs[] = $completedCount;
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'งานใหม่',
+                    'data' => $newJobs,
+                    'borderColor' => '#3b82f6',
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.1)'
+                ],
+                [
+                    'label' => 'ส่งมอบแล้ว',
+                    'data' => $completedJobs,
+                    'borderColor' => '#10b981',
+                    'backgroundColor' => 'rgba(16, 185, 129, 0.1)'
+                ]
+            ],
+            'period' => $period
+        ]);
+    }
+
+    /**
+     * Get top parts usage for charts (AJAX)
+     */
+    public function topPartsApi()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $limit = min((int) ($this->request->getGet('limit') ?? 10), 20);
+
+        $db = \Config\Database::connect();
+
+        $parts = $db->table('job_parts')
+            ->select('parts_inventory.name, SUM(job_parts.quantity) as total_used')
+            ->join('parts_inventory', 'parts_inventory.id = job_parts.part_id')
+            ->where('job_parts.created_at >=', date('Y-m-01'))
+            ->groupBy('job_parts.part_id')
+            ->orderBy('total_used', 'DESC')
+            ->limit($limit)
+            ->get()
+            ->getResultArray();
+
+        $labels = array_column($parts, 'name');
+        $values = array_map('intval', array_column($parts, 'total_used'));
+
+        return $this->response->setJSON([
+            'success' => true,
+            'labels' => $labels,
+            'values' => $values
+        ]);
+    }
+
+    /**
+     * Get technician performance for charts (AJAX)
+     */
+    public function technicianPerformanceApi()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400);
+        }
+
+        $db = \Config\Database::connect();
+
+        // Get jobs completed by each technician this month
+        $performance = $db->table('job_cards')
+            ->select('users.name as technician_name, COUNT(*) as jobs_completed')
+            ->join('users', 'users.id = job_cards.technician_id')
+            ->where('job_cards.status', 'delivered')
+            ->where('job_cards.delivery_date >=', date('Y-m-01'))
+            ->groupBy('job_cards.technician_id')
+            ->orderBy('jobs_completed', 'DESC')
+            ->limit(10)
+            ->get()
+            ->getResultArray();
+
+        $labels = array_column($performance, 'technician_name');
+        $values = array_map('intval', array_column($performance, 'jobs_completed'));
+
+        return $this->response->setJSON([
+            'success' => true,
+            'labels' => $labels,
+            'values' => $values
+        ]);
+    }
+}

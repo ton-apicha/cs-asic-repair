@@ -125,6 +125,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('wip', 'ReportController::wip');
         $routes->get('parts-usage', 'ReportController::partsUsage');
         $routes->get('kpi', 'ReportController::kpi');
+
+        // API endpoints for charts
+        $routes->get('api/revenue', 'ReportController::revenueApi');
+        $routes->get('api/job-status', 'ReportController::jobStatusApi');
+        $routes->get('api/job-trend', 'ReportController::jobTrendApi');
+        $routes->get('api/top-parts', 'ReportController::topPartsApi');
+        $routes->get('api/technician-performance', 'ReportController::technicianPerformanceApi');
     });
 
     // ========================================================================
@@ -192,6 +199,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('monitoring/container-logs', 'Admin\MonitoringController::getContainerLogs');
         $routes->get('monitoring/logs', 'Admin\MonitoringController::getApplicationLogs');
         $routes->get('monitoring/database', 'Admin\MonitoringController::getDatabaseInfo');
+        $routes->get('monitoring/graph-data', 'Admin\MonitoringController::getGraphData');
 
         // Legacy routes (redirect to new monitoring)
         $routes->get('system', function () {

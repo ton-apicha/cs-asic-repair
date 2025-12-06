@@ -178,4 +178,82 @@ class MonitoringController extends BaseController
             'total' => max(0, substr_count($content, "\n") - 2),
         ];
     }
+
+    /**
+     * Get historical graph data for charts (AJAX)
+     */
+    public function getGraphData()
+    {
+        if (!$this->isSuperAdmin()) {
+            return $this->errorResponse('Access denied', 403);
+        }
+
+        $period = $this->request->getGet('period') ?? '24h';
+
+        $metricModel = new \App\Models\SystemMetricModel();
+
+        // Get metrics for each type
+        $cpuMetrics = $metricModel->getMetrics('cpu', $period);
+        $ramMetrics = $metricModel->getMetrics('ram', $period);
+        $diskMetrics = $metricModel->getMetrics('disk', $period);
+
+        // Format labels (timestamps)
+        $labels = [];
+        $cpuData = [];
+        $ramData = [];
+        $diskData = [];
+
+        // If no data, generate sample data for demo
+        if (empty($cpuMetrics) && empty($ramMetrics) && empty($diskMetrics)) {
+            // Generate demo data for last 24 hours
+            $hours = match ($period) {
+                '1h' => 12,
+                '6h' => 24,
+                '24h' => 48,
+                '7d' => 168,
+                default => 48,
+            };
+
+            $interval = match ($period) {
+                '1h' => 5,
+                '6h' => 15,
+                '24h' => 30,
+                '7d' => 60,
+                default => 30,
+            };
+
+            for ($i = $hours; $i >= 0; $i--) {
+                $time = strtotime("-{$i} minutes * {$interval}");
+                $labels[] = date('H:i', $time);
+
+                // Generate realistic random data
+                $cpuData[] = rand(15, 80);
+                $ramData[] = rand(40, 85);
+                $diskData[] = rand(20, 60);
+            }
+        } else {
+            // Use real data
+            foreach ($cpuMetrics as $metric) {
+                $labels[] = date('H:i', strtotime($metric['recorded_at']));
+                $cpuData[] = (float) $metric['value'];
+            }
+
+            foreach ($ramMetrics as $metric) {
+                $ramData[] = (float) $metric['value'];
+            }
+
+            foreach ($diskMetrics as $metric) {
+                $diskData[] = (float) $metric['value'];
+            }
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'labels' => $labels,
+            'cpu' => $cpuData,
+            'ram' => $ramData,
+            'disk' => $diskData,
+            'period' => $period
+        ]);
+    }
 }

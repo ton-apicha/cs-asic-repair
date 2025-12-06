@@ -32,6 +32,7 @@
     <link href="<?= base_url('assets/css/style.css') ?>?v=<?= time() ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/spinner.css') ?>?v=<?= time() ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/print.css') ?>?v=<?= time() ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/charts.css') ?>?v=<?= time() ?>" rel="stylesheet">
 
     <?= $this->renderSection('styles') ?>
 </head>
@@ -459,10 +460,14 @@
     <!-- SortableJS for Kanban -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <!-- Custom JS -->
     <script src="<?= base_url('assets/js/app.js') ?>?v=<?= time() ?>"></script>
     <script src="<?= base_url('assets/js/print-preview.js') ?>?v=<?= time() ?>"></script>
     <script src="<?= base_url('assets/js/shortcuts.js') ?>?v=<?= time() ?>"></script>
+    <script src="<?= base_url('assets/js/analytics.js') ?>?v=<?= time() ?>"></script>
 
     <script>
         // CSRF Setup for AJAX
