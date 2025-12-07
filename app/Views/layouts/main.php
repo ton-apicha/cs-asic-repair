@@ -147,6 +147,9 @@
                                     <li><a href="<?= base_url('admin/monitoring') ?>" class="<?= str_starts_with(uri_string(), 'admin/monitoring') ? 'active' : '' ?>">
                                             <i class="bi bi-speedometer2 me-1"></i>System Monitoring
                                         </a></li>
+                                    <li><a href="<?= base_url('admin/activity-log') ?>" class="<?= str_starts_with(uri_string(), 'admin/activity-log') ? 'active' : '' ?>">
+                                            <i class="bi bi-activity me-1"></i><?= lang('App.activityLog') ?? 'Activity Log' ?>
+                                        </a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>

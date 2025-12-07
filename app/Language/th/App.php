@@ -257,7 +257,7 @@ return [
     'allBranches'       => 'ทุกสาขา',
     'filterByBranch'    => 'กรองตามสาขา',
     'superAdminNote'    => 'ผู้ดูแลระบบสูงสุดสามารถเข้าถึงทุกสาขาได้',
-    'superAdminNoBranch'=> 'ผู้ดูแลระบบสูงสุดไม่ได้อยู่ประจำสาขาใด',
+    'superAdminNoBranch' => 'ผู้ดูแลระบบสูงสุดไม่ได้อยู่ประจำสาขาใด',
     'adminNote'         => 'ผู้ดูแลสาขาจัดการได้เฉพาะสาขาของตน',
     'branchRequired'    => 'กรุณาเลือกสาขาสำหรับผู้ใช้นี้',
     'editUser'          => 'แก้ไขผู้ใช้',
@@ -518,5 +518,23 @@ return [
     'unpaid'             => 'ยังไม่ชำระ',
     'paymentHistory'     => 'ประวัติการชำระเงิน',
     'paymentStatus'      => 'สถานะการชำระ',
-];
 
+    // ========================================================================
+    // Activity Log (Full Thai Support)
+    // ========================================================================
+    'activityLog'        => 'Activity Log',
+    'activityLogDescription' => 'ติดตามการกระทำของผู้ใช้ทั้งหมดในระบบ',
+    'totalToday'         => 'กิจกรรมวันนี้',
+    'createActions'      => 'สร้างใหม่',
+    'updateActions'      => 'แก้ไข',
+    'deleteActions'      => 'ลบ',
+    'oldValues'          => 'ค่าเดิม',
+    'newValues'          => 'ค่าใหม่',
+    'lowIsBetter'        => 'ยิ่งต่ำยิ่งดี',
+    'days'               => 'วัน',
+    'viewOriginalJob'    => 'ดูต้นฉบับ',
+    'checkInDate'        => 'วันที่รับเข้า',
+    'id'                 => 'ID',
+    'device'             => 'อุปกรณ์',
+    'browser'            => 'เบราว์เซอร์',
+];

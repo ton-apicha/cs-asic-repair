@@ -518,4 +518,23 @@ return [
     'unpaid'             => 'UNPAID',
     'paymentHistory'     => 'Payment History',
     'paymentStatus'      => 'Payment Status',
+
+    // ========================================================================
+    // Activity Log (Full Language Support)
+    // ========================================================================
+    'activityLog'        => 'Activity Log',
+    'activityLogDescription' => 'Track all user actions in the system',
+    'totalToday'         => 'Today\'s Activities',
+    'createActions'      => 'Created',
+    'updateActions'      => 'Updated',
+    'deleteActions'      => 'Deleted',
+    'oldValues'          => 'Old Values',
+    'newValues'          => 'New Values',
+    'lowIsBetter'        => 'Lower is better',
+    'days'               => 'days',
+    'viewOriginalJob'    => 'View Original',
+    'checkInDate'        => 'Check-in Date',
+    'id'                 => 'ID',
+    'device'             => 'Device',
+    'browser'            => 'Browser',
 ];

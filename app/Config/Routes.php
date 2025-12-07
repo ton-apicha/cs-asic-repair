@@ -200,6 +200,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // All dangerous actions removed - read-only monitoring only
     // ========================================================================
     $routes->group('admin', ['filter' => 'role:super_admin'], function ($routes) {
+        // Activity Log - Track all user actions
+        $routes->get('activity-log', 'Admin\ActivityLogController::index');
+        $routes->get('activity-log/view/(:num)', 'Admin\ActivityLogController::view/$1');
+        $routes->get('activity-log/record-logs', 'Admin\ActivityLogController::getRecordLogs');
+
         // New unified monitoring dashboard
         $routes->get('monitoring', 'Admin\MonitoringController::index');
         $routes->get('monitoring/metrics', 'Admin\MonitoringController::getMetrics');
