@@ -257,7 +257,7 @@ return [
     'allBranches'       => 'All Branches',
     'filterByBranch'    => 'Filter by Branch',
     'superAdminNote'    => 'Super Admin can access all branches',
-    'superAdminNoBranch'=> 'Super Admin is not assigned to any branch',
+    'superAdminNoBranch' => 'Super Admin is not assigned to any branch',
     'adminNote'         => 'Branch Admin manages one branch',
     'branchRequired'    => 'Select a branch for this user',
     'editUser'          => 'Edit User',
@@ -461,5 +461,61 @@ return [
     'usernameCannotChange' => 'Username cannot be changed',
     'leaveBlankPassword' => 'Leave blank to keep current password',
     'userStatusNote'     => 'Inactive users cannot log in',
-];
 
+    // ========================================================================
+    // Reports Extended (Full Language Support)
+    // ========================================================================
+    'totalJobs'          => 'Total Jobs',
+    'totalRevenue'       => 'Total Revenue',
+    'laborIncome'        => 'Labor Income',
+    'partsIncome'        => 'Parts Income',
+    'salesDetails'       => 'Sales Details',
+    'fromDate'           => 'From',
+    'toDate'             => 'To',
+    'totalClaims'        => 'Total Claims',
+    'claimRate'          => 'Claim Rate',
+    'claimJob'           => 'Claim Job',
+    'claimCost'          => 'Claim Cost',
+    'daysOpen'           => 'Days Open',
+    'inventoryValue'     => 'Inventory Value',
+    'firstTimeFixRate'   => 'First Time Fix Rate',
+    'avgRepairTime'      => 'Avg Repair Time',
+    'hours'              => 'hrs',
+    'netProfit'          => 'Net Profit',
+    'profitMargin'       => 'Profit Margin',
+    'vatCollected'       => 'VAT Collected',
+    'partsSales'         => 'Parts Sales',
+    'warrantyClaims'     => 'Warranty Claims',
+    'totalCost'          => 'Total Cost',
+    'noClaimsInPeriod'   => 'No warranty claims in this period',
+
+    // ========================================================================
+    // Forms Extended (Full Language Support)
+    // ========================================================================
+    'selectModel'        => '-- Select Model --',
+    'notAssigned'        => '-- Not Assigned --',
+    'other'              => 'Other',
+    'otherSpecify'       => 'Other (specify in notes)',
+    'customerSearchHint' => 'Type to search or enter new name to create customer',
+    'originalJobPlaceholder' => 'Original Job ID',
+    'conditionPlaceholder' => 'Scratches, special stickers, etc.',
+    'foundInSystem'      => 'Found in system',
+    'newMachine'         => 'New machine',
+    'willBeRegistered'   => 'will be registered',
+    'noBranchesConfigured' => 'No branches configured',
+    'loginHistory'       => 'Login History',
+    'ipAddress'          => 'IP Address',
+
+    // ========================================================================
+    // PDF Documents (Full Language Support)
+    // ========================================================================
+    'repairService'      => 'Repair Service',
+    'replacementParts'   => 'Replacement parts used',
+    'method'             => 'Method',
+    'reference'          => 'Reference',
+    'paidInFull'         => 'PAID IN FULL',
+    'partialPayment'     => 'PARTIAL',
+    'unpaid'             => 'UNPAID',
+    'paymentHistory'     => 'Payment History',
+    'paymentStatus'      => 'Payment Status',
+];

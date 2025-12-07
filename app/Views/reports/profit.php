@@ -17,11 +17,11 @@
     <div class="card-body">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label"><?= lang('App.date') ?> (From)</label>
+                <label class="form-label"><?= lang('App.date') ?> (<?= lang('App.fromDate') ?>)</label>
                 <input type="date" class="form-control" name="from" value="<?= $from ?? date('Y-m-01') ?>">
             </div>
             <div class="col-md-4">
-                <label class="form-label"><?= lang('App.date') ?> (To)</label>
+                <label class="form-label"><?= lang('App.date') ?> (<?= lang('App.toDate') ?>)</label>
                 <input type="date" class="form-control" name="to" value="<?= $to ?? date('Y-m-d') ?>">
             </div>
             <div class="col-md-4">
@@ -40,7 +40,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Total Revenue</h6>
+                        <h6 class="mb-1"><?= lang('App.totalRevenue') ?></h6>
                         <h3 class="mb-0">฿<?= number_format($summary['revenue'] ?? 0, 0) ?></h3>
                     </div>
                     <i class="bi bi-cash-stack fs-1 opacity-50"></i>
@@ -53,7 +53,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Total Cost</h6>
+                        <h6 class="mb-1"><?= lang('App.totalCost') ?></h6>
                         <h3 class="mb-0">฿<?= number_format($summary['cost'] ?? 0, 0) ?></h3>
                     </div>
                     <i class="bi bi-wallet2 fs-1 opacity-50"></i>
@@ -66,7 +66,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Net Profit</h6>
+                        <h6 class="mb-1"><?= lang('App.netProfit') ?></h6>
                         <h3 class="mb-0">฿<?= number_format($summary['profit'] ?? 0, 0) ?></h3>
                     </div>
                     <i class="bi bi-graph-up-arrow fs-1 opacity-50"></i>
@@ -79,7 +79,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Profit Margin</h6>
+                        <h6 class="mb-1"><?= lang('App.profitMargin') ?></h6>
                         <h3 class="mb-0"><?= number_format($summary['margin'] ?? 0, 1) ?>%</h3>
                     </div>
                     <i class="bi bi-percent fs-1 opacity-50"></i>
@@ -94,48 +94,48 @@
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-arrow-up-circle me-2 text-success"></i>Revenue Breakdown
+                <i class="bi bi-arrow-up-circle me-2 text-success"></i><?= lang('App.totalRevenue') ?>
             </div>
             <div class="card-body">
                 <table class="table">
                     <tr>
-                        <td>Labor Income</td>
+                        <td><?= lang('App.laborIncome') ?></td>
                         <td class="text-end fw-bold">฿<?= number_format($summary['labor_income'] ?? 0, 0) ?></td>
                     </tr>
                     <tr>
-                        <td>Parts Sales</td>
+                        <td><?= lang('App.partsSales') ?></td>
                         <td class="text-end fw-bold">฿<?= number_format($summary['parts_sales'] ?? 0, 0) ?></td>
                     </tr>
                     <tr>
-                        <td>VAT Collected</td>
+                        <td><?= lang('App.vatCollected') ?></td>
                         <td class="text-end fw-bold">฿<?= number_format($summary['vat_collected'] ?? 0, 0) ?></td>
                     </tr>
                     <tr class="table-success">
-                        <th>Total Revenue</th>
+                        <th><?= lang('App.totalRevenue') ?></th>
                         <th class="text-end">฿<?= number_format($summary['revenue'] ?? 0, 0) ?></th>
                     </tr>
                 </table>
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-header">
-                <i class="bi bi-arrow-down-circle me-2 text-danger"></i>Cost Breakdown
+                <i class="bi bi-arrow-down-circle me-2 text-danger"></i><?= lang('App.totalCost') ?>
             </div>
             <div class="card-body">
                 <table class="table">
                     <tr>
-                        <td>Parts Cost</td>
+                        <td><?= lang('App.partsCost') ?></td>
                         <td class="text-end fw-bold">฿<?= number_format($summary['parts_cost'] ?? 0, 0) ?></td>
                     </tr>
                     <tr>
-                        <td>Warranty Claims</td>
+                        <td><?= lang('App.warrantyClaims') ?></td>
                         <td class="text-end fw-bold">฿<?= number_format($summary['warranty_cost'] ?? 0, 0) ?></td>
                     </tr>
                     <tr class="table-danger">
-                        <th>Total Cost</th>
+                        <th><?= lang('App.totalCost') ?></th>
                         <th class="text-end">฿<?= number_format($summary['cost'] ?? 0, 0) ?></th>
                     </tr>
                 </table>
@@ -144,4 +144,3 @@
     </div>
 </div>
 <?= $this->endSection() ?>
-

@@ -6,13 +6,13 @@
     <div>
         <h1 class="page-title" style="font-size: 1.75rem; font-weight: 700; color: var(--text-primary);">
             <i class="bi bi-clock-history text-primary me-2"></i>
-            ประวัติการเข้าสู่ระบบ
+            <?= lang('App.loginHistory') ?>
         </h1>
         <p class="text-muted mb-0">รายการเข้าสู่ระบบล่าสุด 20 รายการ</p>
     </div>
     <a href="<?= base_url('settings') ?>" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>
-        กลับ
+        <?= lang('App.back') ?>
     </a>
 </div>
 
@@ -22,7 +22,7 @@
         <?php if (empty($history)): ?>
             <div class="text-center py-5">
                 <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
-                <p class="text-muted mt-3">ไม่พบประวัติการเข้าสู่ระบบ</p>
+                <p class="text-muted mt-3"><?= lang('App.noRecords') ?></p>
             </div>
         <?php else: ?>
             <!-- Desktop Table -->
@@ -30,11 +30,11 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 180px;">วันที่/เวลา</th>
-                            <th style="width: 120px;">สถานะ</th>
+                            <th style="width: 180px;"><?= lang('App.date') ?></th>
+                            <th style="width: 120px;"><?= lang('App.status') ?></th>
                             <th>อุปกรณ์</th>
                             <th>เบราว์เซอร์</th>
-                            <th style="width: 140px;">IP Address</th>
+                            <th style="width: 140px;"><?= lang('App.ipAddress') ?></th>
                         </tr>
                     </thead>
                     <tbody>

@@ -461,5 +461,62 @@ return [
     'usernameCannotChange' => 'ไม่สามารถเปลี่ยนชื่อผู้ใช้ได้',
     'leaveBlankPassword' => 'เว้นว่างถ้าไม่ต้องการเปลี่ยนรหัสผ่าน',
     'userStatusNote'     => 'ปิดใช้งานจะทำให้ผู้ใช้ไม่สามารถเข้าสู่ระบบได้',
+
+    // ========================================================================
+    // Reports Extended (Full Thai Support)
+    // ========================================================================
+    'totalJobs'          => 'งานทั้งหมด',
+    'totalRevenue'       => 'รายได้รวม',
+    'laborIncome'        => 'รายได้ค่าแรง',
+    'partsIncome'        => 'รายได้อะไหล่',
+    'salesDetails'       => 'รายละเอียดยอดขาย',
+    'fromDate'           => 'จาก',
+    'toDate'             => 'ถึง',
+    'totalClaims'        => 'การเคลมทั้งหมด',
+    'claimRate'          => 'อัตราการเคลม',
+    'claimJob'           => 'ใบงานเคลม',
+    'claimCost'          => 'ค่าใช้จ่ายเคลม',
+    'daysOpen'           => 'จำนวนวันค้าง',
+    'inventoryValue'     => 'มูลค่าสต็อก',
+    'firstTimeFixRate'   => 'อัตราซ่อมสำเร็จครั้งแรก',
+    'avgRepairTime'      => 'เวลาซ่อมเฉลี่ย',
+    'hours'              => 'ชั่วโมง',
+    'netProfit'          => 'กำไรสุทธิ',
+    'profitMargin'       => 'อัตรากำไร',
+    'vatCollected'       => 'VAT ที่เก็บได้',
+    'partsSales'         => 'ยอดขายอะไหล่',
+    'warrantyClaims'     => 'การเคลมประกัน',
+    'totalCost'          => 'ต้นทุนรวม',
+    'noClaimsInPeriod'   => 'ไม่มีการเคลมในช่วงนี้',
+
+    // ========================================================================
+    // Forms Extended (Full Thai Support)
+    // ========================================================================
+    'selectModel'        => '-- เลือกรุ่น --',
+    'notAssigned'        => '-- ยังไม่มอบหมาย --',
+    'other'              => 'อื่นๆ',
+    'otherSpecify'       => 'อื่นๆ (ระบุในหมายเหตุ)',
+    'customerSearchHint' => 'พิมพ์เพื่อค้นหา หรือกรอกชื่อใหม่เพื่อสร้างลูกค้าใหม่',
+    'originalJobPlaceholder' => 'เลขที่ใบงานเดิม',
+    'conditionPlaceholder' => 'รอยขีดข่วน, สติ๊กเกอร์พิเศษ ฯลฯ',
+    'foundInSystem'      => 'พบเครื่องในระบบ',
+    'newMachine'         => 'เครื่องใหม่',
+    'willBeRegistered'   => 'จะถูกบันทึกเข้าระบบ',
+    'noBranchesConfigured' => 'ไม่มีสาขาที่กำหนด',
+    'loginHistory'       => 'ประวัติเข้าสู่ระบบ',
+    'ipAddress'          => 'IP Address',
+
+    // ========================================================================
+    // PDF Documents (Full Thai Support)
+    // ========================================================================
+    'repairService'      => 'บริการซ่อม',
+    'replacementParts'   => 'อะไหล่ที่เปลี่ยน',
+    'method'             => 'วิธีการ',
+    'reference'          => 'อ้างอิง',
+    'paidInFull'         => 'ชำระเต็มจำนวน',
+    'partialPayment'     => 'ชำระบางส่วน',
+    'unpaid'             => 'ยังไม่ชำระ',
+    'paymentHistory'     => 'ประวัติการชำระเงิน',
+    'paymentStatus'      => 'สถานะการชำระ',
 ];
 

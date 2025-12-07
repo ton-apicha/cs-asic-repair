@@ -17,11 +17,11 @@
     <div class="card-body">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label class="form-label"><?= lang('App.date') ?> (From)</label>
+                <label class="form-label"><?= lang('App.date') ?> (<?= lang('App.fromDate') ?>)</label>
                 <input type="date" class="form-control" name="from" value="<?= $from ?? date('Y-m-01') ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label"><?= lang('App.date') ?> (To)</label>
+                <label class="form-label"><?= lang('App.date') ?> (<?= lang('App.toDate') ?>)</label>
                 <input type="date" class="form-control" name="to" value="<?= $to ?? date('Y-m-d') ?>">
             </div>
             <div class="col-md-3">
@@ -48,7 +48,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Total Jobs</h6>
+                        <h6 class="mb-1"><?= lang('App.totalJobs') ?></h6>
                         <h3 class="mb-0"><?= $summary['total_jobs'] ?? 0 ?></h3>
                     </div>
                     <i class="bi bi-clipboard-check fs-1 opacity-50"></i>
@@ -61,7 +61,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Total Revenue</h6>
+                        <h6 class="mb-1"><?= lang('App.totalRevenue') ?></h6>
                         <h3 class="mb-0">฿<?= number_format($summary['total_revenue'] ?? 0, 0) ?></h3>
                     </div>
                     <i class="bi bi-currency-dollar fs-1 opacity-50"></i>
@@ -74,7 +74,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Labor Income</h6>
+                        <h6 class="mb-1"><?= lang('App.laborIncome') ?></h6>
                         <h3 class="mb-0">฿<?= number_format($summary['labor_income'] ?? 0, 0) ?></h3>
                     </div>
                     <i class="bi bi-tools fs-1 opacity-50"></i>
@@ -87,7 +87,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="mb-1">Parts Income</h6>
+                        <h6 class="mb-1"><?= lang('App.partsIncome') ?></h6>
                         <h3 class="mb-0">฿<?= number_format($summary['parts_income'] ?? 0, 0) ?></h3>
                     </div>
                     <i class="bi bi-box-seam fs-1 opacity-50"></i>
@@ -100,7 +100,7 @@
 <!-- Sales Table -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-table me-2"></i>Sales Details
+        <i class="bi bi-table me-2"></i><?= lang('App.salesDetails') ?>
     </div>
     <div class="card-body p-0">
         <?php if (empty($jobs)): ?>
@@ -124,22 +124,22 @@
                     </thead>
                     <tbody>
                         <?php foreach ($jobs as $job): ?>
-                        <tr>
-                            <td><?= date('d/m/Y', strtotime($job['created_at'])) ?></td>
-                            <td>
-                                <a href="<?= base_url('jobs/view/' . $job['id']) ?>"><?= esc($job['job_id']) ?></a>
-                            </td>
-                            <td><?= esc($job['customer_name']) ?></td>
-                            <td><?= esc($job['brand_model']) ?></td>
-                            <td class="text-end">฿<?= number_format($job['labor_cost'], 0) ?></td>
-                            <td class="text-end">฿<?= number_format($job['parts_cost'], 0) ?></td>
-                            <td class="text-end fw-bold">฿<?= number_format($job['grand_total'], 0) ?></td>
-                        </tr>
+                            <tr>
+                                <td><?= date('d/m/Y', strtotime($job['created_at'])) ?></td>
+                                <td>
+                                    <a href="<?= base_url('jobs/view/' . $job['id']) ?>"><?= esc($job['job_id']) ?></a>
+                                </td>
+                                <td><?= esc($job['customer_name']) ?></td>
+                                <td><?= esc($job['brand_model']) ?></td>
+                                <td class="text-end">฿<?= number_format($job['labor_cost'], 0) ?></td>
+                                <td class="text-end">฿<?= number_format($job['parts_cost'], 0) ?></td>
+                                <td class="text-end fw-bold">฿<?= number_format($job['grand_total'], 0) ?></td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot class="table-dark">
                         <tr>
-                            <th colspan="4" class="text-end">Total:</th>
+                            <th colspan="4" class="text-end"><?= lang('App.total') ?>:</th>
                             <th class="text-end">฿<?= number_format($summary['labor_income'] ?? 0, 0) ?></th>
                             <th class="text-end">฿<?= number_format($summary['parts_income'] ?? 0, 0) ?></th>
                             <th class="text-end">฿<?= number_format($summary['total_revenue'] ?? 0, 0) ?></th>
@@ -151,4 +151,3 @@
     </div>
 </div>
 <?= $this->endSection() ?>
-

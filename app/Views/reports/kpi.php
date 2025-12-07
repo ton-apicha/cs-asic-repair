@@ -42,7 +42,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-white-50 mb-1">First Time Fix Rate</h6>
+                            <h6 class="text-white-50 mb-1"><?= lang('App.firstTimeFixRate') ?></h6>
                             <h2 class="mb-0"><?= number_format($ftfr, 1) ?>%</h2>
                         </div>
                         <i class="bi bi-check-circle fs-1 text-white-50"></i>
@@ -57,8 +57,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-dark-50 mb-1">Avg Repair Time</h6>
-                            <h2 class="mb-0"><?= number_format($avgRepairTime, 1) ?> hrs</h2>
+                            <h6 class="text-dark-50 mb-1"><?= lang('App.avgRepairTime') ?></h6>
+                            <h2 class="mb-0"><?= number_format($avgRepairTime, 1) ?> <?= lang('App.hours') ?></h2>
                         </div>
                         <i class="bi bi-clock-history fs-1 text-dark-50"></i>
                     </div>
@@ -107,7 +107,7 @@
     <div class="row g-4">
         <div class="col-md-6">
             <div class="card h-100">
-                <div class="card-header">Claim Rate</div>
+                <div class="card-header"><?= lang('App.claimRate') ?></div>
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
@@ -119,21 +119,20 @@
                         </div>
                     </div>
                     <p class="text-muted mt-2 mb-0">
-                        <small>อัตราการเคลมสินค้าในเดือนนี้ (ยิ่งต่ำยิ่งดี)</small>
+                        <small><?= lang('App.claimRate') ?> (<?= lang('App.lowIsBetter') ?? 'ยิ่งต่ำยิ่งดี' ?>)</small>
                     </p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card h-100">
-                <div class="card-header">Inventory Value</div>
+                <div class="card-header"><?= lang('App.inventoryValue') ?></div>
                 <div class="card-body text-center">
                     <h2 class="display-5 fw-bold text-primary">฿<?= number_format($inventoryValue, 0) ?></h2>
-                    <p class="text-muted mb-0">มูลค่าคลังอะไหล่ทั้งหมด</p>
+                    <p class="text-muted mb-0"><?= lang('App.inventoryValue') ?></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <?= $this->endSection() ?>
-

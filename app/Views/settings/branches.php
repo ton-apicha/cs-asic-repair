@@ -21,14 +21,14 @@
         <?php if (empty($branches)): ?>
             <div class="text-center text-muted py-5">
                 <i class="bi bi-building d-block fs-1 mb-2 opacity-50"></i>
-                <p class="mb-0">No branches configured</p>
+                <p class="mb-0"><?= lang('App.noBranchesConfigured') ?></p>
             </div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
+                            <th><?= lang('App.id') ?></th>
                             <th><?= lang('App.branchName') ?></th>
                             <th><?= lang('App.phone') ?></th>
                             <th><?= lang('App.address') ?></th>
@@ -135,9 +135,11 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    (function () {
+    (function() {
         // Clean up any leftover backdrops on page load
-        document.querySelectorAll('.modal-backdrop').forEach(function (el) { el.remove(); });
+        document.querySelectorAll('.modal-backdrop').forEach(function(el) {
+            el.remove();
+        });
         document.body.classList.remove('modal-open');
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
@@ -149,8 +151,10 @@
         var branchModal = new bootstrap.Modal(branchModalEl);
 
         // Cleanup when modal is hidden
-        branchModalEl.addEventListener('hidden.bs.modal', function () {
-            document.querySelectorAll('.modal-backdrop').forEach(function (el) { el.remove(); });
+        branchModalEl.addEventListener('hidden.bs.modal', function() {
+            document.querySelectorAll('.modal-backdrop').forEach(function(el) {
+                el.remove();
+            });
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
@@ -159,7 +163,7 @@
         // Expose functions globally
         window.branchModal = branchModal;
 
-        window.addBranch = function () {
+        window.addBranch = function() {
             var form = document.getElementById('branchForm');
             var title = document.getElementById('branchModalTitle');
 
@@ -172,7 +176,7 @@
             branchModal.show();
         };
 
-        window.editBranch = function (branch) {
+        window.editBranch = function(branch) {
             var form = document.getElementById('branchForm');
             var title = document.getElementById('branchModalTitle');
 
@@ -188,7 +192,7 @@
             branchModal.show();
         };
 
-        window.deleteBranch = function (id, name) {
+        window.deleteBranch = function(id, name) {
             if (confirm('<?= lang('App.confirmDelete') ?>\n\nBranch: ' + name)) {
                 var form = document.createElement('form');
                 form.method = 'POST';

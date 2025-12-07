@@ -27,32 +27,32 @@
     ];
     ?>
     <?php foreach ($statuses as $key => $status): ?>
-    <div class="col">
-        <div class="card border-<?= $status['color'] ?>">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-1 text-<?= $status['color'] ?>"><?= $status['label'] ?></h6>
-                        <h3 class="mb-0"><?= $summary[$key] ?? 0 ?></h3>
+        <div class="col">
+            <div class="card border-<?= $status['color'] ?>">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-<?= $status['color'] ?>"><?= $status['label'] ?></h6>
+                            <h3 class="mb-0"><?= $summary[$key] ?? 0 ?></h3>
+                        </div>
+                        <i class="bi bi-<?= $status['icon'] ?> fs-1 text-<?= $status['color'] ?> opacity-50"></i>
                     </div>
-                    <i class="bi bi-<?= $status['icon'] ?> fs-1 text-<?= $status['color'] ?> opacity-50"></i>
                 </div>
             </div>
         </div>
-    </div>
     <?php endforeach; ?>
 </div>
 
 <!-- WIP Table -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-table me-2"></i>Work In Progress Jobs
+        <i class="bi bi-table me-2"></i><?= lang('App.wipReport') ?>
     </div>
     <div class="card-body p-0">
         <?php if (empty($jobs)): ?>
             <div class="text-center text-muted py-5">
                 <i class="bi bi-check-circle text-success d-block fs-1 mb-2"></i>
-                <p class="mb-0">All jobs are completed!</p>
+                <p class="mb-0"><?= lang('App.noRecords') ?></p>
             </div>
         <?php else: ?>
             <div class="table-responsive">
@@ -60,8 +60,8 @@
                     <thead class="table-light">
                         <tr>
                             <th><?= lang('App.jobId') ?></th>
-                            <th>Check-in Date</th>
-                            <th>Days Open</th>
+                            <th><?= lang('App.checkInDate') ?></th>
+                            <th><?= lang('App.daysOpen') ?></th>
                             <th><?= lang('App.customer') ?></th>
                             <th><?= lang('App.asset') ?></th>
                             <th><?= lang('App.status') ?></th>
@@ -71,48 +71,48 @@
                     </thead>
                     <tbody>
                         <?php foreach ($jobs as $job): ?>
-                        <?php 
-                        $daysOpen = (strtotime('now') - strtotime($job['created_at'])) / 86400;
-                        $daysClass = $daysOpen > 7 ? 'text-danger' : ($daysOpen > 3 ? 'text-warning' : 'text-success');
-                        ?>
-                        <tr>
-                            <td>
-                                <a href="<?= base_url('jobs/view/' . $job['id']) ?>" class="fw-bold">
-                                    <?= esc($job['job_id']) ?>
-                                </a>
-                                <?php if ($job['is_warranty_claim']): ?>
-                                    <span class="badge bg-danger ms-1">W</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= date('d/m/Y H:i', strtotime($job['created_at'])) ?></td>
-                            <td class="<?= $daysClass ?> fw-bold">
-                                <?= number_format($daysOpen, 0) ?> days
-                            </td>
-                            <td><?= esc($job['customer_name']) ?></td>
-                            <td>
-                                <div><?= esc($job['brand_model']) ?></div>
-                                <small class="text-muted"><?= esc($job['serial_number']) ?></small>
-                            </td>
-                            <td>
-                                <?php
-                                $statusClass = match($job['status']) {
-                                    'new_checkin' => 'badge-status-new',
-                                    'pending_repair' => 'badge-status-pending',
-                                    'in_progress' => 'badge-status-progress',
-                                    'repair_done' => 'badge-status-done',
-                                    'ready_handover' => 'badge-status-ready',
-                                    default => 'bg-secondary'
-                                };
-                                ?>
-                                <span class="badge <?= $statusClass ?>"><?= ucfirst(str_replace('_', ' ', $job['status'])) ?></span>
-                            </td>
-                            <td><?= esc($job['technician_name'] ?? '-') ?></td>
-                            <td>
-                                <a href="<?= base_url('jobs/view/' . $job['id']) ?>" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
+                            <?php
+                            $daysOpen = (strtotime('now') - strtotime($job['created_at'])) / 86400;
+                            $daysClass = $daysOpen > 7 ? 'text-danger' : ($daysOpen > 3 ? 'text-warning' : 'text-success');
+                            ?>
+                            <tr>
+                                <td>
+                                    <a href="<?= base_url('jobs/view/' . $job['id']) ?>" class="fw-bold">
+                                        <?= esc($job['job_id']) ?>
+                                    </a>
+                                    <?php if ($job['is_warranty_claim']): ?>
+                                        <span class="badge bg-danger ms-1">W</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= date('d/m/Y H:i', strtotime($job['created_at'])) ?></td>
+                                <td class="<?= $daysClass ?> fw-bold">
+                                    <?= number_format($daysOpen, 0) ?> <?= lang('App.days') ?>
+                                </td>
+                                <td><?= esc($job['customer_name']) ?></td>
+                                <td>
+                                    <div><?= esc($job['brand_model']) ?></div>
+                                    <small class="text-muted"><?= esc($job['serial_number']) ?></small>
+                                </td>
+                                <td>
+                                    <?php
+                                    $statusClass = match ($job['status']) {
+                                        'new_checkin' => 'badge-status-new',
+                                        'pending_repair' => 'badge-status-pending',
+                                        'in_progress' => 'badge-status-progress',
+                                        'repair_done' => 'badge-status-done',
+                                        'ready_handover' => 'badge-status-ready',
+                                        default => 'bg-secondary'
+                                    };
+                                    ?>
+                                    <span class="badge <?= $statusClass ?>"><?= ucfirst(str_replace('_', ' ', $job['status'])) ?></span>
+                                </td>
+                                <td><?= esc($job['technician_name'] ?? '-') ?></td>
+                                <td>
+                                    <a href="<?= base_url('jobs/view/' . $job['id']) ?>" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -121,4 +121,3 @@
     </div>
 </div>
 <?= $this->endSection() ?>
-

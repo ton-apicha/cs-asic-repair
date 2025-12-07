@@ -45,7 +45,7 @@
                                     data-phone-target="#customer_phone"
                                     placeholder="<?= lang('App.searchCustomer') ?>"
                                     required>
-                                <div class="form-text">พิมพ์เพื่อค้นหา หรือกรอกชื่อใหม่เพื่อสร้างลูกค้าใหม่</div>
+                                <div class="form-text"><?= lang('App.customerSearchHint') ?></div>
                             </div>
 
                             <div class="mb-3">
@@ -93,7 +93,7 @@
                             <div class="mb-3">
                                 <label class="form-label required"><?= lang('App.assetBrandModel') ?></label>
                                 <select class="form-select" id="brand_model" name="brand_model" required>
-                                    <option value="">-- เลือกรุ่น --</option>
+                                    <option value=""><?= lang('App.selectModel') ?></option>
                                     <optgroup label="Bitmain Antminer">
                                         <option value="Bitmain Antminer S19">Antminer S19</option>
                                         <option value="Bitmain Antminer S19 Pro">Antminer S19 Pro</option>
@@ -111,8 +111,8 @@
                                         <option value="Canaan Avalon 1246">Avalon 1246</option>
                                         <option value="Canaan Avalon 1366">Avalon 1366</option>
                                     </optgroup>
-                                    <optgroup label="อื่นๆ">
-                                        <option value="Other">อื่นๆ (ระบุในหมายเหตุ)</option>
+                                    <optgroup label="<?= lang('App.other') ?>">
+                                        <option value="Other"><?= lang('App.otherSpecify') ?></option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -130,7 +130,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label"><?= lang('App.assetCondition') ?></label>
-                                <textarea class="form-control" name="external_condition" rows="2" placeholder="รอยขีดข่วน, สติ๊กเกอร์พิเศษ ฯลฯ"></textarea>
+                                <textarea class="form-control" name="external_condition" rows="2" placeholder="<?= lang('App.conditionPlaceholder') ?>"></textarea>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -155,7 +155,7 @@
                                 <div class="mb-3">
                                     <label class="form-label"><?= lang('App.jobTechnician') ?></label>
                                     <select class="form-select" name="technician_id">
-                                        <option value="">-- ยังไม่มอบหมาย --</option>
+                                        <option value=""><?= lang('App.notAssigned') ?></option>
                                         <?php foreach ($technicians ?? [] as $tech): ?>
                                             <option value="<?= $tech['id'] ?>"><?= esc($tech['name']) ?></option>
                                         <?php endforeach; ?>
@@ -183,7 +183,7 @@
 
                             <div class="mb-3 d-none" id="original_job_container">
                                 <label class="form-label"><?= lang('App.originalJobId') ?></label>
-                                <input type="text" class="form-control" name="original_job_id" placeholder="เลขที่ใบงานเดิม">
+                                <input type="text" class="form-control" name="original_job_id" placeholder="<?= lang('App.originalJobPlaceholder') ?>">
                             </div>
                         </div>
 
